@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.post("/refresh", (req, res) => {
   const refreshToken = req.body.refreshToken
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'http://localhost:3000',
+    redirectUri: 'https://euphonia3-samnjab.vercel.app/',
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
     clientSecret: '33016e8082384da09b7f06052f543674',
     refreshToken,
@@ -38,7 +38,7 @@ app.post("/refresh", (req, res) => {
 app.post("/login", (req, res) => {
   const code = req.body.code
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'http://localhost:3000',
+    redirectUri: 'https://euphonia3-samnjab.vercel.app/',
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
     clientSecret: '33016e8082384da09b7f06052f543674',
   })
