@@ -71,3 +71,4 @@ app.get("/lyrics", async (req, res) => {
 port = 3001
 app.listen(port)
 console.log('Listening on', port)
+module.exports = app 
