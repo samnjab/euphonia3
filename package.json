@@ -2,7 +2,6 @@
   "name": "euphonia",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3001",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@testing-library/jest-dom": "^5.16.5",
@@ -14,6 +13,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "g": "^2.0.1",
     "lyrics-finder": "^21.7.0",
     "nodemon": "^2.0.20",
     "react": "^18.2.0",
@@ -22,6 +22,7 @@
     "react-scripts": "5.0.1",
     "react-spotify-web-playback": "^0.11.3",
     "spotify-web-api-node": "^5.0.2",
+    "vercel": "^28.15.2",
     "web-vitals": "^2.1.4",
     "webfontloader": "^1.6.28"
   },
@@ -30,8 +31,11 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "devStart": "nodemon ./src/server/server.js",
-    "startServer": "node ./src/server/server.js"
+    "devStart": "nodemon ./src/api/server.js",
+    "startServer": "node ./src/api/server.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   },
   "eslintConfig": {
     "extends": [
