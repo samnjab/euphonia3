@@ -9,7 +9,7 @@ export default function useAuth(code) {
 
   useEffect(() => {
     axios
-      .post("http://localhost:3001/api/server/login", {
+      .post("http://localhost:3001/api/server/login",{ mode: 'cors' }, {
         code,
       })
       .then(res => {
