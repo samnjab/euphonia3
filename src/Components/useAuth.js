@@ -9,7 +9,7 @@ export default function useAuth(code) {
 
   useEffect(() => {
     axios
-      .post("http://localhost:3001/api/server/login",{ mode: 'cors' }, {
+      .post("http://localhost:3000/api/server/login",{ mode: 'cors' }, {
         code,
       })
       .then(res => {
@@ -28,7 +28,7 @@ export default function useAuth(code) {
     if (!refreshToken || !expiresIn) return
     const interval = setInterval(() => {
       axios
-        .post("http://localhost:3001/api/server/refresh", {
+        .post("http://localhost:3000/api/server/refresh",{ mode: 'cors' }, {
           refreshToken,
         })
         .then(res => {
