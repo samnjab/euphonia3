@@ -9,9 +9,7 @@ export default function useAuth(code) {
 
   useEffect(() => {
     axios
-      .post("http://localhost:3000/api/server/login",{ mode: 'cors' }, {
-        code,
-      })
+      .get(`/api/express/code/${code}`,{ mode: 'cors' })
       .then(res => {
         setAccessToken(res.data.accessToken)
         setRefreshToken(res.data.refreshToken)
@@ -28,9 +26,7 @@ export default function useAuth(code) {
     if (!refreshToken || !expiresIn) return
     const interval = setInterval(() => {
       axios
-        .post("http://localhost:3000/api/server/refresh",{ mode: 'cors' }, {
-          refreshToken,
-        })
+        .get(`/api/express/refresh/${refreshToken}`,{ mode: 'cors' })
         .then(res => {
           setAccessToken(res.data.accessToken)
           setExpiresIn(res.data.expiresIn)
