@@ -565,6 +565,7 @@ label:nth-of-type(2n) {
 @media(max-width:550px){
   .App{
     font-size:100%;
+    font-weight:100;
   }
   .play,
   .like,
