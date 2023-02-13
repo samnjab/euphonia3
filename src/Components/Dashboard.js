@@ -1,6 +1,5 @@
 // Modules
 import SpotifyWebApi from "spotify-web-api-node"
-import axios from "axios"
 // Hooks
 import { useState, useEffect } from "react"
 // Components

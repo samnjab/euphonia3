@@ -9,7 +9,6 @@ export default function TrackSearchResult({ track, playTrack, selectTrack, spoti
     // const [playingStatus, setPlayingStatus]= useState(false)
     const [inMyLibrary, setInMyLibrary] = useState(false)
     const [added, setAdded] = useState(false)
-
     useEffect(()=>{
         spotifyApi.containsMySavedTracks([track.id])
         .then(res=>{
