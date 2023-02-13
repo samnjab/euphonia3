@@ -16,7 +16,7 @@ app.get('/api/express/code/:code', (req, res) => {
   
   // res.end(`Item: ${code}`);
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'https://euphonia-samnjab.vercel.app/',
+    redirectUri: 'https://euphonia3.vercel.app/',
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
     clientSecret: '33016e8082384da09b7f06052f543674',
   })
@@ -40,7 +40,7 @@ app.get('/api/express/refresh/:refreshToken', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'https://euphonia-samnjab.vercel.app/',
+    redirectUri: 'https://euphonia3.vercel.app/',
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
     clientSecret: '33016e8082384da09b7f06052f543674',
     refreshToken,
