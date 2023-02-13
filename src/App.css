@@ -244,7 +244,7 @@ input::placeholder{
   cursor: pointer;
   height: 7px;
   width: 7px;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   pointer-events: all;
   position: relative;
 }
