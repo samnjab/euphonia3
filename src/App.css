@@ -564,7 +564,7 @@ label:nth-of-type(2n) {
 
 @media(max-width:550px){
   .App{
-    font-size:90%;
+    font-size:100%;
   }
   .play,
   .like,
@@ -596,6 +596,11 @@ label:nth-of-type(2n) {
   .duration{
     font-size:0.5rem;
   }
+  .album,
+  .duration,
+  .plus {
+    display: none;
+  }
 }
 @media(max-width:450px){
   .App {
@@ -618,7 +623,11 @@ label:nth-of-type(2n) {
     height:36px;
     margin:1rem 0 0 0;
   }
-
+  .album,
+  .duration,
+  .plus {
+    display: none;
+  }
 }
 @media(max-width:360px){
   .album,
