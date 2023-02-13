@@ -19,6 +19,7 @@ export default function Player({ accessToken, track, listOfTracks, playingStatus
         if (!state.isPlaying) changePlay(false)
         if (state.isPlaying){
           changePlayingTrack(state.track)
+          changePlay(true)
         }
       }}
       play={playingStatus}
