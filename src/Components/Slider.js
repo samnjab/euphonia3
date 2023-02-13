@@ -1,5 +1,4 @@
 import {useState} from 'react'
-import '../componentStyles/Slider.css' 
 import classnames from 'classnames'
 
 export default function Slider({ min, max, handleRecoParam, recoParam}) {
