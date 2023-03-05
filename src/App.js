@@ -27,6 +27,7 @@ function App() {
         <main>
             {code ? <Dashboard code={code} /> : <Login />}
         </main>
+        <footer><p>Powered by Spotify API</p><p>by Sam J. @ Juno</p></footer>
     </div>
 
   )

@@ -40,17 +40,13 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
         )
     }
-    
-
     const handlePlayTrack = (track) => {
         setPlayingTrack(track)
         setPlayingTracks(recommendations)
     }
-
     const changePlay = (e) => {
         (e) ? setPlayingStatus(true) : setPlayingStatus(false)
     }
-    
     const deselectTrack = (toBeRemovedTrack) =>{
         setSelectedTracks(
             selectedTracks.filter(track => {
@@ -65,7 +61,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             })
         )
     }
-
     const selectTrack = (track) =>{
         const exists = selectedTracks.filter(selectedTrack =>{
             return selectedTrack.uri === track.uri
@@ -109,15 +104,11 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             }
         }
         spotifyApi.getRecommendations({
-            // seed_artists:seedArtists,
             seed_tracks: seedTracks,
             seed_artists:seedArtists,
             ...requestParams
-            
-
         }).then(data => {
             if (!start) return
-            const recommendations = data.body;
             setRecommendations(
                 data.body?.tracks?.map(track => {
                     const smallestAlbumImage = track.album.images.reduce(
@@ -128,6 +119,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         track.album.images[0]
                     )
                     return {
+                        preview_url:track?.preview_url || '',
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
                         title: track.name,
@@ -139,15 +131,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     }
                 })
             )
-
         }).catch(error=>{
             return 
         })
-    
-        
-        
         return () => start = false
-
     },[selectedTracks, selectedArtists, recoParams])
     
     useEffect(() => {
@@ -190,7 +177,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 })
             )
         })
-
         return () => (start = false)
     }, [trackSearch, accessToken])
     
@@ -227,7 +213,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             )
             
         })
-
         return () => (start = false)
     }, [artistSearch, accessToken])
 
@@ -246,7 +231,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         }}
                     />
             </form>
-            
             <div className='searchResults'>
             {   revealStatus ? (
                     param ==='artist' ? 
@@ -259,7 +243,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     })
                     :
                     searchTrackResults.map(track => {
-
                         return <TrackSearchResult
                         track={track}
                         key={track.uri}
@@ -309,6 +292,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 recommendations.map(track => {
                     return <RecoTrack 
                             track={track} 
+                            preview_url={track.preview_url}
                             user={user}
                             playTrack= {handlePlayTrack} 
                             playingStatus={playingStatus}
@@ -333,7 +317,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 changePlayingTrack={(track)=> setPlayingTrack(track)}/>
                 :
                 <></>
-
             }
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (
@@ -341,9 +324,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 {lyrics}
                 </div>
                 )} */}
-
         </div>
-
-        
     )
 }

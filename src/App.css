@@ -8,6 +8,48 @@ html { box-sizing: border-box;}
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; border: 0; padding: 0; white-space: nowrap; clip-path: inset(100%); clip: rect(0 0 0 0); overflow: hidden;}
 
 
+/* Variables */
+:root {
+  /* colors */
+  --primaryColorRef: #000000;
+  --mixedColor1Ref: #1c1517;
+  --mixedColor2Ref: #382b2e;
+  --mixedColor3Ref: #544146;
+  --mixedColor4Ref: #6f565d;
+  --mixedColor5Ref: #8b6b74;
+  --mixedColor6Ref: #a6818a;
+  --mixedColor7Ref: #c196a1;
+  --mixedColor8Ref: #e2b0bd;
+  --secondaryColorRef: #ffc6d5;
+  --tertiaryColorRef: #e4001c;
+  --secondaryColorGradientMin: rgba(255, 198, 213, 0);
+  --secondaryColorGradientMax: rgba(255, 198, 213, 100);
+  --primaryColorGradientMin: rgba(0, 0, 0, 0);
+  --primaryColorGradientMax: rgba(0, 0, 0, 100);
+  --overlayBackgroundColor: var(--mixedColor8Ref);
+  --overlayGradientMin: rgba(193, 150, 161, 0);
+  --overlayGradientMax: rgba(193, 150, 161, 100);
+  --foregroundColor: var(--primaryColorRef);
+  --foregroundColorMix1: var(--mixedColor1Ref);
+  --foregroundColorMix2: var(--mixedColor2Ref);
+  --foregroundColorMix3: var(--mixedColor3Ref);
+  --foregroundColorMix4: var(--mixedColor4Ref);
+  --foregroundColorMix5: var(--mixedColor5Ref);
+  --foregroundColorMix6: var(--mixedColor6Ref);
+  --foregroundColorMix7: var(--mixedColor7Ref);
+  --foregroundColorMix8: var(--mixedColor8Ref);
+  --backgroundColor: var(--secondaryColorRef);
+  --backgroundGradientColorMin: var(--secondaryColorGradientMin);
+  --backgroundGradientColorMax: var(--secondaryColorGradientMax);
+  --borderColor: var(--mixedColor7Ref);
+  --highlightColor: var(--tertiaryColorRef);
+  --errorColor: #E4001C;
+  
+  /* fonts */
+  --displayFont: 'Gloock',serif;
+  --textFont:'Source Sans Pro', sans-serif;
+}
+
 /* resets */
 html{
   color:white;
@@ -364,8 +406,7 @@ label:nth-of-type(2n) {
 }
 
 .checkbox:checked+.label .switch {
-  /* right: 0px; */
-  left: 140px;
+  left: 160px;
 }
 /* end of toggle switch styles */
 
@@ -540,6 +581,15 @@ label:nth-of-type(2n) {
 }
 .playlist{
   margin:5px 0;
+}
+footer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7rem;
+  text-align: center;
+  margin: 2rem 0;
 }
 
 
