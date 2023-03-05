@@ -5,6 +5,7 @@ import ArtistSearchResult from './ArtistSearchResult'
 import DisplayTrack from "./DisplayTrack"
 import DisplayArtist from "./DisplayArtist"
 import RecoTrack from './RecoTrack'
+import WebPlayer from "./WebPlayer"
 import Player from './Player'
 import Slider from './Slider'
 import Error from './Error'
@@ -17,9 +18,12 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [selectedTracks, setSelectedTracks] = useState([])
     const [selectedArtists, setSelectedArtists] = useState([])
     const [recommendations, setRecommendations] = useState([])
+    const [player, setPlayer] = useState(undefined)
+    const [playingStatus, setPlayingStatus]= useState(false)
+    const [isPaused, setIsPaused] = useState(false)
+    const [isActive, setIsActive] = useState(false)
     const [playingTrack, setPlayingTrack] = useState([])
     const [playingTracks, setPlayingTracks] = useState([])
-    const [playingStatus, setPlayingStatus]= useState(false)
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
 
     const handleRecoParam = (recoParam, lower, upper) => {
@@ -68,7 +72,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if(exists.length == 0){
             setSelectedTracks([...selectedTracks, track])
         }
-        setTrackSearch([])
+        setTrackSearch('')
         setRevealStatus(false)
     }
     const selectArtist = (artist) => {
@@ -78,7 +82,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if (exists.length == 0){
             setSelectedArtists([...selectedArtists, artist])
         }
-        setArtistSearch([])
+        setArtistSearch('')
         setRevealStatus(false)
     }
     useEffect(() => {
@@ -151,7 +155,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     // }
 
     useEffect(() => {
-        if (!trackSearch) return setSearchTrackResults([])
+        if (!trackSearch) {
+            setSearchTrackResults([])
+            return 
+        }
         if (!accessToken) return
         let start = true
         spotifyApi.searchTracks(trackSearch)
@@ -181,7 +188,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     }, [trackSearch, accessToken])
     
     useEffect(() => {
-        if (!artistSearch) return setSearchArtistResults([])
+        if (!artistSearch) {
+            setSearchArtistResults([])
+            return 
+        }
         if (!accessToken) return
         let start = true
         spotifyApi.searchArtists(artistSearch)
@@ -215,6 +225,33 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         })
         return () => (start = false)
     }, [artistSearch, accessToken])
+    useEffect(() => {
+        if (!accessToken) return
+        const script = document.createElement('script')
+        script.src = "https://sdk.scdn.co/spotify-player.js"
+        script.async = true
+        document.body.appendChild(script)
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const player = new window.Spotify.Player({
+                name: 'Euphonia',
+                getOAuthToken:cb => {cb(accessToken)},
+                volume:0.5
+            })
+            console.log('player ready', player)
+            setPlayer(player)
+        }
+    },[accessToken])
+
+    useEffect(() => {
+        if (!player) return
+        player.addListener('ready', ({device_id}) => {
+            console.log('ready with device id', device_id)
+        })
+        player.addListener('not_ready', ({device_id}) => {
+            console.log('device id has gone offline', device_id)
+        })
+        player.connect()
+    }, [player])
 
     return(
         <div className='apiSearch'>
@@ -248,7 +285,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         key={track.uri}
                         selectTrack={selectTrack}
                         playTrack= {handlePlayTrack}
-                        changePlay={changePlay}
+                        // changePlay={changePlay}
                     />
                     })
                 )  
@@ -307,6 +344,18 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 }
             </div>
             {
+                isActive ? 
+                <WebPlayer 
+                playingTrack={playingTrack}
+                setPaused={setIsPaused}
+                setActive={setIsActive} 
+                listOfTracks={playingTracks}
+                playingStatus={playingStatus} 
+                />
+                :
+                <></>
+            }
+            {/* {
                 playingTracks ?
                 <Player 
                 accessToken={accessToken} 
@@ -317,7 +366,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 changePlayingTrack={(track)=> setPlayingTrack(track)}/>
                 :
                 <></>
-            }
+            } */}
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (
                 <div style={{ whiteSpace: "pre" }}>
