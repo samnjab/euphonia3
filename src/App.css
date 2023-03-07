@@ -66,6 +66,18 @@ body{
  background-color: var(--backgroundColor);
  color: var(--foregroundColorMix1);
 }
+.layout {
+  position: relative;
+  width: 100vw;
+}
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 644px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 
 .App {
   text-align: center;
@@ -78,6 +90,8 @@ body{
 
 /* header */
 .App-header {
+  position:relative;
+  z-index:30;
   min-height: 10vh;
   width:100vw;
   display: flex;
@@ -103,6 +117,8 @@ header h2{
 
 /* Main Section */
 main{
+  position:relative;
+  z-index:30;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -112,6 +128,8 @@ main{
 }
 /* Login */
 .login{
+  position:relative;
+  z-index:30;
   background-color:var(--foregroundColorMix6);
   /* background-image: linear-gradient(var(--backgroundGradientColorMin), var(--backgroundGradientColorMax)); */
   width:fit-content;
@@ -128,6 +146,8 @@ main{
 }
 /* Dashboard & wrapper */
 .dashboard{
+  position:relative;
+  z-index:30;
   width:100%;
   margin:1rem 0;
 }

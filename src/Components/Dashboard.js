@@ -63,7 +63,6 @@ export default function Dashboard({ code }) {
                     label='Track/Artist'
                     searchBy={searchBy}
                     />
-                    <i role="presentation" aria-hidden="true">◑</i>
                 </div>
                 <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
             </div>
