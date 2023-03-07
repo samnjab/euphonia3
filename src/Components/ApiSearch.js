@@ -25,7 +25,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [playingTrack, setPlayingTrack] = useState([])
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
-
     const handleRecoParam = (recoParam, lower, upper) => {
         let min = lower/100
         let max = upper/100
@@ -262,10 +261,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         type="text"
                         placeholder={param==='artist' ? 'Search by Artist' : 'Search by Track'}
                         value={param==='artist' ? artistSearch : trackSearch}
-                        onChange={e => param==='artist' ? setArtistSearch(e.target.value) : setTrackSearch(e.target.value) }
-                        onClick={e => {
-                            revealStatus ? setRevealStatus(false) : setRevealStatus(true)
-                        }}
+                        onChange={e => {
+                            setRevealStatus(true)
+                            param==='artist' ? setArtistSearch(e.target.value) : setTrackSearch(e.target.value)
+                        } }
                     />
             </form>
             <div className='searchResults'>
