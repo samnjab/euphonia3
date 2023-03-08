@@ -101,6 +101,10 @@ canvas {
   font-size: calc(10px + 2vmin);
   color:var(--foregroundColor);
 }
+.App-header.landing{
+  min-height:80vh;
+}
+
 h1{
   font-family:var(--displayFont);
   font-size:5rem;

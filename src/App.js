@@ -30,33 +30,35 @@ function App() {
     
   return (
     <div className={`App ${theme}`}>
-         <i role="presentation" 
-            aria-hidden="true"
-            onClick={()=> {
-                        let i = themes.indexOf(theme)
-                        if (i < themes.length - 1) setTheme(themes[i + 1])
-                        else setTheme(themes[0])
-                    }}> ◑ </i>
-        <Routes>
-            <Route path='/' 
-                element={<>
-                        <Canvas windowDims={windowDims} theme={theme}/>
-                        <Header />  
-                        <Login />
-                       
-                        </> }/>
-            <Route path='/app'
-                element={
-                    <>
-                        <header className='App-header'>
-                            <h1> Euphonia</h1>
-                            <h2>old favourites multiplied</h2>
-                         </header>
-                        <Dashboard code={code} />
-                    </>
-                }/>
-                
-        </Routes>
+        <div className='layout'>
+            <i role="presentation" 
+                aria-hidden="true"
+                onClick={()=> {
+                            let i = themes.indexOf(theme)
+                            if (i < themes.length - 1) setTheme(themes[i + 1])
+                            else setTheme(themes[0])
+                        }}> ◑ </i>
+            <Routes>
+                <Route path='/' 
+                    element={<>
+                            <Canvas windowDims={windowDims} theme={theme}/>
+                            <Header />  
+                            <Login />
+                        
+                            </> }/>
+                <Route path='/app'
+                    element={
+                        <>
+                            <header className='App-header'>
+                                <h1> Euphonia</h1>
+                                <h2>old favourites multiplied</h2>
+                            </header>
+                            <Dashboard code={code} />
+                        </>
+                    }/>
+                    
+            </Routes>
+        </div>
        
        
         <footer><p>Powered by Spotify API</p><p>by Sam J. @ Juno</p></footer>
