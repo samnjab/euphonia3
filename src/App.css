@@ -21,6 +21,7 @@ html { box-sizing: border-box;}
   --mixedColor6Ref: #a6818a;
   --mixedColor7Ref: #c196a1;
   --secondaryColorRef: #BC939E;
+  --overlayLight:#DECACF;
   --colorGradientMin: rgba(0, 0, 0, 0);
   --colorGradientMax: rgba(0, 0, 0, 100);
   --tertiaryColorRef: #e4001c;
@@ -37,9 +38,10 @@ html { box-sizing: border-box;}
   --colorGradientMinBlue: rgba(0, 0, 0, 0);
   --colorGradientMaxBlue: rgba(0, 0, 0, 100);
   --tertiaryColorRefBlue: #e4001c;
-  /* colors */
+  /* default colors */
   --backgroundColor: var(--secondaryColorRef);
-  --overlayBackgroundColor: var(--mixedColor7Ref);
+  --overlayBackgroundColor: var(--mixedColor6Ref);
+  --overlayLightBackgroundColor:var(--overlayLight);
   --foregroundColor: var(--primaryColorRef);
   --foregroundColorMix1: var(--mixedColor1Ref);
   --foregroundColorMix2: var(--mixedColor2Ref);
@@ -61,7 +63,7 @@ html { box-sizing: border-box;}
 /* themes */
 .lightPink{
   --backgroundColor: var(--secondaryColorRef);
-  --overlayBackgroundColor: var(--mixedColor7Ref);
+  --overlayBackgroundColor: var(--mixedColor6Ref);
   --foregroundColor: var(--primaryColorRef);
   --foregroundColorMix1: var(--mixedColor1Ref);
   --foregroundColorMix2: var(--mixedColor2Ref);
@@ -95,7 +97,7 @@ html { box-sizing: border-box;}
 }
 .lightBlue{
   --backgroundColor: var(--secondaryColorRefBlue);
-  --overlayBackgroundColor: var(--mixedColor7RefBlue);
+  --overlayBackgroundColor: var(--mixedColor6RefBlue);
   --foregroundColor: var(--primaryColorRefBlue);
   --foregroundColorMix1: var(--mixedColor1RefBlue);
   --foregroundColorMix2: var(--mixedColor2RefBlue);
@@ -174,6 +176,7 @@ canvas {
 .themeToggle{
   position:relative;
   z-index:30;
+  cursor:pointer;
 }
 /* header */
 .App-header {
@@ -221,16 +224,16 @@ main{
 .login{
   position:relative;
   z-index:30;
-  background-color:var(--foregroundColorMix6);
+  background-color:transparent;
   /* background-image: linear-gradient(var(--backgroundGradientColorMin), var(--backgroundGradientColorMax)); */
   width:fit-content;
-  border-radius:25px;
+  /* border-radius:25px; */
   padding:0.75rem 1.5rem;
   font-size:1rem;
   margin:auto;
 }
 .login a{
-  color:var(--foregroundColorMix2);
+  color:var(--foregroundColor);
   display:block;
   width:100%;
   height:100%;
@@ -257,10 +260,10 @@ main{
 }
 /* User Profile */
 .userInfo{
-  background-color:var(--overlayBackgroundColor);
-  color:var(--foregroundColorMix2);
+  background-color:transparent;
+  color:var(--foregroundColor);
   max-width:fit-content;
-  border-radius:25px;
+  /* border-radius:25px; */
   padding:0.25rem 0.5rem;
   margin:0 0.5rem 1rem 0;
   display:flex;
@@ -268,10 +271,13 @@ main{
   align-self:flex-start;
   font-size:0.8rem;
 }
+.userInfo:hover{
+  background-color:var(--overlayBackgroundColor);
+}
 .userInfo .cover{
   width:32px;
   height:32px;
-  border-radius:50%;
+  /* border-radius:50%; */
   margin-left:0;
   object-fit:cover;
   display:inline-block;
@@ -301,15 +307,20 @@ p{
 /* Search form */
 .searchBox input{
   width:fit-content;
-  border-radius:25px;
+  /* border-radius:25px; */
   padding:0.75rem 1.5rem;
   width:100%;
   font-size:1rem;
   letter-spacing:1px;
-  background-color:var(--overlayBackgroundColor);
-  color:var(--foregroundColorMix2);
+  background-color: transparent;
+  color:var(--foregroundColor);
   border:none;
-
+}
+.searchBox:hover{
+  background-color:var(--overlayBackgroundColor);
+}
+.searchBox:focus{
+  outline:none;
 }
 input::placeholder{
   font-style:italic;
@@ -344,7 +355,7 @@ input::placeholder{
   left: 0;
 }
 .sliderRange {
-  background: linear-gradient(to right, var(--overlayGradientMin), var(--overlayGradientMax) 65%);
+  background: linear-gradient(to right, var(--gradientColorMin), var(--gradientColorMax) 65%);
   z-index: 2;
   width: 100%;
   position: absolute;
@@ -375,7 +386,7 @@ input::placeholder{
   z-index: 5;
 }
 .thumb::-webkit-slider-thumb {
-  background-color: var(--foregroundColorMix3);
+  background-color: var(--foregroundColorMix5);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -386,7 +397,7 @@ input::placeholder{
   position: relative;
 }
 .thumb::-moz-range-thumb {
-  background-color: var(--foregroundColorMix3);
+  background-color: var(--foregroundColorMix5);
   border: none;
   border-radius: 50%;
   cursor: pointer;
@@ -438,7 +449,6 @@ label:nth-of-type(2n) {
   display: block;
   overflow: hidden;
   cursor: pointer;
-  border: 0 solid #bbb;
   border-radius: 20px;
 }
 
@@ -456,7 +466,7 @@ label:nth-of-type(2n) {
   height: 50%;
   padding: 0;
   line-height: 36px;
-  color: var(--foregroundColorMix1);
+  color: var(--foregroundColorMix6);
   font-weight: bold;
   box-sizing: border-box;
 }
@@ -467,8 +477,8 @@ label:nth-of-type(2n) {
   text-transform: uppercase;
   letter-spacing: 1px;
   padding-left: 40px;
-  background-color: var(--foregroundColorMix1);
-  color: #fff;
+  background-color: var(--foregroundColor);
+  color: var(--backgroundColor);
 }
 
 .inner:after {
@@ -477,8 +487,8 @@ label:nth-of-type(2n) {
   text-transform: uppercase;
   letter-spacing: 1px;
   padding-right: 40px;
-  background-color: var(--foregroundColorMix7);
-  color: #fff;
+  background-color: var(--foregroundColor);
+  color: var(--backgroundColor);
   text-align: right;
 }
 
@@ -487,7 +497,7 @@ label:nth-of-type(2n) {
   width: 30px;
   height: 30px;
   margin: 5px;
-  background: #fff;
+  background: var(--overlayLightBackgroundColor);
   position: absolute;
   top: -2px;
   left: -2px;
@@ -524,9 +534,9 @@ label:nth-of-type(2n) {
   top:50px;
   left:0;
   width:100%;
-  background-color:#0D0D25;
+  background-color:var(--overlayLightBackgroundColor);
   z-index:6;
-  border-radius:15px;
+  /* border-radius:15px; */
   max-height:300px;
   overflow-y: scroll;
 }
@@ -536,7 +546,7 @@ label:nth-of-type(2n) {
   width:90%;
   margin:0.25rem auto;
   align-items:center;
-  border-bottom: #FAAE7B solid 0.5px;
+  border-bottom: var(--borderColor) solid 0.5px;
   padding:1rem 0.5rem;
 }
 .trackSearchResult .info,
@@ -577,7 +587,7 @@ label:nth-of-type(2n) {
   font-size:1rem;
 }
 .liked{
-  color:#FAAE7B;
+  color:var(--foregroundColor);
 }
 .iconBox{
   border-radius:50%;
@@ -627,8 +637,8 @@ label:nth-of-type(2n) {
   margin:0.5rem auto;
   display:flex;
   flex-wrap:wrap;
-  background-color:#FAAE7B;
-  border-radius:15px;
+  background-color:var(--overlayLightBackgroundColor);
+  /* border-radius:15px; */
   padding:1rem;
   max-height:fit-content;
 
@@ -670,7 +680,7 @@ label:nth-of-type(2n) {
   z-index:10;
   font-size:12px;
   text-align:left;
-  border-radius:15px;
+  /* border-radius:15px; */
   padding:15px;
   
 }
