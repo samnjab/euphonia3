@@ -11,6 +11,7 @@ html { box-sizing: border-box;}
 /* Variables */
 :root {
   /* colors */
+  /* pink theme */
   --primaryColorRef: #000000;
   --mixedColor1Ref: #1c1517;
   --mixedColor2Ref: #382b2e;
@@ -20,14 +21,25 @@ html { box-sizing: border-box;}
   --mixedColor6Ref: #a6818a;
   --mixedColor7Ref: #c196a1;
   --secondaryColorRef: #BC939E;
+  --colorGradientMin: rgba(0, 0, 0, 0);
+  --colorGradientMax: rgba(0, 0, 0, 100);
   --tertiaryColorRef: #e4001c;
-  --secondaryColorGradientMin: var(#8b6b74);
-  --secondaryColorGradientMax: var(#382b2e);
-  --primaryColorGradientMin: rgba(0, 0, 0, 0);
-  --primaryColorGradientMax: rgba(0, 0, 0, 100);
+  /* blue theme */
+  --primaryColorRefBlue:#000000;
+  --mixedColor1RefBlue:#111619;
+  --mixedColor2RefBlue: #222C32;
+  --mixedColor3RefBlue: #33414B;
+  --mixedColor4RefBlue: #455764;
+  --mixedColor5RefBlue: #566D7D;
+  --mixedColor6RefBlue: #678396;
+  --mixedColor7RefBlue: #7898AF;
+  --secondaryColorRefBlue: #CDCEDC;
+  --colorGradientMinBlue: rgba(0, 0, 0, 0);
+  --colorGradientMaxBlue: rgba(0, 0, 0, 100);
+  --tertiaryColorRefBlue: #e4001c;
+  /* colors */
+  --backgroundColor: var(--secondaryColorRef);
   --overlayBackgroundColor: var(--mixedColor7Ref);
-  --overlayGradientMin: rgba(193, 150, 161, 0);
-  --overlayGradientMax: rgba(193, 150, 161);
   --foregroundColor: var(--primaryColorRef);
   --foregroundColorMix1: var(--mixedColor1Ref);
   --foregroundColorMix2: var(--mixedColor2Ref);
@@ -36,22 +48,93 @@ html { box-sizing: border-box;}
   --foregroundColorMix5: var(--mixedColor5Ref);
   --foregroundColorMix6: var(--mixedColor6Ref);
   --foregroundColorMix7: var(--mixedColor7Ref);
-  --backgroundColor: var(--secondaryColorRef);
-  --backgroundGradientColorMin: var(--secondaryColorGradientMin);
-  --backgroundGradientColorMax: var(--secondaryColorGradientMax);
+  --gradientColorMin: var(--colorGradientMin);
+  --gradientColorMax: var(--colorGradientMax);
   --borderColor: var(--mixedColor7Ref);
   --highlightColor: var(--tertiaryColorRef);
   --errorColor: #E4001C;
-
   /* fonts */
   --displayFont: 'Gloock',serif;
   --textFont:'Source Sans Pro', sans-serif;
 }
 
+/* themes */
+.lightPink{
+  --backgroundColor: var(--secondaryColorRef);
+  --overlayBackgroundColor: var(--mixedColor7Ref);
+  --foregroundColor: var(--primaryColorRef);
+  --foregroundColorMix1: var(--mixedColor1Ref);
+  --foregroundColorMix2: var(--mixedColor2Ref);
+  --foregroundColorMix3: var(--mixedColor3Ref);
+  --foregroundColorMix4: var(--mixedColor4Ref);
+  --foregroundColorMix5: var(--mixedColor5Ref);
+  --foregroundColorMix6: var(--mixedColor6Ref);
+  --foregroundColorMix7: var(--mixedColor7Ref);
+  --gradientColorMin: var(--colorGradientMin);
+  --gradientColorMax: var(--colorGradientMax);
+  --borderColor: var(--mixedColor7Ref);
+  --highlightColor: var(--tertiaryColorRef);
+  --errorColor: #E4001C;
+}
+.darkPink{
+  --backgroundColor: var(--primaryColorRef);
+  --overlayBackgroundColor: var(--mixedColor2Ref);
+  --foregroundColor: var(--secondaryColorRef);
+  --foregroundColorMix1: var(--mixedColor7Ref);
+  --foregroundColorMix2: var(--mixedColor6Ref);
+  --foregroundColorMix3: var(--mixedColor5Ref);
+  --foregroundColorMix4: var(--mixedColor4Ref);
+  --foregroundColorMix5: var(--mixedColor3Ref);
+  --foregroundColorMix6: var(--mixedColor2Ref);
+  --foregroundColorMix7: var(--mixedColor1Ref);
+  --gradientColorMin: var(--colorGradientMin);
+  --gradientColorMax: var(--colorGradientMax);
+  --borderColor: var(--mixedColor1Ref);
+  --highlightColor: var(--tertiaryColorRef);
+  --errorColor: #E4001C;
+}
+.lightBlue{
+  --backgroundColor: var(--secondaryColorRefBlue);
+  --overlayBackgroundColor: var(--mixedColor7RefBlue);
+  --foregroundColor: var(--primaryColorRefBlue);
+  --foregroundColorMix1: var(--mixedColor1RefBlue);
+  --foregroundColorMix2: var(--mixedColor2RefBlue);
+  --foregroundColorMix3: var(--mixedColor3RefBlue);
+  --foregroundColorMix4: var(--mixedColor4RefBlue);
+  --foregroundColorMix5: var(--mixedColor5RefBlue);
+  --foregroundColorMix6: var(--mixedColor6RefBlue);
+  --foregroundColorMix7: var(--mixedColor7RefBlue);
+  --gradientColorMin: var(--colorGradientMinBlue);
+  --gradientColorMax: var(--colorGradientMaxBlue);
+  --borderColor: var(--mixedColor7RefBlue);
+  --highlightColor: var(--tertiaryColorRefBlue);
+  --errorColor: #E4001C;
+
+}
+.darkBlue{
+  --backgroundColor: var(--primaryColorRefBlue);
+  --overlayBackgroundColor: var(--mixedColor2RefBlue);
+  --foregroundColor: var(--secondaryColorRefBlue);
+  --foregroundColorMix1: var(--mixedColor7RefBlue);
+  --foregroundColorMix2: var(--mixedColor6RefBlue);
+  --foregroundColorMix3: var(--mixedColor5RefBlue);
+  --foregroundColorMix4: var(--mixedColor4RefBlue);
+  --foregroundColorMix5: var(--mixedColor3RefBlue);
+  --foregroundColorMix6: var(--mixedColor2RefBlue);
+  --foregroundColorMix7: var(--mixedColor1RefBlue);
+  --gradientColorMin: var(--colorGradientMinBlue);
+  --gradientColorMax: var(--colorGradientMaxBlue);
+  --borderColor: var(--mixedColor1RefBlue);
+  --highlightColor: var(--tertiaryColorRefBlue);
+  --errorColor: #E4001C;
+
+}
+
 /* resets */
 html{
-  color:var(--foregroundColor);
-  font-size:125%;
+  background: var(--backgroundColor);
+  color: var(--foregroundColor);
+  -moz-osx-font-smoothing: grayscale;
 }
 a{
   color:var(--foregroundColor);
@@ -61,6 +144,7 @@ a{
 ul{
   list-style:none;
 }
+
 
 body{
  background-color: var(--backgroundColor);
@@ -87,7 +171,10 @@ canvas {
   justify-content:space-between;
   align-items:center;
 }
-
+.themeToggle{
+  position:relative;
+  z-index:30;
+}
 /* header */
 .App-header {
   position:relative;

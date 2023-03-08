@@ -14,7 +14,7 @@ export default function Canvas({windowDims, theme}){
             this.shadowX = shadowX
             this.shadowY = shadowY
             this.shadowWidth = shadowWidth
-            this.shadowHeight = height * 2.5
+            this.shadowHeight = height * 4
             this.shadowColor = shadowColor
         }
         #decreasing = false
@@ -34,12 +34,12 @@ export default function Canvas({windowDims, theme}){
             if (this.height <= - this.maxHeight) this.decreasing = true
             if (!this.decreasing){
                 this.height -= this.dy
-                this.shadowHeight = this.height * 2.5
+                this.shadowHeight = this.height * 4
                 this.opacity += this.dy / this.maxHeight
                 if (this.opacity > 0.5) this.opacity = 0.5 
             }else{
                 this.height += this.dy * 2
-                this.shadowHeight = this.height * 2.5
+                this.shadowHeight = this.height * 4
                 this.opacity -= this.dy * 2 / this.maxHeight
                 if (this.opacity < 0.1) this.opacity = 0.1 
             }
@@ -61,7 +61,7 @@ export default function Canvas({windowDims, theme}){
         let minOpacity = 0.1
         let shadowColor = '#a6818a'
         for (let i=0; i < 15; i++){
-            const dt = 200 - Math.random() * 100
+            const dt = 250 - Math.random() * 100
             let height = Math.random() * 150
             const color = colorArray[Math.floor(Math.random() * colorArray.length)]
             let bar = new Bar(width, - height, (width + 5)* i + (canvas.width - (10 + 5)* 15)/2, canvas.height/2,  maxHeight/dt, maxHeight, color, height *(maxOpacity-minOpacity)/maxHeight, (shadowWidth + 10) * i, 4 * canvas.height/5, shadowWidth ,shadowColor)

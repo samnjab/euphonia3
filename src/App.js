@@ -31,7 +31,7 @@ function App() {
   return (
     <div className={`App ${theme}`}>
         <div className='layout'>
-            <i role="presentation" 
+            <i className='themeToggle' 
                 aria-hidden="true"
                 onClick={()=> {
                             let i = themes.indexOf(theme)
@@ -41,7 +41,7 @@ function App() {
             <Routes>
                 <Route path='/' 
                     element={<>
-                            <Canvas windowDims={windowDims} theme={theme}/>
+                            {/* <Canvas windowDims={windowDims} theme={theme}/> */}
                             <Header />  
                             <Login />
                         
