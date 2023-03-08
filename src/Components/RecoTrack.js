@@ -6,8 +6,18 @@ import SoloView from "./SoloView";
 
 export default function TrackSearchResult({ track, preview_url, playTrack, selectTrack, spotifyApi, user, playingStatus, playingTrack, changePlay }) {
     const [viewSolo, setViewSolo] = useState(false)
+    console.log('track is', track)
+    
+
     return ( 
       <div className='recoTrack'>
+          <audio src={preview_url} id={`${track.uri}`}></audio>
+          <div onClick={() => {
+                let audioElement = document.getElementById(`${track.uri}`)
+                console.log(audioElement)
+                audioElement.play()
+              } }>Play track preview</div>
+            <div ></div>
             <div 
             className='iconBox'>
                 {   playingTrack.id !== track.id ?
@@ -35,7 +45,14 @@ export default function TrackSearchResult({ track, preview_url, playTrack, selec
                 }
             </div>
             {console.log('preview url', preview_url)}
-            <a src={preview_url} onClick={() => setViewSolo(true) }>
+            <a src={preview_url} 
+            onClick={() => setViewSolo(true) }
+            onHover ={()=>{
+                const audioElement = document.getElementById(`${track.uri}`)
+                console.log(audioElement)
+                audioElement.play()
+            }}
+            >
                 <img src={track.albumUrl} className='cover' />
             </a>
             { viewSolo ? 
