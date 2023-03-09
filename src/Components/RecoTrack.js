@@ -4,12 +4,12 @@ import {useState, useEffect, useRef} from 'react'
 import Playlists from './Playlists';
 import SoloView from "./SoloView";
 
-export default function TrackSearchResult({ track, preview_url, playTrack, selectTrack, spotifyApi, user, playingStatus, playingTrack, changePlay }) {
+export default function TrackSearchResult({ track, selectTrack, spotifyApi, user }) {
     const [viewSolo, setViewSolo] = useState(false)
     const keepPlaying = useRef(false)
     return ( 
       <div className='recoTrack'>
-          <audio src={preview_url} id={`${track.uri}`}></audio>
+          <audio src={track.preview_url} id={`${track.uri}`}></audio>
             <a  
             onClick={() => {
                 setViewSolo(true)
@@ -20,8 +20,8 @@ export default function TrackSearchResult({ track, preview_url, playTrack, selec
                 console.log(audioElement)
                 audioElement.play()
             }}
-            onMouseLeave={() => {
-                if (!keepPlaying){
+            onMouseLeave ={() => {
+                if (!keepPlaying.current){
                     const audioElement = document.getElementById(`${track.uri}`)
                     console.log(audioElement)
                     audioElement.pause()

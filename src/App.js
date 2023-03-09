@@ -41,7 +41,7 @@ function App() {
             <Routes>
                 <Route path='/' 
                     element={<>
-                            <Canvas windowDims={windowDims} theme={theme}/>
+                            {/* <Canvas windowDims={windowDims} theme={theme}/> */}
                             <Header />  
                             <Login />
                         

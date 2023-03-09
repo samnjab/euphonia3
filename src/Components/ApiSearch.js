@@ -1,5 +1,5 @@
 import React from "react"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TrackSearchResult from './TrackSearchResult'
 import ArtistSearchResult from './ArtistSearchResult'
 import DisplayTrack from "./DisplayTrack"
@@ -19,7 +19,8 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [selectedArtists, setSelectedArtists] = useState([])
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState(undefined)
-    const [playingStatus, setPlayingStatus]= useState(false)
+    const [apiReady,setApiReady] = useState(false)
+    const [playerId, setPlayerId] = useState('')
     const [isPaused, setIsPaused] = useState(false)
     const [isActive, setIsActive] = useState(false)
     const [playingTrack, setPlayingTrack] = useState([])
@@ -47,9 +48,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         setPlayingTrack(track)
         setPlayingTracks(recommendations)
     }
-    const changePlay = (e) => {
-        (e) ? setPlayingStatus(true) : setPlayingStatus(false)
-    }
+    
     const deselectTrack = (toBeRemovedTrack) =>{
         setSelectedTracks(
             selectedTracks.filter(track => {
@@ -141,8 +140,13 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     },[selectedTracks, selectedArtists, recoParams])
     
     useEffect(() => {
+        const settingAccessToken = async() => {
+            await spotifyApi.setAccessToken(accessToken)
+            setApiReady(true)
+            console.log('setting access token')
+        }
         if (!accessToken) return
-        spotifyApi.setAccessToken(accessToken)
+        settingAccessToken()
     }, [accessToken])
 
     // lyrics stretch goal to be implemented after project due date:
@@ -243,14 +247,17 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     useEffect(() => {
         if (!player) return
+        console.log('api ready is', apiReady)
+        if(!apiReady) return
         player.addListener('ready', ({device_id}) => {
             console.log('ready with device id', device_id)
+            setPlayerId(device_id)
         })
         player.addListener('not_ready', ({device_id}) => {
             console.log('device id has gone offline', device_id)
         })
         player.connect()
-    }, [player])
+    }, [apiReady, player])
 
     return(
         <div className='apiSearch'>
@@ -284,7 +291,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         key={track.uri}
                         selectTrack={selectTrack}
                         playTrack= {handlePlayTrack}
-                        // changePlay={changePlay}
                     />
                     })
                 )  
@@ -331,9 +337,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             preview_url={track.preview_url}
                             user={user}
                             playTrack= {handlePlayTrack} 
-                            playingStatus={playingStatus}
                             playingTrack={playingTrack}
-                            changePlay={changePlay}
                             selectTrack={selectTrack}
                             spotifyApi={spotifyApi} 
                             key={track.uri}/>
@@ -343,29 +347,26 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 }
             </div>
             {
-                isActive ? 
+                console.log('player id before sending it', playerId)
+
+            }
+            {
+                playerId && apiReady ?
                 <WebPlayer 
+                player={player}
+                playerId={playerId}
+                spotifyApi={spotifyApi}
+                setPlayingTrack={setPlayingTrack}
                 playingTrack={playingTrack}
                 setPaused={setIsPaused}
                 setActive={setIsActive} 
                 listOfTracks={playingTracks}
-                playingStatus={playingStatus} 
+                isPaused={isPaused}
                 />
                 :
                 <></>
             }
-            {/* {
-                playingTracks ?
-                <Player 
-                accessToken={accessToken} 
-                track={playingTrack} 
-                listOfTracks={playingTracks}
-                playingStatus={playingStatus} 
-                changePlay={changePlay} 
-                changePlayingTrack={(track)=> setPlayingTrack(track)}/>
-                :
-                <></>
-            } */}
+            
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (
                 <div style={{ whiteSpace: "pre" }}>
