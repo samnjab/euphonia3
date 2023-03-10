@@ -147,7 +147,12 @@ ul{
   list-style:none;
 }
 
-
+#shuffleOn{
+  background-color: yellow;
+}
+#likedHeart{
+  color:pink;
+}
 body{
  background-color: var(--backgroundColor);
  color: var(--foregroundColorMix1);

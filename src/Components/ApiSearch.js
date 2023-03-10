@@ -247,7 +247,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     useEffect(() => {
         if (!player) return
-        console.log('api ready is', apiReady)
         if(!apiReady) return
         player.addListener('ready', ({device_id}) => {
             console.log('ready with device id', device_id)
@@ -358,7 +357,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 spotifyApi={spotifyApi}
                 setPlayingTrack={setPlayingTrack}
                 playingTrack={playingTrack}
-                setPaused={setIsPaused}
+                setIsPaused={setIsPaused}
                 setActive={setIsActive} 
                 listOfTracks={playingTracks}
                 isPaused={isPaused}

@@ -1,5 +1,4 @@
 const app = require('express')();
-const { v4 } = require('uuid');
 const SpotifyWebApi = require("spotify-web-api-node")
 
 app.get('/api/express/code/:code', (req, res) => {
@@ -8,7 +7,6 @@ app.get('/api/express/code/:code', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   
-  // res.end(`Item: ${code}`);
   const spotifyApi = new SpotifyWebApi({
     redirectUri: 'http://localhost:3000',
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
