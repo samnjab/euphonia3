@@ -6,7 +6,6 @@ import DisplayTrack from "./DisplayTrack"
 import DisplayArtist from "./DisplayArtist"
 import RecoTrack from './RecoTrack'
 import WebPlayer from "./WebPlayer"
-import Player from './Player'
 import Slider from './Slider'
 import Error from './Error'
 export default function ApiSearch({ param, spotifyApi, accessToken, user}){

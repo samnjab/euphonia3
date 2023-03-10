@@ -35,10 +35,14 @@ export default function Progress({spotifyApi, setIsPaused, setShuffle, setRepeat
     },[progressParams?.shuffle_state])
 
     const updateProgress = (e) => {
-        // console.log('width is', this.clientWidth)
-        console.log('client width', e.target.clientWidth)
-        console.log('offsetX is', e.target.clientX)
-
+        const progressContiner = document.querySelector('.progressContainer')
+        const positionMs = Math.round(e.nativeEvent.offsetX/progressContiner.clientWidth * progressParams?.item.duration_ms)
+        spotifyApi.seek(positionMs)
+        .then(function() {
+            console.log('Seek to ' + positionMs);
+        }).catch(error => {
+            console.log(error.message)
+        })
     }
 
     return(
