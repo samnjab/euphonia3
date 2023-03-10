@@ -5,6 +5,7 @@ import { GiMicrophone } from "react-icons/gi"
 import {HiMicrophone} from 'react-icons/hi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
+import Progress from "./Progress"
 
 export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack, playingTrack, setIsPaused, setIsActive, isPaused}){
     const [userPlayingStatus, setUserPlayingStatus] = useState(false)
@@ -15,9 +16,20 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
     const [shuffle, setShuffle] = useState(false)
     const [liked, setLiked] = useState(false)
     const [inMyLibrary, setInMyLibrary] = useState(false)
-    
-    console.log('player inside webplayer is', player)
+
+    player.addListener('player_state_changed', ({
+        position,
+        duration,
+        track_window: { current_track }
+        }) => {
+        console.log('Currently Playing', current_track);
+        console.log('Position in Song', position);
+        console.log('Duration of Song', duration);
+        });
+
     useEffect(() => {
+        if (!playingTrack) return
+        console.log('performing contains', playingTrack)
         spotifyApi.containsMySavedTracks([playingTrack.id])
         .then(res=>{
             setInMyLibrary(res.body[0])
@@ -49,26 +61,14 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         if (!playerId) return
         spotifyApi.getMyDevices()
         .then(function(data) {
+            console.log('data from devices', data)
             setDevices(data.body.devices)
-            console.log(devices)
         })
         .catch((error) => {
             setDevices([])
             console.log(error.message)
         })
-        spotifyApi.getMyCurrentPlaybackState()
-        .then(function(data) {
-        if (data.body && data.body.is_playing) {
-            console.log("User is currently playing something!");
-            setUserPlayingStatus(true)
-            } else {
-                setUserPlayingStatus(false)
-            console.log("User is not playing anything, or doing so in private.");
-            }
-        } )
-        .catch((error) => {
-            console.log(error.message)
-        })
+        
         spotifyApi.getMyCurrentPlayingTrack()
         .then((data) => {
             const track = data.body.item
@@ -97,11 +97,27 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         //     console.log(error.message)
         })
     }, [playerId])
+    useEffect(() => {
+        console.log('isPaused is', isPaused)
+        spotifyApi.getMyCurrentPlaybackState()
+        .then(function(data) {
+        if (data.body && data.body.is_playing) {
+            console.log("User is currently playing something!", data.body);
+            setUserPlayingStatus(true)
+            } else {
+                setUserPlayingStatus(false)
+            console.log("User is not playing anything, or doing so in private.");
+            }
+        } )
+        .catch((error) => {
+            console.log(error.message)
+        })
+    },[isPaused])
 
    
     useEffect(() => {
-        console.log('playing track uri is', playingTrack.uri)
-        if (playingTrack.length === 0) return 
+        console.log('playing track uri is', playingTrack?.uri)
+        if (!playingTrack) return 
         // spotifyApi.play({ 
         //     uris:[playingTrack.uri] 
         // }).then(() => {
@@ -113,34 +129,7 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         // })
     }, [playingTrack])
 
-    // player.addListener('player_state_changed', ( state => {
-    //     if (!state) return
-    //     setPlayingTrack(state.track_window.current_track)
-    //     setIspPaused(state.paused)
-    //     player.getCurrentState().then(state => {
-    //         (!state) ? setIsActive(false) : setIsActive(true)
-    //     })
-    // }))
-    const togglePlay = () => {
-        if (playingTrack.length === 0) return
-        if (isPaused) {
-            spotifyApi.play()
-            .then(() => {
-                setIsPaused(false)
-                setIsActive(true)
-            }).catch((error) => {
-                console.log(error.message)
-            })
-        }else if (!isPaused){
-            spotifyApi.pause()
-            .then(() => {
-                setIsPaused(true)
-                setIsActive(false)
-            }).catch((error) => {
-                console.log(error.message)
-            })
-        }
-    }
+    
     const transferPlay = (device) => {
         spotifyApi.transferMyPlayback([device.id])
         .then((res) => {
@@ -152,19 +141,8 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
     }
     return(
         <div className='container'>
-            <div className='trackWrapper'>
-                <img src={playingTrack.albumUrl} 
-                className='playingTrackCover'
-                alt='' />
-                <div className='playingTrackInfo'>
-                    <div className='playingTrackName'>
-                        {playingTrack.title}
-                    </div>
-                    <div className='playingTrackArtist'>
-                        {playingTrack.artist}
-                    </div>
-                </div>
-            </div>
+            
+            <Progress spotifyApi={spotifyApi}/>
             {
                 shuffle ? 
                 <button 
@@ -192,18 +170,25 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
             className='playerBtn'
             onClick={() => spotifyApi.skipToPrevious()}
             ><FontAwesomeIcon icon={faBackwardStep}/></button>
+            {console.log('userPlayingStatus is', userPlayingStatus)}
             {
-                isPaused ? 
-                <button id='play' 
-                className='playerBtn'
-                onClick={() => spotifyApi.play()}
-                ><FontAwesomeIcon icon={faPlayCircle}/></button>
-                :
+                !isPaused ? 
                 <button 
                 id='pause' 
                 className='playerBtn'
-                onClick={() => spotifyApi.pause()}
+                onClick={() => {
+                    spotifyApi.pause()
+                    setIsPaused(true)
+                }}
                 ><FontAwesomeIcon icon={faPauseCircle}/></button>
+                :
+                <button id='play' 
+                className='playerBtn'
+                onClick={() => {
+                    spotifyApi.play()
+                    setIsPaused(false)
+                }}
+                ><FontAwesomeIcon icon={faPlayCircle}/></button>
 
             }
             <button 

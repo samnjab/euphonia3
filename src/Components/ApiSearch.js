@@ -23,7 +23,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [playerId, setPlayerId] = useState('')
     const [isPaused, setIsPaused] = useState(false)
     const [isActive, setIsActive] = useState(false)
-    const [playingTrack, setPlayingTrack] = useState([])
+    const [playingTrack, setPlayingTrack] = useState(undefined)
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
     const handleRecoParam = (recoParam, lower, upper) => {
@@ -143,7 +143,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         const settingAccessToken = async() => {
             await spotifyApi.setAccessToken(accessToken)
             setApiReady(true)
-            console.log('setting access token')
         }
         if (!accessToken) return
         settingAccessToken()
@@ -240,7 +239,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 getOAuthToken:cb => {cb(accessToken)},
                 volume:0.5
             })
-            console.log('player ready', player)
             setPlayer(player)
         }
     },[accessToken])
@@ -336,7 +334,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             preview_url={track.preview_url}
                             user={user}
                             playTrack= {handlePlayTrack} 
-                            playingTrack={playingTrack}
                             selectTrack={selectTrack}
                             spotifyApi={spotifyApi} 
                             key={track.uri}/>
@@ -345,10 +342,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     
                 }
             </div>
-            {
-                console.log('player id before sending it', playerId)
-
-            }
             {
                 playerId && apiReady ?
                 <WebPlayer 
