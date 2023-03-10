@@ -4,15 +4,14 @@ import { FiShuffle, FiRepeat, FiRewind, FiMic } from 'react-icons/fi'
 import { GiMicrophone } from "react-icons/gi"
 import {HiMicrophone} from 'react-icons/hi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShuffle, faComputer, faRepeat, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
+import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack, playingTrack, setIsPaused, setIsActive, isPaused}){
-    const [userPlayingStatus, setUserPlayingStatus] = useState(false)
+export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
+    const [isPaused, setIsPaused] = useState(false)
     const [showDevices, setShowDevices] = useState(false)
     const [devices, setDevices] = useState([])
-    const [repeatOne, setRepeatOne] = useState(false)
-    const [closedLoop, setClosedLoop] = useState(false)
+    const [repeat, setRepeat] = useState('context')
     const [shuffle, setShuffle] = useState(false)
     const [liked, setLiked] = useState(false)
     const [inMyLibrary, setInMyLibrary] = useState(false)
@@ -97,22 +96,7 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         //     console.log(error.message)
         })
     }, [playerId])
-    useEffect(() => {
-        console.log('isPaused is', isPaused)
-        spotifyApi.getMyCurrentPlaybackState()
-        .then(function(data) {
-        if (data.body && data.body.is_playing) {
-            console.log("User is currently playing something!", data.body);
-            setUserPlayingStatus(true)
-            } else {
-                setUserPlayingStatus(false)
-            console.log("User is not playing anything, or doing so in private.");
-            }
-        } )
-        .catch((error) => {
-            console.log(error.message)
-        })
-    },[isPaused])
+    
 
    
     useEffect(() => {
@@ -140,10 +124,10 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         })
     }
     return(
-        <div className='container'>
-            
-            <Progress spotifyApi={spotifyApi}/>
-            {
+        <div className='MusicContainer'>
+            <Progress spotifyApi={spotifyApi} setIsPaused={setIsPaused} setRepeat={setRepeat} setShuffle={setShuffle}/>
+            <div className='playerNav'>
+                {
                 shuffle ? 
                 <button 
                     id='shuffleOn' 
@@ -170,7 +154,6 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
             className='playerBtn'
             onClick={() => spotifyApi.skipToPrevious()}
             ><FontAwesomeIcon icon={faBackwardStep}/></button>
-            {console.log('userPlayingStatus is', userPlayingStatus)}
             {
                 !isPaused ? 
                 <button 
@@ -197,28 +180,31 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
             onClick={() => spotifyApi.skipToNext()}
             > <FontAwesomeIcon icon={faForwardStep}/></button>
             {
-                closedLoop ?
-                <button id='repeatLoop'
+                repeat === 'context' ?
+                <button 
+                id='repeatLoop'
                 className='playerBtn'
                 onClick={() => {
-                    setClosedLoop(false)
-                    setRepeatOne(true)}}
-                ><i className="fa-solid fa-repeat"></i></button>
-                :
-                repeatOne ?
-                <button id='repeatOne'
-                className='playerBtn'
-                onClick={() => {
-                    setRepeatOne(false)
+                    setRepeat('track')
                 }}
-                ><i className="fa-solid fa-repeat-1"></i></button>
+                ><FontAwesomeIcon icon={faRepeat}/>loop</button>
                 :
-                <button id='repeatNone'
+                repeat === 'track' ?
+                <button 
+                id='repeatOne'
                 className='playerBtn'
                 onClick={() => {
-                    setClosedLoop(true)
+                    setRepeat('off')
                 }}
-                ><FontAwesomeIcon icon={faRepeat}/></button>
+                ><FontAwesomeIcon icon={faRotate}/>one</button>
+                :
+                <button
+                id='repeatOff'
+                className='playerBtn'
+                onClick={() => {
+                    setRepeat('context')
+                }}
+                ><FontAwesomeIcon icon={faRepeat}/>off</button>
                 
             }
             <button id='lyrics' className='playerBtn'> <GiMicrophone /></button>
@@ -242,7 +228,7 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
             onClick={() => setShowDevices(!showDevices)}
             ><FontAwesomeIcon icon={faComputer} /></button>
             {
-                userPlayingStatus ?
+                !isPaused ?
                 <div id='playingDevice' ></div>
                 :
                 <></>
@@ -263,21 +249,7 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
 
 
             }
-            
-            
-            
-           
-            
-            
-            
-            
-            
-            
-           
-            
-
-            
-            
+            </div>            
         </div>
     )
 }
