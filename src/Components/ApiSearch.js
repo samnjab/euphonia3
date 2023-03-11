@@ -17,12 +17,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [selectedTracks, setSelectedTracks] = useState([])
     const [selectedArtists, setSelectedArtists] = useState([])
     const [recommendations, setRecommendations] = useState([])
-    const [player, setPlayer] = useState(undefined)
+    const [player, setPlayer] = useState()
     const [apiReady,setApiReady] = useState(false)
     const [playerId, setPlayerId] = useState('')
-    const [isPaused, setIsPaused] = useState(false)
-    const [isActive, setIsActive] = useState(false)
-    const [playingTrack, setPlayingTrack] = useState(undefined)
+    const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
     const handleRecoParam = (recoParam, lower, upper) => {
@@ -43,8 +41,8 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
         )
     }
-    const handlePlayTrack = (track) => {
-        setPlayingTrack(track)
+    const handleChangeTrack = (track) => {
+        setChangeTrackTo(track)
         setPlayingTracks(recommendations)
     }
     
@@ -286,7 +284,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         track={track}
                         key={track.uri}
                         selectTrack={selectTrack}
-                        playTrack= {handlePlayTrack}
                     />
                     })
                 )  
@@ -332,7 +329,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             track={track} 
                             preview_url={track.preview_url}
                             user={user}
-                            playTrack= {handlePlayTrack} 
+                            changeTrackTo= {handleChangeTrack} 
                             selectTrack={selectTrack}
                             spotifyApi={spotifyApi} 
                             key={track.uri}/>
@@ -347,8 +344,8 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 player={player}
                 playerId={playerId}
                 spotifyApi={spotifyApi}
-                setPlayingTrack={setPlayingTrack}
-                playingTrack={playingTrack}
+                changeTrackTo={changeTrackTo}
+                setChangeTrackTo={setChangeTrackTo}
                 listOfTracks={playingTracks}
                 />
                 :

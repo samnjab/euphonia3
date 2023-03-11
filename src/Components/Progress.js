@@ -1,27 +1,34 @@
 import { useState, useEffect } from "react"
 
-export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setShuffle, setRepeat}){
+export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setShuffle, setRepeat, setReset, reset}){
     const [progressParams, setProgressParams] = useState()
+    
     useEffect(() => {
         spotifyApi.getMyCurrentPlaybackState()
         .then((data) => {
             const {is_playing, item, progress_ms, repeat_state, shuffle_state} = data.body
-            const largestAlbumImage = data.body.item.album.images.reduce(
+            const largestAlbumImage = data.body.item?.album.images.reduce(
                 (largest, image) => {
                     if (image.height > largest.height) return image
                     return largest
                 },
-                data.body.item.album.images[0]
+                data.body.item?.album.images[0]
                 )
                 setProgressParams({is_playing:is_playing, item:item, albumImage:largestAlbumImage ,progress_ms:progress_ms, repeat_state:repeat_state, shuffle_state:shuffle_state})
+            }).catch(error => {
+                console.log(error)
+                setReset(!reset)
             })
-            document.getElementById('progressBar').style.width = `${(progressParams?.progress_ms/progressParams?.item.duration_ms) * 100}%`
-    },[progressParams])
+
+            if (progressParams?.item){
+                document.getElementById('progressBar').style.width = `${(progressParams?.progress_ms/progressParams?.item.duration_ms) * 100}%`
+            }
+    },[progressParams, reset])
 
     useEffect(() => {
         if (!progressParams) return
+        if (!progressParams.item) return
         let track = progressParams?.item
-        console.log('useeffect firing')
         setPlayingTrack(
             {
                 preview_url:track?.preview_url || '',
@@ -36,7 +43,7 @@ export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setS
              }
         )
 
-    },[progressParams?.item.name])
+    },[progressParams?.item?.name])
     
     useEffect(() => {
         if (!progressParams) return
@@ -68,15 +75,15 @@ export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setS
     return(
         <div className='progress'>
             <div className='trackWrapper'>
-                <img src={progressParams?.albumImage.url} 
+                <img src={progressParams?.albumImage?.url} 
                 className='playingTrackCover'
                 alt='' />
                 <div className='playingTrackInfo'>
                     <div className='playingTrackName'>
-                        {progressParams?.item.name}
+                        {progressParams?.item?.name}
                     </div>
                     <div className='playingTrackArtist'>
-                        { progressParams?.item.artists.map(artist => {
+                        { progressParams?.item?.artists.map(artist => {
                             return <div className='artistName'>{artist.name}</div>
                         })}
                     </div>

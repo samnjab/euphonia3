@@ -4,7 +4,7 @@ import {useState, useEffect, useRef} from 'react'
 import Playlists from './Playlists';
 import SoloView from "./SoloView";
 
-export default function TrackSearchResult({ track, selectTrack, spotifyApi, user, playTrack }) {
+export default function TrackSearchResult({ track, selectTrack, spotifyApi, user, changeTrackTo }) {
     const [viewSolo, setViewSolo] = useState(false)
     const keepPlaying = useRef(false)
     return ( 
@@ -13,18 +13,16 @@ export default function TrackSearchResult({ track, selectTrack, spotifyApi, user
             <a  
             onClick={() => {
                 setViewSolo(true)
-                playTrack(track)
+                changeTrackTo(track)
                 // keepPlaying.current = true
             } }
             onMouseEnter ={() =>{
                 const audioElement = document.getElementById(`${track.uri}`)
-                console.log(audioElement)
                 audioElement.play()
             }}
             onMouseLeave ={() => {
                 if (!keepPlaying.current){
                     const audioElement = document.getElementById(`${track.uri}`)
-                    console.log(audioElement)
                     audioElement.pause()
                 }
             }}

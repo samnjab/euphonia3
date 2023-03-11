@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { FaHeart, FaMicrophone, FaPlay, FaPause} from 'react-icons/fa'
-import { FiShuffle, FiRepeat, FiRewind, FiMic } from 'react-icons/fi'
 import { GiMicrophone } from "react-icons/gi"
 import {HiMicrophone} from 'react-icons/hi'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack, playingTrack}){
+export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo}){
+    const initialPlayngStatus = useRef(false)
+    const [playingTrack, setPlayingTrack] = useState()
     const [isPaused, setIsPaused] = useState(false)
     const [showDevices, setShowDevices] = useState(false)
     const [devices, setDevices] = useState([])
@@ -15,17 +16,37 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
     const [shuffle, setShuffle] = useState(false)
     const [liked, setLiked] = useState(false)
     const [inMyLibrary, setInMyLibrary] = useState(false)
+    const [reset, setReset] = useState(false)
+
+    
+    useEffect(() => {
+        spotifyApi.getMyCurrentPlaybackState()
+        .then((data) => {
+            initialPlayngStatus.current = data.body.is_playing
+            if (!data.body.is_playing){
+                spotifyApi.transferMyPlayback([playerId])
+                .then((res) => {
+                        console.log('transferring playback')
+                    })
+                    .catch((error)=>{
+                        console.log(error.message)
+                    })
+            }
+        }).catch((error) => {
+            console.log(error.message)
+            setReset(!reset)
+        })
+    }, [])
 
     useEffect(() => {
         if (!playingTrack) return
-        console.log('contains', playingTrack)
         spotifyApi.containsMySavedTracks([playingTrack.id])
         .then(res=>{
             setInMyLibrary(res.body[0])
         }).catch(error => {
-            return
+            setReset(!reset)
         })
-    },[playingTrack, liked])
+    },[playingTrack, liked, reset])
 
     const likeTrack = (track) => {
         if (!track) return
@@ -58,25 +79,25 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
         .catch((error) => {
             setDevices([])
             console.log(error.message)
+            setReset(!reset)
         })
         
-    }, [playerId])
+    }, [playerId, reset])
     
 
    
     useEffect(() => {
-        console.log('playing track uri is', playingTrack?.uri)
-        if (!playingTrack) return 
-        // spotifyApi.play({ 
-        //     uris:[playingTrack.uri] 
-        // }).then(() => {
-        //     setIsPaused(false)
-        //     setIsActive(true)
-            
-        // }).catch((error) => {
-        //     console.log(error.message)
-        // })
-    }, [playingTrack])
+        if (!changeTrackTo) return 
+        spotifyApi.play({ 
+            uris:[changeTrackTo.uri] 
+        }).then(() => {
+            setReset(!reset)
+            setChangeTrackTo()
+        }).catch((error) => {
+            console.log(error.message)
+            setReset(!reset)
+        })
+    }, [changeTrackTo, reset])
 
     
     const transferPlay = (device) => {
@@ -95,7 +116,10 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
             setPlayingTrack={setPlayingTrack}
             setIsPaused={setIsPaused} 
             setRepeat={setRepeat} 
-            setShuffle={setShuffle}/>
+            setShuffle={setShuffle}
+            reset={reset}
+            setReset={setReset}
+            />
             <div className='playerNav'>
                 {
                 shuffle ? 
@@ -209,13 +233,13 @@ export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack
                 id='likedHeart' 
                 className='playerBtn'
                 onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart />liked</button>
+                ><FaHeart /></button>
                 :
                 <button 
                 id='unlikedHeart' 
                 className='playerBtn'
                  onClick={() => likeTrack(playingTrack)}
-                ><FaHeart />unliked</button>
+                ><FaHeart /></button>
 
 
             }
