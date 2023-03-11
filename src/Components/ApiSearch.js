@@ -110,10 +110,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             if (!start) return
             setRecommendations(
                 data.body?.tracks?.map(track => {
-                    const smallestAlbumImage = track.album.images.reduce(
-                        (smallest, image) => {
-                            if (image.height < smallest.height) return image
-                            return smallest
+                    const largestAlbumImage = track.album.images.reduce(
+                        (largest, image) => {
+                            if (image.height > largest.height) return image
+                            return largest
                         },
                         track.album.images[0]
                     )
@@ -124,7 +124,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         title: track.name,
                         albumTitle:track.album.name,
                         uri: track.uri,
-                        albumUrl: smallestAlbumImage.url,
+                        albumUrl: largestAlbumImage.url,
                         id:track.id,
                         duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
                     }

@@ -27,7 +27,9 @@ export default function TrackSearchResult({ track, selectTrack, spotifyApi, user
                 }
             }}
             >
-                <img src={track.albumUrl} className='cover' />
+                <div className='img-box'>
+                    <img src={track.albumUrl} className='cover' />
+                </div>
             </a>
             { viewSolo ? 
             <SoloView 

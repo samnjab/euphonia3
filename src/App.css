@@ -146,19 +146,34 @@ a{
 ul{
   list-style:none;
 }
+.img-box img{
+  max-width:100%;
+  width:100%;
+  height:auto;
+  object-fit: cover;
+}
+button {
+  display: inline-block;
+  border: none;
+  padding: 1rem 2rem;
+  margin: 0;
+  text-decoration: none;
+  background-color: transparent;
+  opacity:0.5;
+  font-size: 1rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background 250ms ease-in-out,
+    transform 150ms ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: opacity 0.3s ease-in-out;
+}
+button:hover{
+  opacity:1;
+}
 
-#shuffleOn{
-  background-color: yellow;
-}
-#likedHeart{
-  color:pink;
-}
-#repeatLook{
-  background-color: yellow;
-}
-#repeatOne{
-  background-color: #544146;
-}
+
 .progressContainer{
   background-color: white;
   height:4px;
@@ -588,7 +603,6 @@ label:nth-of-type(2n) {
 .cover{
   height:64px;
   width:64px;
-  margin:0 1rem;
 }
 .icons{
   display:flex;
@@ -693,15 +707,27 @@ label:nth-of-type(2n) {
   max-width:100%;
   max-height:90vh;
   overflow-y: scroll;
+  display:flex;
+  flex-wrap:wrap;
 }
 
 .recoTrack{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin:0.75rem 0;
+  margin:0.25rem 0;
   position:relative;
 }
+
+a {
+  width:64px;
+  height:64px;
+}
+a .img-box{
+  max-width:100%;
+  max-height:100%;
+}
+
 .playlists{
   max-height:100px;
   overflow-y: scroll;
@@ -725,6 +751,59 @@ footer {
   font-size: 0.7rem;
   text-align: center;
   margin: 2rem 0;
+}
+
+/* Player */
+.playingTrackCover{
+  width:100px;
+  height:100px;
+}
+.trackWrapper{
+  display:flex;
+  align-items: center;
+}
+.playingTrackInfo{
+  text-align:left;
+  margin:0 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.playerNav{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.playerBtn{
+  padding: 0 1rem;
+  height:2rem;
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: uppercase;
+}
+#play{
+  font-size: 2rem;
+
+}
+#pause{
+  font-size: 2rem;
+
+}
+#shuffleOn {
+  
+}
+
+#likedHeart {
+  color: pink;
+}
+
+#repeatLook {
+  
+}
+
+#repeatOne {
+  background-color: #544146;
 }
 
 

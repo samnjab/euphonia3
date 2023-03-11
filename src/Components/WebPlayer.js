@@ -124,84 +124,76 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
                 {
                 shuffle ? 
                 <button 
-                    id='shuffleOn' 
                     className='playerBtn'
                     onClick={() => {
                         spotifyApi.setShuffle(false)
                         setShuffle(false)
-                        }}>shuffle On<FontAwesomeIcon icon={faShuffle} />
+                        }}>shuffle On<FontAwesomeIcon id='shuffleOn' icon={faShuffle} />
                 </button>
                 :
                 <button 
-                    id='shuffleOff' 
                     className='playerBtn'
                     onClick={() => {
                         spotifyApi.setShuffle(true)
                         setShuffle(true)
-                        }}>shuffle Off<FontAwesomeIcon icon={faShuffle} />
+                        }}>shuffle Off<FontAwesomeIcon  id='shuffleOff' icon={faShuffle} />
                 </button>
 
             }
             
             <button 
-            id='backward' 
             className='playerBtn'
             onClick={() => spotifyApi.skipToPrevious()}
-            ><FontAwesomeIcon icon={faBackwardStep}/></button>
+            ><FontAwesomeIcon  id='backward' icon={faBackwardStep}/></button>
             {
                 !isPaused ? 
                 <button 
-                id='pause' 
                 className='playerBtn'
                 onClick={() => {
                     spotifyApi.pause()
                     setIsPaused(true)
                 }}
-                ><FontAwesomeIcon icon={faPauseCircle}/></button>
+                ><FontAwesomeIcon id='pause' icon={faPauseCircle}/></button>
                 :
-                <button id='play' 
+                <button  
                 className='playerBtn'
                 onClick={() => {
                     spotifyApi.play()
                     setIsPaused(false)
                 }}
-                ><FontAwesomeIcon icon={faPlayCircle}/></button>
+                ><FontAwesomeIcon id='play' icon={faPlayCircle}/></button>
 
             }
             <button 
-            id='forward' 
             className='playerBtn'
             onClick={() => spotifyApi.skipToNext()}
-            > <FontAwesomeIcon icon={faForwardStep}/></button>
+            > <FontAwesomeIcon id='forward' icon={faForwardStep}/></button>
             {
                 repeat === 'context' ?
                 <button 
-                id='repeatLoop'
                 className='playerBtn'
                 onClick={() => {
                     setRepeat('track')
                 }}
-                ><FontAwesomeIcon icon={faRepeat}/>loop</button>
+                ><FontAwesomeIcon id='repeatLoop' icon={faRepeat}/>loop</button>
                 :
                 repeat === 'track' ?
                 <button 
-                id='repeatOne'
                 className='playerBtn'
                 onClick={() => {
                     setRepeat('off')
                 }}
-                ><FontAwesomeIcon icon={faRotate}/>one</button>
+                ><FontAwesomeIcon id='repeatOne' icon={faRotate}/>one</button>
                 :
                 <button
-                id='repeatOff'
                 className='playerBtn'
                 onClick={() => {
                     setRepeat('context')
                 }}
-                ><FontAwesomeIcon icon={faRepeat}/>off</button>
+                ><FontAwesomeIcon id='repeatOff' icon={faRepeat}/>off</button>
                 
             }
-            <button id='lyrics' className='playerBtn'> <GiMicrophone /></button>
+            <button id='lyrics' className='playerBtn'>Lyrics</button>
             {
                 showDevices ?
                 devices.map(device => {
@@ -216,11 +208,10 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
                 :
                 <></>
             }
-            <button 
-            id='devices' 
+            <button  
             className='playerBtn'
             onClick={() => setShowDevices(!showDevices)}
-            ><FontAwesomeIcon icon={faComputer} /></button>
+            ><FontAwesomeIcon  id='devices' icon={faComputer} /></button>
             {
                 !isPaused ?
                 <div id='playingDevice' ></div>
@@ -229,17 +220,15 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
             }
             {
                 inMyLibrary ?
-                <button 
-                id='likedHeart' 
+                <button  
                 className='playerBtn'
                 onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart /></button>
+                ><FaHeart  id='likedHeart' /></button>
                 :
                 <button 
-                id='unlikedHeart' 
                 className='playerBtn'
                  onClick={() => likeTrack(playingTrack)}
-                ><FaHeart /></button>
+                ><FaHeart  id='unlikedHeart'/></button>
 
 
             }

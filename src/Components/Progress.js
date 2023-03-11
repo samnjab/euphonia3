@@ -75,9 +75,11 @@ export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setS
     return(
         <div className='progress'>
             <div className='trackWrapper'>
-                <img src={progressParams?.albumImage?.url} 
-                className='playingTrackCover'
-                alt='' />
+                <div className='img-box playingTrackCover'>
+                    <img src={progressParams?.albumImage?.url} 
+                    className='cover'
+                    alt='' />
+                </div>
                 <div className='playingTrackInfo'>
                     <div className='playingTrackName'>
                         {progressParams?.item?.name}
