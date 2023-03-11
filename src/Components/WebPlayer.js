@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
+export default function WebPlayer({player, playerId, spotifyApi, setPlayingTrack, playingTrack}){
     const [isPaused, setIsPaused] = useState(false)
     const [showDevices, setShowDevices] = useState(false)
     const [devices, setDevices] = useState([])
@@ -16,31 +16,23 @@ export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
     const [liked, setLiked] = useState(false)
     const [inMyLibrary, setInMyLibrary] = useState(false)
 
-    player.addListener('player_state_changed', ({
-        position,
-        duration,
-        track_window: { current_track }
-        }) => {
-        console.log('Currently Playing', current_track);
-        console.log('Position in Song', position);
-        console.log('Duration of Song', duration);
-        });
-
     useEffect(() => {
         if (!playingTrack) return
-        console.log('performing contains', playingTrack)
+        console.log('contains', playingTrack)
         spotifyApi.containsMySavedTracks([playingTrack.id])
         .then(res=>{
             setInMyLibrary(res.body[0])
         }).catch(error => {
             return
         })
-    },[liked])
+    },[playingTrack, liked])
+
     const likeTrack = (track) => {
         if (!track) return
         spotifyApi.addToMySavedTracks([track.id])
         .then(res => {
-            setLiked(true)  
+            setLiked(true) 
+            console.log('liking', res.body) 
         }).catch(error => {
             prompt('Oops! could not add to library. Try again in a bit!')
             return
@@ -68,33 +60,6 @@ export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
             console.log(error.message)
         })
         
-        spotifyApi.getMyCurrentPlayingTrack()
-        .then((data) => {
-            const track = data.body.item
-        //     console.log('now playing is', data.body.item)
-        //     const smallestAlbumImage = track.album.images.reduce(
-        //                 (smallest, image) => {
-        //                     if (image.height < smallest.height) return image
-        //                     return smallest
-        //                 },
-        //                 track.album.images[0]
-        //             )
-        //             setPlayingTrack(
-        //                 {
-        //                 preview_url:track?.preview_url || '',
-        //                 artist: track.artists[0].name,
-        //                 artistId: track.artists[0].id,
-        //                 title: track.name,
-        //                 albumTitle:track.album.name,
-        //                 uri: track.uri,
-        //                 albumUrl: smallestAlbumImage.url,
-        //                 id:track.id,
-        //                 duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
-        //             }
-        //             ) 
-        // }).catch((error) => {
-        //     console.log(error.message)
-        })
     }, [playerId])
     
 
@@ -125,7 +90,12 @@ export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
     }
     return(
         <div className='MusicContainer'>
-            <Progress spotifyApi={spotifyApi} setIsPaused={setIsPaused} setRepeat={setRepeat} setShuffle={setShuffle}/>
+            <Progress 
+            spotifyApi={spotifyApi} 
+            setPlayingTrack={setPlayingTrack}
+            setIsPaused={setIsPaused} 
+            setRepeat={setRepeat} 
+            setShuffle={setShuffle}/>
             <div className='playerNav'>
                 {
                 shuffle ? 
@@ -238,14 +208,14 @@ export default function WebPlayer({player, playerId, spotifyApi, playingTrack}){
                 <button 
                 id='likedHeart' 
                 className='playerBtn'
-                onClick={() => likeTrack(playingTrack)}
-                ><FaHeart /></button>
+                onClick={() => unlikeTrack(playingTrack)}
+                ><FaHeart />liked</button>
                 :
                 <button 
                 id='unlikedHeart' 
                 className='playerBtn'
-                 onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart /></button>
+                 onClick={() => likeTrack(playingTrack)}
+                ><FaHeart />unliked</button>
 
 
             }

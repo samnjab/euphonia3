@@ -4,7 +4,6 @@ import SpotifyWebApi from "spotify-web-api-node"
 import { useState, useEffect } from "react"
 // Components
 import useAuth from "./useAuth"
-import Player from "./Player"
 import ApiSearch from "./ApiSearch"
 import ToggleSwitch from "./ToggleSwitch"
 import DisplayMe from './DisplayMe'

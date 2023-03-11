@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 
-export default function Progress({spotifyApi, setIsPaused, setShuffle, setRepeat}){
+export default function Progress({spotifyApi, setPlayingTrack ,setIsPaused, setShuffle, setRepeat}){
     const [progressParams, setProgressParams] = useState()
     useEffect(() => {
         spotifyApi.getMyCurrentPlaybackState()
@@ -17,6 +17,26 @@ export default function Progress({spotifyApi, setIsPaused, setShuffle, setRepeat
             })
             document.getElementById('progressBar').style.width = `${(progressParams?.progress_ms/progressParams?.item.duration_ms) * 100}%`
     },[progressParams])
+
+    useEffect(() => {
+        if (!progressParams) return
+        let track = progressParams?.item
+        console.log('useeffect firing')
+        setPlayingTrack(
+            {
+                preview_url:track?.preview_url || '',
+                artist: track.artists[0].name,
+                artistId: track.artists[0].id,
+                title: track.name,
+                albumTitle:track.album.name,
+                uri: track.uri,
+                albumUrl: progressParams?.albumImage,
+                id:track.id,
+                duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+             }
+        )
+
+    },[progressParams?.item.name])
     
     useEffect(() => {
         if (!progressParams) return

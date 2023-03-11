@@ -349,10 +349,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 spotifyApi={spotifyApi}
                 setPlayingTrack={setPlayingTrack}
                 playingTrack={playingTrack}
-                setIsPaused={setIsPaused}
-                setActive={setIsActive} 
                 listOfTracks={playingTracks}
-                isPaused={isPaused}
                 />
                 :
                 <></>
