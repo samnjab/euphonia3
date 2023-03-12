@@ -345,6 +345,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 playerId={playerId}
                 spotifyApi={spotifyApi}
                 changeTrackTo={changeTrackTo}
+                selectTrack={selectTrack}
                 setChangeTrackTo={setChangeTrackTo}
                 listOfTracks={playingTracks}
                 />

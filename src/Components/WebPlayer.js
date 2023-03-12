@@ -1,21 +1,19 @@
 import { useEffect, useState, useRef } from "react"
-import { FaHeart, FaMicrophone, FaPlay, FaPause} from 'react-icons/fa'
-import { GiMicrophone } from "react-icons/gi"
-import {HiMicrophone} from 'react-icons/hi'
+import {FaVolumeUp, FaStickyNote, FaArrowUp} from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo}){
+export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectTrack}){
     const initialPlayngStatus = useRef(false)
+    const [activeDevice, setActiveDevice] = useState()
     const [playingTrack, setPlayingTrack] = useState()
     const [isPaused, setIsPaused] = useState(false)
     const [showDevices, setShowDevices] = useState(false)
     const [devices, setDevices] = useState([])
     const [repeat, setRepeat] = useState('context')
     const [shuffle, setShuffle] = useState(false)
-    const [liked, setLiked] = useState(false)
-    const [inMyLibrary, setInMyLibrary] = useState(false)
+    const [volume, setVolume] = useState(50)
     const [reset, setReset] = useState(false)
 
     
@@ -38,36 +36,7 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
         })
     }, [])
 
-    useEffect(() => {
-        if (!playingTrack) return
-        spotifyApi.containsMySavedTracks([playingTrack.id])
-        .then(res=>{
-            setInMyLibrary(res.body[0])
-        }).catch(error => {
-            setReset(!reset)
-        })
-    },[playingTrack, liked, reset])
-
-    const likeTrack = (track) => {
-        if (!track) return
-        spotifyApi.addToMySavedTracks([track.id])
-        .then(res => {
-            setLiked(true) 
-            console.log('liking', res.body) 
-        }).catch(error => {
-            prompt('Oops! could not add to library. Try again in a bit!')
-            return
-        })
-    }
-    const unlikeTrack = (track) => {
-        if (!track) return
-        spotifyApi.removeFromMySavedTracks([track.id])
-        .then(res => {
-            setLiked(false)
-        }).catch(error=>{
-            prompt('Oops! could not remove from library. Try again in a bit!')
-        })
-    }
+   
 
     useEffect(() => {
         if (!playerId) return
@@ -83,8 +52,6 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
         })
         
     }, [playerId, reset])
-    
-
    
     useEffect(() => {
         if (!changeTrackTo) return 
@@ -99,6 +66,10 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
         })
     }, [changeTrackTo, reset])
 
+    useEffect(() => {
+        document.getElementById('volumeBar').style.width = `${volume}%`
+    }, [volume])
+
     
     const transferPlay = (device) => {
         spotifyApi.transferMyPlayback([device.id])
@@ -109,130 +80,167 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
             console.log(error.message)
         })
     }
+    const updateVolume = (e) => {
+        console.log('volume before set', volume)
+        const volumeTrack = document.querySelector('.volumeTrack')
+        spotifyApi.setVolume(Math.round(e.nativeEvent.offsetX/volumeTrack.clientWidth * 100))
+        .then(function () {
+          
+        }).catch(error =>{
+            console.log(error.message)
+        })
+    }
     return(
+        <>
         <div className='MusicContainer'>
             <Progress 
             spotifyApi={spotifyApi} 
+            playingTrack={playingTrack}
             setPlayingTrack={setPlayingTrack}
             setIsPaused={setIsPaused} 
             setRepeat={setRepeat} 
             setShuffle={setShuffle}
+            setActiveDevice={setActiveDevice}
+            setVolume={setVolume}
             reset={reset}
             setReset={setReset}
             />
             <div className='playerNav'>
-                {
-                shuffle ? 
+                <button id='lyrics' className='playerBtn'><FaStickyNote /></button>
                 <button 
-                    className='playerBtn'
-                    onClick={() => {
-                        spotifyApi.setShuffle(false)
-                        setShuffle(false)
-                        }}>shuffle On<FontAwesomeIcon id='shuffleOn' icon={faShuffle} />
-                </button>
-                :
-                <button 
-                    className='playerBtn'
-                    onClick={() => {
-                        spotifyApi.setShuffle(true)
-                        setShuffle(true)
-                        }}>shuffle Off<FontAwesomeIcon  id='shuffleOff' icon={faShuffle} />
-                </button>
-
-            }
-            
-            <button 
-            className='playerBtn'
-            onClick={() => spotifyApi.skipToPrevious()}
-            ><FontAwesomeIcon  id='backward' icon={faBackwardStep}/></button>
-            {
-                !isPaused ? 
-                <button 
+                id='moveUp' 
                 className='playerBtn'
-                onClick={() => {
-                    spotifyApi.pause()
-                    setIsPaused(true)
-                }}
-                ><FontAwesomeIcon id='pause' icon={faPauseCircle}/></button>
-                :
+                onClick={() => selectTrack(playingTrack)}
+                ><FaArrowUp /></button>
+                <div className='mainNav'>
+                        {
+                        shuffle ? 
+                        <button 
+                            className='playerBtn'
+                            onClick={() => {
+                                spotifyApi.setShuffle(false)
+                                setShuffle(false)
+                                }}><FontAwesomeIcon id='shuffleOn' icon={faShuffle} />
+                        </button>
+                        :
+                        <button 
+                            className='playerBtn'
+                            onClick={() => {
+                                spotifyApi.setShuffle(true)
+                                setShuffle(true)
+                                }}><FontAwesomeIcon  id='shuffleOff' icon={faShuffle} />
+                        </button>
+
+                    }
+                    
+                    <button 
+                    className='playerBtn'
+                    onClick={() => spotifyApi.skipToPrevious()}
+                    ><FontAwesomeIcon  id='backward' icon={faBackwardStep}/></button>
+                    {
+                        !isPaused ? 
+                        <button 
+                        className='playerBtn'
+                        onClick={() => {
+                            spotifyApi.pause()
+                            setIsPaused(true)
+                        }}
+                        ><FontAwesomeIcon id='pause' icon={faPauseCircle}/></button>
+                        :
+                        <button  
+                        className='playerBtn'
+                        onClick={() => {
+                            spotifyApi.play()
+                            setIsPaused(false)
+                        }}
+                        ><FontAwesomeIcon id='play' icon={faPlayCircle}/></button>
+
+                    }
+                    <button 
+                    className='playerBtn'
+                    onClick={() => spotifyApi.skipToNext()}
+                    > <FontAwesomeIcon id='forward' icon={faForwardStep}/></button>
+                    {
+                        repeat === 'context' ?
+                        <button 
+                        className='playerBtn'
+                        onClick={() => {
+                            setRepeat('track')
+                        }}
+                        ><FontAwesomeIcon id='repeatLoop' icon={faRepeat}/></button>
+                        :
+                        repeat === 'track' ?
+                        <button 
+                        className='playerBtn'
+                        onClick={() => {
+                            setRepeat('off')
+                        }}
+                        ><FontAwesomeIcon id='repeatOne' icon={faRotate}/></button>
+                        :
+                        <button
+                        className='playerBtn'
+                        onClick={() => {
+                            setRepeat('context')
+                        }}
+                        ><FontAwesomeIcon id='repeatOff' icon={faRepeat}/></button>
+                        
+                    }
+                </div>
+                <div className='volumeContainer'>
+                    <FaVolumeUp id='volume'/>
+                    <div 
+                    className='volumeTrack'
+                    onClick={(e) => updateVolume(e)}>
+                        <div id='volumeBar'></div>
+                    </div>
+
+                </div>
+            </div> 
+             <div 
+             onMouseOver={() => setShowDevices(true)}
+             onMouseLeave={() => setShowDevices(false)}
+            className='devicesContainer'>
+                <div 
+                classNmae='deviceList'
+                onClick={() => setShowDevices(false)}
+                >
+                    {
+                        showDevices ?
+                        devices.map(device => {
+                            return (
+                                <div 
+                                className='deviceInfo'
+                                onClick={() => transferPlay(device)}>
+                                    {device.name}
+                                </div>
+                            )
+                        })
+                        :
+                        <></>
+                    }
+                </div>
                 <button  
                 className='playerBtn'
-                onClick={() => {
-                    spotifyApi.play()
-                    setIsPaused(false)
-                }}
-                ><FontAwesomeIcon id='play' icon={faPlayCircle}/></button>
-
-            }
-            <button 
-            className='playerBtn'
-            onClick={() => spotifyApi.skipToNext()}
-            > <FontAwesomeIcon id='forward' icon={faForwardStep}/></button>
+                ><FontAwesomeIcon  id='devices' icon={faComputer} /></button>
+            </div>
             {
-                repeat === 'context' ?
-                <button 
-                className='playerBtn'
-                onClick={() => {
-                    setRepeat('track')
-                }}
-                ><FontAwesomeIcon id='repeatLoop' icon={faRepeat}/>loop</button>
-                :
-                repeat === 'track' ?
-                <button 
-                className='playerBtn'
-                onClick={() => {
-                    setRepeat('off')
-                }}
-                ><FontAwesomeIcon id='repeatOne' icon={faRotate}/>one</button>
-                :
-                <button
-                className='playerBtn'
-                onClick={() => {
-                    setRepeat('context')
-                }}
-                ><FontAwesomeIcon id='repeatOff' icon={faRepeat}/>off</button>
-                
-            }
-            <button id='lyrics' className='playerBtn'>Lyrics</button>
-            {
-                showDevices ?
-                devices.map(device => {
-                    return (
-                        <div 
-                        className='deviceInfo'
-                        onClick={() => transferPlay(device)}>
-                            {device.name}
-                        </div>
-                    )
-                })
+                !isPaused && activeDevice ?
+                <div id='playingDevice' >
+                    <div id='soundBars'>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <p> Listening on {activeDevice.name}</p>
+                </div>
                 :
                 <></>
-            }
-            <button  
-            className='playerBtn'
-            onClick={() => setShowDevices(!showDevices)}
-            ><FontAwesomeIcon  id='devices' icon={faComputer} /></button>
-            {
-                !isPaused ?
-                <div id='playingDevice' ></div>
-                :
-                <></>
-            }
-            {
-                inMyLibrary ?
-                <button  
-                className='playerBtn'
-                onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart  id='likedHeart' /></button>
-                :
-                <button 
-                className='playerBtn'
-                 onClick={() => likeTrack(playingTrack)}
-                ><FaHeart  id='unlikedHeart'/></button>
-
-
-            }
-            </div>            
+            }           
         </div>
+        </>
+        
     )
 }
