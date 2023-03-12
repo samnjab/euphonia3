@@ -1,4 +1,4 @@
-const ToggleSwitch = ({ label, searchBy}) => {
+const ToggleSwitch = ({ label, searchBy }) => {
   return (
     <div className="container">
       {}{" "}

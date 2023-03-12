@@ -6,6 +6,7 @@ import { useState, useEffect } from "react"
 import useAuth from "./useAuth"
 import ApiSearch from "./ApiSearch"
 import ToggleSwitch from "./ToggleSwitch"
+import SearchOptions from "./SearchOptions"
 import DisplayMe from './DisplayMe'
 
 const spotifyApi = new SpotifyWebApi({
@@ -15,21 +16,15 @@ const spotifyApi = new SpotifyWebApi({
 export default function Dashboard({ code }) {
     const accessToken = useAuth(code)
     const [user, setUser] = useState({})
-
     const [lyrics, setLyrics] = useState("")
     const [searchParam, setSearchParam] = useState('track')
-    
+
     const addUser= (user) =>{
         setUser(user)
     }
-    
-
     const searchBy = (e) => {
-        if (e.target.checked){
-            setSearchParam('artist')
-        }else{
-            setSearchParam('track')
-        }
+        console.log('e.target is', e.target)
+        setSearchParam(e.target.id)
     }
 
     // useEffect(() => {
@@ -62,11 +57,7 @@ export default function Dashboard({ code }) {
             </header>
             <section className='dashboard'>
                 <div className='wrapper'>
-                    <ToggleSwitch 
-                    label='Track/Artist'
-                    searchBy={searchBy}
-                    />
-                   
+                    <SearchOptions searchBy={searchBy} />
                     <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
                 </div>
             </section>
