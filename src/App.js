@@ -48,13 +48,7 @@ function App() {
                             </> }/>
                 <Route path='/app'
                     element={
-                        <>
-                            <header className='App-header'>
-                                <h1> Euphonia</h1>
-                                <h2>old favourites multiplied</h2>
-                            </header>
-                            <Dashboard code={code} />
-                        </>
+                        <Dashboard code={code} />
                     }/>
                     
             </Routes>

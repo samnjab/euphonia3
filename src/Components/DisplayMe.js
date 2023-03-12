@@ -34,7 +34,6 @@ export default function DisplayMe({ accessToken, spotifyApi }){
                         <></>
                     }
                     
-                    
                 </div>
 
         </div>

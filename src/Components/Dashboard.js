@@ -54,17 +54,22 @@ export default function Dashboard({ code }) {
     
 
     return (
-        <section className='dashboard'>
-            <div className='wrapper'>
-                <div className='topRow'>
-                    <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
+        <>
+            <header className='App-header'>
+                <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
+                <h1> Euphonia</h1>
+                <h2>old favourites multiplied</h2>
+            </header>
+            <section className='dashboard'>
+                <div className='wrapper'>
                     <ToggleSwitch 
                     label='Track/Artist'
                     searchBy={searchBy}
                     />
+                   
+                    <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
                 </div>
-                <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
-            </div>
-        </section>
+            </section>
+        </>
   )
 }

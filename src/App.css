@@ -275,26 +275,21 @@ main{
   margin:0 auto;
   max-width:1000px;
 }
-.topRow{
-  max-width:100%;
-  margin:0.5rem auto;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:0.5rem;
-}
 /* User Profile */
 .userInfo{
   background-color:transparent;
   color:var(--foregroundColor);
-  max-width:fit-content;
-  /* border-radius:25px; */
+  min-width:fit-content;
+  width:10rem;
+  border-radius:25px;
   padding:0.25rem 0.5rem;
   margin:0 0.5rem 1rem 0;
   display:flex;
   flex-wrap:wrap;
-  align-self:flex-start;
+  align-self:center;
+  justify-content: center;
   font-size:0.8rem;
+  font-weight:100;
 }
 .userInfo:hover{
   background-color:var(--overlayBackgroundColor);
@@ -302,17 +297,23 @@ main{
 .userInfo .cover{
   width:32px;
   height:32px;
-  /* border-radius:50%; */
+  border-radius:50%;
   margin-left:0;
+  margin-right:10px;
   object-fit:cover;
   display:inline-block;
 }
 .text{
   flex-basis:50%;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 p{
   flex-basis:100%;
   text-align:left;
+  font-weight:100;
 }
 .username{
   width:100%;
@@ -320,6 +321,7 @@ p{
   text-align:left;
   margin:0;
   display:inline-block;
+  letter-spacing: 0.5px;
 }
 .userEmail{
   font-size:0.8rem;
