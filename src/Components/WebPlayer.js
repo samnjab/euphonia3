@@ -201,7 +201,7 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
              onMouseLeave={() => setShowDevices(false)}
             className='devicesContainer'>
                 <div 
-                classNmae='deviceList'
+                className='deviceList'
                 onClick={() => setShowDevices(false)}
                 >
                     {

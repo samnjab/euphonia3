@@ -9,10 +9,12 @@ import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
 export default function ApiSearch({ param, spotifyApi, accessToken, user}){
-    const [trackSearch, setTrackSearch] = useState('')
-    const [artistSearch, setArtistSearch] = useState('')
+
+    const [search, setSearch] = useState('')
     const [searchTrackResults, setSearchTrackResults] = useState([])
     const [searchArtistResults, setSearchArtistResults] = useState([])
+    const [albumSearchResults, setAlbumSearchResults] = useState([])
+    const [playlistSearchResults, setPlaylistSearchResults] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
     const [selectedTracks, setSelectedTracks] = useState([])
     const [selectedArtists, setSelectedArtists] = useState([])
@@ -64,10 +66,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         const exists = selectedTracks.filter(selectedTrack =>{
             return selectedTrack.uri === track.uri
         })
-        if(exists.length == 0){
+        if(exists.length === 0){
             setSelectedTracks([...selectedTracks, track])
         }
-        setTrackSearch('')
+        setSearch('')
         setRevealStatus(false)
     }
     const selectArtist = (artist) => {
@@ -77,7 +79,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if (exists.length == 0){
             setSelectedArtists([...selectedArtists, artist])
         }
-        setArtistSearch('')
+        setSearch('')
         setRevealStatus(false)
     }
     useEffect(() => {
@@ -154,76 +156,81 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     // }
 
     useEffect(() => {
-        if (!trackSearch) {
+        if (!search) {
             setSearchTrackResults([])
-            return 
-        }
-        if (!accessToken) return
-        let start = true
-        spotifyApi.searchTracks(trackSearch)
-        .then(res => {
-            if (!start) return
-            setSearchTrackResults(
-                res.body.tracks.items.map(track => {
-                    const smallestAlbumImage = track.album.images.reduce(
-                        (smallest, image) => {
-                            if (image.height < smallest.height) return image
-                            return smallest
-                        },
-                        track.album.images[0]
-                    )
-                    return {
-                        artist: track.artists[0].name,
-                        artistId: track.artists[0].id,
-                        title: track.name,
-                        uri: track.uri,
-                        albumUrl: smallestAlbumImage.url,
-                        id:track.id
-                    }
-                })
-            )
-        })
-        return () => (start = false)
-    }, [trackSearch, accessToken])
-    
-    useEffect(() => {
-        if (!artistSearch) {
             setSearchArtistResults([])
+            setAlbumSearchResults([])
+            setPlaylistSearchResults([])
             return 
         }
+        console.log('access token is', accessToken)
         if (!accessToken) return
         let start = true
-        spotifyApi.searchArtists(artistSearch)
-        .then(res => {
-            if (!start) return
-            setSearchArtistResults(
-                res.body.artists.items.map(artist => {
-                    let pickedImg = artist.images[0]
-                    try{
-                        const smallestArtistImage = artist.images.reduce(
+        if (param === 'track') {
+            spotifyApi.searchTracks(search)
+            .then(res => {
+                if (!start) return
+                setSearchTrackResults(
+                    res.body.tracks.items.map(track => {
+                        const smallestAlbumImage = track.album.images.reduce(
                             (smallest, image) => {
                                 if (image.height < smallest.height) return image
                                 return smallest
                             },
-                            artist.images[0]
+                            track.album.images[0]
                         )
-                        pickedImg = smallestArtistImage.url 
-                    }
-                    catch{
-                        pickedImg = artist.images[0]
-                    }
-                    return {
-                        id: artist.id,
-                        name: artist.name,
-                        uri: artist.uri,
-                        artistImg: pickedImg
-                    }
-                })
-            )
-            
-        })
+                        return {
+                            artist: track.artists[0].name,
+                            artistId: track.artists[0].id,
+                            title: track.name,
+                            uri: track.uri,
+                            albumUrl: smallestAlbumImage.url,
+                            id:track.id
+                        }
+                    })
+                )
+            })
+        }
+        else if (param === 'artist'){
+                spotifyApi.searchArtists(search)
+                .then(res => {
+                if (!start) return
+                setSearchArtistResults(
+                    res.body.artists.items.map(artist => {
+                        let pickedImg = artist.images[0]
+                        try{
+                            const smallestArtistImage = artist.images.reduce(
+                                (smallest, image) => {
+                                    if (image.height < smallest.height) return image
+                                    return smallest
+                                },
+                                artist.images[0]
+                            )
+                            pickedImg = smallestArtistImage.url 
+                        }
+                        catch{
+                            pickedImg = artist.images[0]
+                        }
+                        return {
+                            id: artist.id,
+                            name: artist.name,
+                            uri: artist.uri,
+                            artistImg: pickedImg
+                        }
+                    })
+                )
+            })
+        }
+        else if(param === 'album'){
+            spotifyApi.searchAlbums(search)
+            .then(res => {
+                console.log('result of album search', res.body)
+            })
+
+        }
         return () => (start = false)
-    }, [artistSearch, accessToken])
+    }, [search, accessToken])
+    
     useEffect(() => {
         if (!accessToken) return
         const script = document.createElement('script')
@@ -260,11 +267,11 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             onSubmit={(e) => e.preventDefault()}>
                 <input
                         type="text"
-                        placeholder={param==='artist' ? 'Search by Artist' : 'Search by Track'}
-                        value={param==='artist' ? artistSearch : trackSearch}
+                        placeholder={`Search by ${param}`}
+                        value={search}
                         onChange={e => {
                             setRevealStatus(true)
-                            param==='artist' ? setArtistSearch(e.target.value) : setTrackSearch(e.target.value)
+                            setSearch(e.target.value)
                         } }
                     />
             </form>
