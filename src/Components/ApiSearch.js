@@ -345,7 +345,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     
                 }
             </div>
-            {
+            {/* {
                 playerId && apiReady ?
                 <WebPlayer 
                 player={player}
@@ -358,7 +358,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 />
                 :
                 <></>
-            }
+            } */}
             
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (

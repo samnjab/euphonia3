@@ -453,6 +453,51 @@ label:nth-of-type(2n) {
 }
 /* end of slider styles */
 
+/* Search Options */
+.searchOptionsContainer{
+  display:flex;
+  align-items: center;
+  /* transform: translate(50%, 50%); */
+  border-radius: 40px;
+  background-color: var(--overlayBackgroundColor);
+  width:fit-content;
+}
+.searchOptionsContainer:hover > .listOfOptions{
+  width: fit-content;
+}
+.searchOptionsContainer:hover>.selectedOption {
+  /* background-color: var(--overlayLightBackgroundColor); */
+}
+.selectedOption{
+  text-transform: capitalize;
+  padding:5px 20px;
+  border-radius: 15px;
+  /* transition: 0.4s ease-in-out; */
+}
+.selectedOption:hover{
+ 
+}
+.listOfOptions{
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width:0px;
+  overflow-x:hidden;
+}
+.option{
+  text-transform: capitalize;
+  opacity:0.6;
+  transition:all 0.3s ease-in-out;
+  margin:0 10px;
+  /* width:0;
+  overflow-x: hidden; */
+}
+.option:hover{
+  opacity:1.0;
+  transform: scale(1.06);
+}
+
+
 /* Toggle switch styles */
 .container {
   text-align: right;

@@ -22,10 +22,6 @@ export default function Dashboard({ code }) {
     const addUser= (user) =>{
         setUser(user)
     }
-    const searchBy = (e) => {
-        console.log('e.target is', e.target)
-        setSearchParam(e.target.id)
-    }
 
     // useEffect(() => {
     //     if (!playingTrack) return
@@ -57,7 +53,7 @@ export default function Dashboard({ code }) {
             </header>
             <section className='dashboard'>
                 <div className='wrapper'>
-                    <SearchOptions searchBy={searchBy} />
+                    <SearchOptions searchBy={(e) => setSearchParam(e.target.id)} searchParam={searchParam}/>
                     <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
                 </div>
             </section>
