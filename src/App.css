@@ -172,11 +172,15 @@ button {
 button:hover{
   opacity:1;
 }
+input:focus{
+  outline: none;
+}
 
 body{
  background-color: var(--backgroundColor);
  color: var(--foregroundColorMix1);
 }
+
 .layout {
   position: relative;
   width: 100vw;
@@ -343,6 +347,7 @@ p{
   color:var(--foregroundColor);
   border:none;
 }
+
 .searchBox:hover{
   background-color:var(--overlayBackgroundColor);
 }
@@ -454,138 +459,57 @@ label:nth-of-type(2n) {
 /* end of slider styles */
 
 /* Search Options */
+.wrapper{
+  display:flex;
+  flex-direction: column;
+}
 .searchOptionsContainer{
+  align-self:center;
   display:flex;
   align-items: center;
-  /* transform: translate(50%, 50%); */
   border-radius: 40px;
+  padding:0px 15px;
   background-color: var(--overlayBackgroundColor);
-  width:fit-content;
+  position:relative;
+  line-height: 1;
 }
-.searchOptionsContainer:hover > .listOfOptions{
-  width: fit-content;
+
+.searchOptionsContainer:hover>.listOfOptions{
+  max-width: 300px;
+
 }
 .searchOptionsContainer:hover>.selectedOption {
   /* background-color: var(--overlayLightBackgroundColor); */
 }
 .selectedOption{
   text-transform: capitalize;
-  padding:5px 20px;
+  padding:0px 15px;
   border-radius: 15px;
-  /* transition: 0.4s ease-in-out; */
 }
 .selectedOption:hover{
  
 }
 .listOfOptions{
+  padding:0px;
   display:flex;
   justify-content: space-between;
   align-items: center;
   max-width:0px;
   overflow-x:hidden;
+  overflow-y: hidden;
+  transition: 0.5s ease-in-out;
+
 }
 .option{
   text-transform: capitalize;
   opacity:0.6;
   transition:all 0.3s ease-in-out;
-  margin:0 10px;
-  /* width:0;
-  overflow-x: hidden; */
+  padding:0px 15px;
 }
 .option:hover{
   opacity:1.0;
   transform: scale(1.06);
 }
-
-
-/* Toggle switch styles */
-.container {
-  text-align: right;
-  margin: 0 0 0 0.5rem;
-  display: inline-block;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 200px;
-  display: inline-block;
-  text-align: left;
-  top: 8px;
-}
-
-.checkbox {
-  display: none;
-}
-
-.label {
-  display: block;
-  overflow: hidden;
-  cursor: pointer;
-  border-radius: 20px;
-}
-
-.inner {
-  display: block;
-  width: 200%;
-  margin-left: -100%;
-  transition: margin 0.5s ease 0s;
-}
-
-.inner:before,
-.inner:after {
-  float: left;
-  width: 50%;
-  height: 50%;
-  padding: 0;
-  line-height: 36px;
-  color: var(--foregroundColorMix6);
-  font-weight: bold;
-  box-sizing: border-box;
-}
-
-.inner:before {
-  content: "Artist";
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-left: 40px;
-  background-color: var(--foregroundColor);
-  color: var(--backgroundColor);
-}
-
-.inner:after {
-  content: "Track";
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding-right: 40px;
-  background-color: var(--foregroundColor);
-  color: var(--backgroundColor);
-  text-align: right;
-}
-
-.switch {
-  display: block;
-  width: 30px;
-  height: 30px;
-  margin: 5px;
-  background: var(--overlayLightBackgroundColor);
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  border: 0 solid #bbb;
-  border-radius: 20px;
-  transition: all 0.5s ease 0s;
-}
-
-.checkbox:checked+.label .inner {
-  margin-left: 0;
-}
-
-.checkbox:checked+.label .switch {
-  left: 160px;
-}
-/* end of toggle switch styles */
 
 /* apiSearch component styles */
 .apiSearch{

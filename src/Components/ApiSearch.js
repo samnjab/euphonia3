@@ -1,18 +1,16 @@
 import React from "react"
 import { useState, useEffect, useRef } from 'react'
-import TrackSearchResult from './TrackSearchResult'
-import ArtistSearchResult from './ArtistSearchResult'
 import DisplayTrack from "./DisplayTrack"
 import DisplayArtist from "./DisplayArtist"
 import RecoTrack from './RecoTrack'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
+import SearchResult from "./SearchResult"
 export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     const [search, setSearch] = useState('')
-    const [searchTrackResults, setSearchTrackResults] = useState([])
-    const [searchArtistResults, setSearchArtistResults] = useState([])
+    const [searchResults, setSearchResults] = useState([])
     const [albumSearchResults, setAlbumSearchResults] = useState([])
     const [playlistSearchResults, setPlaylistSearchResults] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
@@ -132,7 +130,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     }
                 })
             )
-        }).catch(error=>{
+        }).catch( error =>{
             return 
         })
         return () => start = false
@@ -157,20 +155,16 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     useEffect(() => {
         if (!search) {
-            setSearchTrackResults([])
-            setSearchArtistResults([])
-            setAlbumSearchResults([])
-            setPlaylistSearchResults([])
+            setSearchResults([])
             return 
         }
-        console.log('access token is', accessToken)
         if (!accessToken) return
         let start = true
         if (param === 'track') {
             spotifyApi.searchTracks(search)
             .then(res => {
                 if (!start) return
-                setSearchTrackResults(
+                setSearchResults(
                     res.body.tracks.items.map(track => {
                         const smallestAlbumImage = track.album.images.reduce(
                             (smallest, image) => {
@@ -180,12 +174,13 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             track.album.images[0]
                         )
                         return {
-                            artist: track.artists[0].name,
-                            artistId: track.artists[0].id,
+                            type:'track',
                             title: track.name,
                             uri: track.uri,
-                            albumUrl: smallestAlbumImage.url,
-                            id:track.id
+                            id:track.id,
+                            imageUrl: smallestAlbumImage.url,
+                            artist: track.artists[0].name,
+                            artistId: track.artists[0].id
                         }
                     })
                 )
@@ -195,27 +190,21 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 spotifyApi.searchArtists(search)
                 .then(res => {
                 if (!start) return
-                setSearchArtistResults(
+                setSearchResults(
                     res.body.artists.items.map(artist => {
-                        let pickedImg = artist.images[0]
-                        try{
-                            const smallestArtistImage = artist.images.reduce(
-                                (smallest, image) => {
-                                    if (image.height < smallest.height) return image
-                                    return smallest
-                                },
-                                artist.images[0]
-                            )
-                            pickedImg = smallestArtistImage.url 
-                        }
-                        catch{
-                            pickedImg = artist.images[0]
-                        }
+                        const largestArtistImage = artist.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
+                            },
+                            artist.images[0]
+                        )
                         return {
-                            id: artist.id,
-                            name: artist.name,
+                            type:'artist',
+                            title: artist.name,
                             uri: artist.uri,
-                            artistImg: pickedImg
+                            id: artist.id,
+                            imageUrl: largestArtistImage.url
                         }
                     })
                 )
@@ -224,9 +213,56 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         else if(param === 'album'){
             spotifyApi.searchAlbums(search)
             .then(res => {
-                console.log('result of album search', res.body)
+                if (!start) return
+                console.log('album res is', res.body.albums.items)
+                setSearchResults(
+                    res.body.albums.items.map(album => {
+                        const largestAlbumImage = album.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
+                            },
+                            album.images[0]
+                        )
+                        return {
+                            type:'album',
+                            title: album.name,
+                            uri: album.uri,
+                            id: album.id,
+                            imageUrl:largestAlbumImage.url,
+                            artist: album.artists[0].name,
+                            artistId: album.artists[0].id
+                        }
+                    })
+                )
             })
-
+        }
+        else if (param === 'playlist'){
+            spotifyApi.searchPlaylists('workout')
+            .then(res => {
+                if (!start) return
+                setSearchResults(
+                    res.body.playlists.items.map(playlist => {
+                        const largestPlaylistImage = playlist.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
+                            },
+                            playlist.images[0]
+                        )
+                        return {
+                            type:'playlist',
+                            title: playlist.name,
+                            uri: playlist.uri,
+                            id: playlist.id,
+                            imageUrl:largestPlaylistImage.url,
+                            tracks:playlist.tracks,
+                            owner: playlist.owner.display_name,
+                            description: playlist.description
+                        }
+                    })
+                )
+            })
         }
         return () => (start = false)
     }, [search, accessToken])
@@ -277,21 +313,8 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             </form>
             <div className='searchResults'>
             {   revealStatus ? (
-                    param ==='artist' ? 
-                    searchArtistResults.map(artist => {
-                        return <ArtistSearchResult 
-                        artist={artist}
-                        key={artist.uri}
-                        selectArtist={selectArtist}
-                        /> 
-                    })
-                    :
-                    searchTrackResults.map(track => {
-                        return <TrackSearchResult
-                        track={track}
-                        key={track.uri}
-                        selectTrack={selectTrack}
-                    />
+                    searchResults.map(searchResult => {
+                        return <SearchResult item={searchResult} /> 
                     })
                 )  
                 : <></>

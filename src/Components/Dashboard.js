@@ -5,7 +5,6 @@ import { useState, useEffect } from "react"
 // Components
 import useAuth from "./useAuth"
 import ApiSearch from "./ApiSearch"
-import ToggleSwitch from "./ToggleSwitch"
 import SearchOptions from "./SearchOptions"
 import DisplayMe from './DisplayMe'
 

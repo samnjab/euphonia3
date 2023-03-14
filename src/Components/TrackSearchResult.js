@@ -1,5 +1,3 @@
-import React from "react"
-
 export default function TrackSearchResult({ track, selectTrack}) {
     return ( 
       <div
