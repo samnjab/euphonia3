@@ -505,6 +505,7 @@ label:nth-of-type(2n) {
   opacity:0.6;
   transition:all 0.3s ease-in-out;
   padding:0px 15px;
+  cursor:pointer;
 }
 .option:hover{
   opacity:1.0;

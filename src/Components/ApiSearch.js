@@ -6,13 +6,11 @@ import RecoTrack from './RecoTrack'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
-import SearchResult from "./SearchResult"
+import DisplayItem from "./DisplayItem"
 export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
-    const [albumSearchResults, setAlbumSearchResults] = useState([])
-    const [playlistSearchResults, setPlaylistSearchResults] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
     const [selectedTracks, setSelectedTracks] = useState([])
     const [selectedArtists, setSelectedArtists] = useState([])
@@ -23,120 +21,9 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
-    const handleRecoParam = (recoParam, lower, upper) => {
-        let min = lower/100
-        let max = upper/100
-        if (recoParam ==='popularity'){
-            min = lower
-            max = upper  
-        }else if(recoParam==='tempo'){
-            min = lower * 1.6 + 40
-            max = upper * 1.6 + 40
-        }
-        setRecoParams(
-            {
-                ...recoParams,
-                [recoParam]:{min:min, max:max}
-            }
 
-        )
-    }
-    const handleChangeTrack = (track) => {
-        setChangeTrackTo(track)
-        setPlayingTracks(recommendations)
-    }
-    
-    const deselectTrack = (toBeRemovedTrack) =>{
-        setSelectedTracks(
-            selectedTracks.filter(track => {
-                return track !== toBeRemovedTrack
-            })
-        )
-    }
-    const deselectArtist = (toBeRemovedArtist) =>{
-        setSelectedArtists(
-            selectedArtists.filter(artist => {
-                return artist !== toBeRemovedArtist
-            })
-        )
-    }
-    const selectTrack = (track) =>{
-        const exists = selectedTracks.filter(selectedTrack =>{
-            return selectedTrack.uri === track.uri
-        })
-        if(exists.length === 0){
-            setSelectedTracks([...selectedTracks, track])
-        }
-        setSearch('')
-        setRevealStatus(false)
-    }
-    const selectArtist = (artist) => {
-        const exists = selectedArtists.filter(selectedArtist =>{
-            return selectedArtist.uri === artist.uri
-        })
-        if (exists.length == 0){
-            setSelectedArtists([...selectedArtists, artist])
-        }
-        setSearch('')
-        setRevealStatus(false)
-    }
-    useEffect(() => {
-        if(!accessToken) return
-        if(selectedTracks.length == 0 && selectedArtists.length == 0) {
-            setRecommendations([])
-            return 
-        }
-        let start = true
-        const seedTracks = selectedTracks.map(track => {
-            return track.id
-        })
-        const seedArtists = selectedArtists.map(artist=>{
-            return artist.id
-        })
-        const requestParams = {}
-        for (let key in recoParams){
-            if (recoParams[key]?.min){
-                requestParams[`min_${key}`] = recoParams[key].min
-            }
-            if (recoParams[key]?.max){
-                requestParams[`max_${key}`] = recoParams[key].max
-            }
-        }
-        spotifyApi.getRecommendations({
-            seed_tracks: seedTracks,
-            seed_artists:seedArtists,
-            ...requestParams
-        }).then(data => {
-            if (!start) return
-            setRecommendations(
-                data.body?.tracks?.map(track => {
-                    const largestAlbumImage = track.album.images.reduce(
-                        (largest, image) => {
-                            if (image.height > largest.height) return image
-                            return largest
-                        },
-                        track.album.images[0]
-                    )
-                    return {
-                        preview_url:track?.preview_url || '',
-                        artist: track.artists[0].name,
-                        artistId: track.artists[0].id,
-                        title: track.name,
-                        albumTitle:track.album.name,
-                        uri: track.uri,
-                        albumUrl: largestAlbumImage.url,
-                        id:track.id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
-                    }
-                })
-            )
-        }).catch( error =>{
-            return 
-        })
-        return () => start = false
-    },[selectedTracks, selectedArtists, recoParams])
-    
-    useEffect(() => {
+    // UseEffects
+     useEffect(() => {
         const settingAccessToken = async() => {
             await spotifyApi.setAccessToken(accessToken)
             setApiReady(true)
@@ -145,13 +32,38 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         settingAccessToken()
     }, [accessToken])
 
-    // lyrics stretch goal to be implemented after project due date:
+    useEffect(() => {
+        if (!accessToken) return
+        const script = document.createElement('script')
+        script.src = "https://sdk.scdn.co/spotify-player.js"
+        script.async = true
+        document.body.appendChild(script)
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const player = new window.Spotify.Player({
+                name: 'Euphonia',
+                getOAuthToken:cb => {cb(accessToken)},
+                volume:0.5
+            })
+            setPlayer(player)
+        }
+    },[accessToken])
 
-    // function playTrack(track) {
-    //     // setPlayingTrack(track)
-    //     setSearch("")
-    //     setLyrics("")
-    // }
+    useEffect(() => {
+        if (!player) return
+        if(!apiReady) return
+        player.addListener('ready', ({device_id}) => {
+            console.log('ready with device id', device_id)
+            setPlayerId(device_id)
+        })
+        player.addListener('not_ready', ({device_id}) => {
+            console.log('device id has gone offline', device_id)
+        })
+        player.connect()
+    }, [apiReady, player])
+
+    useEffect(() => {
+        setSearch('')
+    },[param])
 
     useEffect(() => {
         if (!search) {
@@ -266,35 +178,136 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         }
         return () => (start = false)
     }, [search, accessToken])
-    
-    useEffect(() => {
-        if (!accessToken) return
-        const script = document.createElement('script')
-        script.src = "https://sdk.scdn.co/spotify-player.js"
-        script.async = true
-        document.body.appendChild(script)
-        window.onSpotifyWebPlaybackSDKReady = () => {
-            const player = new window.Spotify.Player({
-                name: 'Euphonia',
-                getOAuthToken:cb => {cb(accessToken)},
-                volume:0.5
-            })
-            setPlayer(player)
-        }
-    },[accessToken])
 
     useEffect(() => {
-        if (!player) return
-        if(!apiReady) return
-        player.addListener('ready', ({device_id}) => {
-            console.log('ready with device id', device_id)
-            setPlayerId(device_id)
+        if(!accessToken) return
+        if(selectedTracks.length == 0 && selectedArtists.length == 0) {
+            setRecommendations([])
+            return 
+        }
+        let start = true
+        const seedTracks = selectedTracks.map(track => {
+            return track.id
         })
-        player.addListener('not_ready', ({device_id}) => {
-            console.log('device id has gone offline', device_id)
+        const seedArtists = selectedArtists.map(artist=>{
+            return artist.id
         })
-        player.connect()
-    }, [apiReady, player])
+        const requestParams = {}
+        for (let key in recoParams){
+            if (recoParams[key]?.min){
+                requestParams[`min_${key}`] = recoParams[key].min
+            }
+            if (recoParams[key]?.max){
+                requestParams[`max_${key}`] = recoParams[key].max
+            }
+        }
+        spotifyApi.getRecommendations({
+            seed_tracks: seedTracks,
+            seed_artists:seedArtists,
+            ...requestParams
+        }).then(data => {
+            if (!start) return
+            setRecommendations(
+                data.body?.tracks?.map(track => {
+                    const largestAlbumImage = track.album.images.reduce(
+                        (largest, image) => {
+                            if (image.height > largest.height) return image
+                            return largest
+                        },
+                        track.album.images[0]
+                    )
+                    return {
+                        preview_url:track?.preview_url || '',
+                        artist: track.artists[0].name,
+                        artistId: track.artists[0].id,
+                        title: track.name,
+                        albumTitle:track.album.name,
+                        uri: track.uri,
+                        albumUrl: largestAlbumImage.url,
+                        id:track.id,
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                    }
+                })
+            )
+        }).catch( error =>{
+            return 
+        })
+        return () => start = false
+    },[selectedTracks, selectedArtists, recoParams])
+
+    const handleRecoParam = (recoParam, lower, upper) => {
+        let min = lower/100
+        let max = upper/100
+        if (recoParam ==='popularity'){
+            min = lower
+            max = upper  
+        }else if(recoParam==='tempo'){
+            min = lower * 1.6 + 40
+            max = upper * 1.6 + 40
+        }
+        setRecoParams(
+            {
+                ...recoParams,
+                [recoParam]:{min:min, max:max}
+            }
+
+        )
+    }
+    // Functions
+    const selectTrack = (track) =>{
+        const exists = selectedTracks.filter(selectedTrack =>{
+            return selectedTrack.uri === track.uri
+        })
+        if(exists.length === 0){
+            setSelectedTracks([...selectedTracks, track])
+        }
+        setSearch('')
+        setRevealStatus(false)
+    }
+    const deselectTrack = (toBeRemovedTrack) =>{
+        setSelectedTracks(
+            selectedTracks.filter(track => {
+                return track !== toBeRemovedTrack
+            })
+        )
+    }
+    const selectArtist = (artist) => {
+        const exists = selectedArtists.filter(selectedArtist =>{
+            return selectedArtist.uri === artist.uri
+        })
+        if (exists.length == 0){
+            setSelectedArtists([...selectedArtists, artist])
+        }
+        setSearch('')
+        setRevealStatus(false)
+    }
+    const deselectArtist = (toBeRemovedArtist) =>{
+        setSelectedArtists(
+            selectedArtists.filter(artist => {
+                return artist !== toBeRemovedArtist
+            })
+        )
+    }
+    const handleChangeTrack = (track) => {
+        setChangeTrackTo(track)
+        setPlayingTracks(recommendations)
+    }
+    
+    
+    
+   
+    
+    
+    
+   
+
+    // lyrics stretch goal to be implemented after project due date:
+
+    // function playTrack(track) {
+    //     // setPlayingTrack(track)
+    //     setSearch("")
+    //     setLyrics("")
+    // }
 
     return(
         <div className='apiSearch'>
@@ -314,7 +327,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             <div className='searchResults'>
             {   revealStatus ? (
                     searchResults.map(searchResult => {
-                        return <SearchResult item={searchResult} /> 
+                        return <DisplayItem item={searchResult} /> 
                     })
                 )  
                 : <></>

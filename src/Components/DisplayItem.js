@@ -1,4 +1,4 @@
-export default function SearchResult({ item, selectTrack}) {
+export default function DisplayItem({ item, selectTrack}) {
     return ( 
       <div
           style={{ cursor: "pointer" }}
