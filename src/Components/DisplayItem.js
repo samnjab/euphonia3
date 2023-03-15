@@ -1,17 +1,11 @@
 import { useEffect, useRef } from 'react'
-export default function DisplayItem({ item, selectTrack, selectArtist, selectAlbum, selectPlaylist }) {
-  const typeToFunction = [{ type:'track', function:selectTrack }, { type:'artist', function:selectArtist }, { type:'album', function:selectAlbum }, { type:'playlist', function:selectPlaylist }]
-  const selectFunction = useRef()
-  useEffect(() => {
-    selectFunction.current = typeToFunction.filter(pair => {
-      return pair.type === item.type
-    })
-  }, [item])
+export default function DisplayItem({ item, selectItem }) {
+  
     return ( 
       <div
           style={{ cursor: "pointer" }}
           className='searchResult'
-          onClick={()=> selectFunction.current[0].function(item)}
+          onClick={()=> selectItem(item, item.type)}
           >
           <img 
             src={item.imageUrl}

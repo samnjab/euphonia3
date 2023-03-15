@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from 'react'
 
 import Playlists from './Playlists';
 
-export default function TrackSearchResult({ track, selectTrack, spotifyApi, user, changeTrackTo }) {
+export default function TrackSearchResult({ track, selectItem, spotifyApi, user, changeTrackTo }) {
     return ( 
       <div className='recoTrack'>
           <audio src={track.preview_url} id={`${track.uri}`}></audio>
@@ -19,7 +19,7 @@ export default function TrackSearchResult({ track, selectTrack, spotifyApi, user
             }}
             >
                 <div className='img-box'>
-                    <img src={track.albumUrl} className='cover' />
+                    <img src={track.imageUrl} className='cover' />
                 </div>
             </a>
       </div>

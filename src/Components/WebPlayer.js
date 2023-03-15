@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectTrack}){
+export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectItem}){
     const initialPlayngStatus = useRef(false)
     const [activeDevice, setActiveDevice] = useState()
     const [playingTrack, setPlayingTrack] = useState()
@@ -110,7 +110,7 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
                 <button 
                 id='moveUp' 
                 className='playerBtn'
-                onClick={() => selectTrack(playingTrack)}
+                onClick={() => selectItem(playingTrack, playingTrack.type)}
                 ><FaArrowUp /></button>
                 <div className='mainNav'>
                         {

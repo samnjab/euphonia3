@@ -1,21 +1,19 @@
-import React from "react"
+// Modules
+import React from 'react'
 import { useState, useEffect, useRef } from 'react'
-import DisplayTrack from "./DisplayTrack"
-import DisplayArtist from "./DisplayArtist"
+// Components
 import RecoTrack from './RecoTrack'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
-import DisplayItem from "./DisplayItem"
+import DisplayItem from './DisplayItem'
+import DisplaySelected from './DisplaySelected'
 export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
+    const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
     const [revealStatus, setRevealStatus] = useState(false)
-    const [selectedTracks, setSelectedTracks] = useState([])
-    const [selectedArtists, setSelectedArtists] = useState([])
-    const [selectedAlbums, setSelectedAlbums] = useState([])
-    const [selectedPlaylists, setSelectedPlaylists] = useState([])
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
     const [apiReady,setApiReady] = useState(false)
@@ -23,6 +21,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
+  
 
     // UseEffects
      useEffect(() => {
@@ -90,6 +89,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         return {
                             type:'track',
                             title: track.name,
+                            albumTitle: track.album.name,
                             uri: track.uri,
                             id:track.id,
                             imageUrl: smallestAlbumImage?.url || '',
@@ -183,15 +183,19 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     useEffect(() => {
         if(!accessToken) return
-        if(selectedTracks.length == 0 && selectedArtists.length == 0) {
-            setRecommendations([])
+        let selected = false
+        for (param in paramToSelection){
+            if (paramToSelection[param].length !== 0) selected= true
+        }
+        if (!selected){
+             setRecommendations([])
             return 
         }
         let start = true
-        const seedTracks = selectedTracks.map(track => {
+        const seedTracks = paramToSelection['track'].map(track => {
             return track.id
         })
-        const seedArtists = selectedArtists.map(artist=>{
+        const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
         })
         const requestParams = {}
@@ -219,14 +223,15 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         track.album.images[0]
                     )
                     return {
-                        preview_url:track?.preview_url || '',
-                        artist: track.artists[0].name,
-                        artistId: track.artists[0].id,
+                        type:'track',
                         title: track.name,
                         albumTitle:track.album.name,
                         uri: track.uri,
-                        albumUrl: largestAlbumImage.url,
                         id:track.id,
+                        imageUrl: largestAlbumImage.url,
+                        preview_url:track?.preview_url || '',
+                        artist: track.artists[0].name,
+                        artistId: track.artists[0].id,
                         duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
                     }
                 })
@@ -235,7 +240,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             return 
         })
         return () => start = false
-    },[selectedTracks, selectedArtists, recoParams])
+    },[paramToSelection, recoParams])
 
     const handleRecoParam = (recoParam, lower, upper) => {
         let min = lower/100
@@ -255,76 +260,26 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
         )
     }
+    
     // Functions
-    const selectTrack = (track) =>{
-        const exists = selectedTracks.filter(selectedTrack =>{
-            return selectedTrack.uri === track.uri
+    const selectItem = (item, param) => {
+        const exists = paramToSelection[param].filter(selecteditem =>{
+            return selecteditem.uri === item.uri
         })
-        if(exists.length === 0){
-            setSelectedTracks([...selectedTracks, track])
-        }
+        if(exists.length === 0) setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item]})
         setSearch('')
         setRevealStatus(false)
+        
     }
-    const deselectTrack = (toBeRemovedTrack) =>{
-        setSelectedTracks(
-            selectedTracks.filter(track => {
-                return track !== toBeRemovedTrack
+    const deselectItem = (item, param) => {
+        setParamToSelection(
+            {...paramToSelection, 
+                [param]: paramToSelection[param].filter(toBeRemovedItem => {
+                    return item !== toBeRemovedItem
+                })
             })
-        )
     }
-    const selectArtist = (artist) => {
-        const exists = selectedArtists.filter(selectedArtist =>{
-            return selectedArtist.uri === artist.uri
-        })
-        if (exists.length == 0){
-            setSelectedArtists([...selectedArtists, artist])
-        }
-        setSearch('')
-        setRevealStatus(false)
-    }
-    const deselectArtist = (toBeRemovedArtist) =>{
-        setSelectedArtists(
-            selectedArtists.filter(artist => {
-                return artist !== toBeRemovedArtist
-            })
-        )
-    }
-    const selectAlbum = (album) =>{
-        const exists = selectedAlbums.filter(selectedAlbum =>{
-            return selectedAlbum.uri === album.uri
-        })
-        if(exists.length === 0){
-            setSelectedAlbums([...selectedAlbums, album])
-        }
-        setSearch('')
-        setRevealStatus(false)
-    }
-    const deselectAlbum = (toBeRemovedAlbum) =>{
-        setSelectedAlbums(
-            selectedAlbums.filter(album => {
-                return album !== toBeRemovedAlbum
-            })
-        )
-    }
-    const selectPlaylist = (playlist) =>{
-        const exists = selectedPlaylists.filter(selectedPlaylist =>{
-            return selectedPlaylist.uri === playlist.uri
-        })
-        if(exists.length === 0){
-            setSelectedPlaylists([...selectedPlaylists, playlist])
-        }
-        setSearch('')
-        setRevealStatus(false)
-    }
-    const deselectPlaylist = (toBeRemovedPlaylist) =>{
-        setSelectedTracks(
-            selectedPlaylists.filter(playlist => {
-                return playlist !== toBeRemovedPlaylist
-            })
-        )
-    }
-
+    
     const handleChangeTrack = (track) => {
         setChangeTrackTo(track)
         setPlayingTracks(recommendations)
@@ -366,30 +321,20 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     searchResults.map(searchResult => {
                         return <DisplayItem 
                                 item={searchResult} 
-                                selectTrack={selectTrack} 
-                                selectArtist={selectArtist}
-                                selectAlbum={selectAlbum}
-                                selectPlaylist={selectPlaylist}/> 
+                                selectItem={selectItem}
+                                /> 
                     })
                 )  
                 : <></>
             }
             </div>
             <div className='selected'>
-                {   
-                    param === 'artist' ? 
-                    selectedArtists.map(artist => {
-                        return <DisplayArtist 
-                                artist = {artist}
-                                deselectArtist={deselectArtist} 
-                                key={artist.uri}
-                                /> 
-                    })
-                    : selectedTracks.map(track => {
-                        return <DisplayTrack 
-                                track={track} 
-                                deselectTrack={deselectTrack}
-                                key={track.uri}
+                {
+                    paramToSelection[param].map(item => {
+                        return <DisplaySelected
+                                param={param}
+                                item={item}
+                                deselectItem={deselectItem}
                                 />
                     })
                 }
@@ -415,7 +360,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             preview_url={track.preview_url}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 
-                            selectTrack={selectTrack}
+                            selectItem={selectItem}
                             spotifyApi={spotifyApi} 
                             key={track.uri}/>
                 })
@@ -430,7 +375,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 playerId={playerId}
                 spotifyApi={spotifyApi}
                 changeTrackTo={changeTrackTo}
-                selectTrack={selectTrack}
+                selectItem={selectItem}
                 setChangeTrackTo={setChangeTrackTo}
                 listOfTracks={playingTracks}
                 />

@@ -35,14 +35,15 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
         let track = progressParams?.item
         setPlayingTrack(
             {
-                preview_url:track?.preview_url || '',
-                artist: track.artists[0].name,
-                artistId: track.artists[0].id,
+                type:'track',
                 title: track.name,
                 albumTitle:track.album.name,
                 uri: track.uri,
-                albumUrl: progressParams?.albumImage?.url,
                 id:track.id,
+                imageUrl: progressParams?.albumImage?.url,
+                preview_url:track?.preview_url || '',
+                artist: track.artists[0].name,
+                artistId: track.artists[0].id,
                 duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
              }
         )
