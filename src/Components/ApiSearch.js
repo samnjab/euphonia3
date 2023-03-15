@@ -14,6 +14,8 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [revealStatus, setRevealStatus] = useState(false)
     const [selectedTracks, setSelectedTracks] = useState([])
     const [selectedArtists, setSelectedArtists] = useState([])
+    const [selectedAlbums, setSelectedAlbums] = useState([])
+    const [selectedPlaylists, setSelectedPlaylists] = useState([])
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
     const [apiReady,setApiReady] = useState(false)
@@ -90,7 +92,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             title: track.name,
                             uri: track.uri,
                             id:track.id,
-                            imageUrl: smallestAlbumImage.url,
+                            imageUrl: smallestAlbumImage?.url || '',
                             artist: track.artists[0].name,
                             artistId: track.artists[0].id
                         }
@@ -116,7 +118,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             title: artist.name,
                             uri: artist.uri,
                             id: artist.id,
-                            imageUrl: largestArtistImage.url
+                            imageUrl: largestArtistImage?.url || ''
                         }
                     })
                 )
@@ -141,7 +143,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             title: album.name,
                             uri: album.uri,
                             id: album.id,
-                            imageUrl:largestAlbumImage.url,
+                            imageUrl:largestAlbumImage?.url || '',
                             artist: album.artists[0].name,
                             artistId: album.artists[0].id
                         }
@@ -167,7 +169,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             title: playlist.name,
                             uri: playlist.uri,
                             id: playlist.id,
-                            imageUrl:largestPlaylistImage.url,
+                            imageUrl:largestPlaylistImage?.url || '',
                             tracks:playlist.tracks,
                             owner: playlist.owner.display_name,
                             description: playlist.description
@@ -288,6 +290,41 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             })
         )
     }
+    const selectAlbum = (album) =>{
+        const exists = selectedAlbums.filter(selectedAlbum =>{
+            return selectedAlbum.uri === album.uri
+        })
+        if(exists.length === 0){
+            setSelectedAlbums([...selectedAlbums, album])
+        }
+        setSearch('')
+        setRevealStatus(false)
+    }
+    const deselectAlbum = (toBeRemovedAlbum) =>{
+        setSelectedAlbums(
+            selectedAlbums.filter(album => {
+                return album !== toBeRemovedAlbum
+            })
+        )
+    }
+    const selectPlaylist = (playlist) =>{
+        const exists = selectedPlaylists.filter(selectedPlaylist =>{
+            return selectedPlaylist.uri === playlist.uri
+        })
+        if(exists.length === 0){
+            setSelectedPlaylists([...selectedPlaylists, playlist])
+        }
+        setSearch('')
+        setRevealStatus(false)
+    }
+    const deselectPlaylist = (toBeRemovedPlaylist) =>{
+        setSelectedTracks(
+            selectedPlaylists.filter(playlist => {
+                return playlist !== toBeRemovedPlaylist
+            })
+        )
+    }
+
     const handleChangeTrack = (track) => {
         setChangeTrackTo(track)
         setPlayingTracks(recommendations)
@@ -327,7 +364,12 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             <div className='searchResults'>
             {   revealStatus ? (
                     searchResults.map(searchResult => {
-                        return <DisplayItem item={searchResult} /> 
+                        return <DisplayItem 
+                                item={searchResult} 
+                                selectTrack={selectTrack} 
+                                selectArtist={selectArtist}
+                                selectAlbum={selectAlbum}
+                                selectPlaylist={selectPlaylist}/> 
                     })
                 )  
                 : <></>

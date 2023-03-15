@@ -26,18 +26,18 @@ html { box-sizing: border-box;}
   --colorGradientMax: rgba(0, 0, 0, 100);
   --tertiaryColorRef: #e4001c;
   /* blue theme */
-  --primaryColorRefBlue:#000000;
-  --mixedColor1RefBlue:#111619;
-  --mixedColor2RefBlue: #222C32;
-  --mixedColor3RefBlue: #33414B;
-  --mixedColor4RefBlue: #455764;
+  --primaryColorRefBlue:#311A51;
+  --mixedColor1RefBlue:#f4f3ee;
+  --mixedColor2RefBlue: #e5e5e5;
+  --mixedColor3RefBlue: #dee2e6;
+  --mixedColor4RefBlue: #f7ebe8;
   --mixedColor5RefBlue: #566D7D;
-  --mixedColor6RefBlue: #678396;
-  --mixedColor7RefBlue: #7898AF;
-  --secondaryColorRefBlue: #CDCEDC;
-  --colorGradientMinBlue: rgba(0, 0, 0, 0);
+  --mixedColor6RefBlue: #242423;
+  --mixedColor7RefBlue: #4f5d75;
+  --secondaryColorRefBlue: #f5cb5c;
+  --colorGradientMinBlue: #333533;
   --colorGradientMaxBlue: rgba(0, 0, 0, 100);
-  --tertiaryColorRefBlue: #e4001c;
+  --tertiaryColorRefBlue: #d62828;
   /* default colors */
   --backgroundColor: var(--secondaryColorRef);
   --overlayBackgroundColor: var(--mixedColor6Ref);
