@@ -1,5 +1,7 @@
 const app = require('express')();
+const request = require('request');
 require('dotenv').config();
+
 const SpotifyWebApi = require("spotify-web-api-node")
 
 app.get('/api/express/code/:code', (req, res) => {
@@ -73,7 +75,7 @@ request.post(authOptions, function(error, response, body) {
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
     res.json({
-      accessToken:  body.access_token, 
+      accessToken: body.access_token, 
       expiresIn:body.expires_in
     })
   } else{
