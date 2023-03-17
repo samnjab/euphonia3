@@ -13,6 +13,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
+    const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [revealStatus, setRevealStatus] = useState(false)
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
@@ -128,7 +129,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             spotifyApi.searchAlbums(search)
             .then(res => {
                 if (!start) return
-                console.log('album res is', res.body.albums.items)
                 setSearchResults(
                     res.body.albums.items.map(album => {
                         const largestAlbumImage = album.images.reduce(
@@ -260,6 +260,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
         )
     }
+    useEffect(() => {
+        console.log('album tracks inside useeffect', albumTracks)
+
+    }, [albumTracks.title])
     
     // Functions
     const selectItem = (item, param) => {
@@ -269,6 +273,32 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if(exists.length === 0) setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item]})
         setSearch('')
         setRevealStatus(false)
+        if (param === 'album'){
+            console.log('item is', item)
+            spotifyApi.getAlbum(item.id)
+            .then(data => {
+                console.log('selected album', data.body)
+                let tracks = data.body.tracks.items.map(track => {
+                    return {
+                        type:'track',
+                        title: track.name,
+                        uri: track.uri,
+                        id:track.id,
+                        preview_url:track?.preview_url || '',
+                        imageUrl: item.imageUrl,
+                        albumTitle:item.title,
+                        artist: track.artists[0].name,
+                        artistId: track.artists[0].id,
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                    }
+                })
+                console.log('title is', data.body.name, 'tracks are', tracks)
+
+                setAlbumTracks({ title: data.body.name, tracks:tracks})
+            }).catch(error => {
+                console.log(error.message)
+            })
+        }
         
     }
     const deselectItem = (item, param) => {
@@ -350,7 +380,29 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
                 <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
             </div>
-            
+           { console.log('conditions', param==='album', albumTracks.tracks)}
+            {
+                param === 'album' && albumTracks.tracks.length !== 0 ?
+                <div className='albumTracks'>
+                    {console.log('album tracks are', albumTracks.track)}
+                    <h4>{albumTracks.title}</h4>
+                    {
+                        albumTracks.tracks.map(track => {
+                            return <RecoTrack 
+                            track={track} 
+                            preview_url={track.preview_url}
+                            user={user}
+                            changeTrackTo= {handleChangeTrack} 
+                            selectItem={selectItem}
+                            spotifyApi={spotifyApi} 
+                            key={track.uri}/>
+                        })
+                    }
+
+                </div>
+                :
+                <></>
+            }
             <div className='recommendations'>
                 {
                 recommendations ? 
