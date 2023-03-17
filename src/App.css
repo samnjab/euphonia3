@@ -652,6 +652,14 @@ label:nth-of-type(2n) {
   display:flex;
   align-items:center;
 }
+/* Album preview styles */
+.albumTracks{
+  display:flex;
+  flex-wrap:wrap;
+}
+.albumTracks h4{
+  flex-basis:100%;
+}
 
 /* recommendation styles */
 .recommendations{
@@ -669,6 +677,7 @@ label:nth-of-type(2n) {
   align-items:center;
   margin:0.25rem 0;
   position:relative;
+  margin:2.5px;
 }
 
 a {
