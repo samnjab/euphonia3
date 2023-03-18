@@ -14,6 +14,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
+    const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [revealStatus, setRevealStatus] = useState(false)
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
@@ -152,7 +153,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             })
         }
         else if (param === 'playlist'){
-            spotifyApi.searchPlaylists('workout')
+            spotifyApi.searchPlaylists(search)
             .then(res => {
                 if (!start) return
                 setSearchResults(
@@ -170,7 +171,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                             uri: playlist.uri,
                             id: playlist.id,
                             imageUrl:largestPlaylistImage?.url || '',
-                            tracks:playlist.tracks,
                             owner: playlist.owner.display_name,
                             description: playlist.description
                         }
@@ -192,12 +192,16 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             return 
         }
         let start = true
-        const seedTracks = paramToSelection['track'].map(track => {
+        const seedTracks = [...paramToSelection['track'].map(track => {
             return track.id
-        })
+        }), ...paramToSelection['playlist'].map(track => {
+            return track.id
+        })]
+        console.log('seed track are', seedTracks)
         const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
         })
+        if (seedTracks.length === 0 && seedArtists.length === 0) return
         const requestParams = {}
         for (let key in recoParams){
             if (recoParams[key]?.min){
@@ -236,7 +240,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     }
                 })
             )
-        }).catch( error =>{
+        }).catch(error => {
             return 
         })
         return () => start = false
@@ -260,10 +264,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
         )
     }
-    useEffect(() => {
-        console.log('album tracks inside useeffect', albumTracks)
-
-    }, [albumTracks.title])
     
     // Functions
     const selectItem = (item, param) => {
@@ -274,7 +274,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         setSearch('')
         setRevealStatus(false)
         if (param === 'album'){
-            console.log('item is', item)
             spotifyApi.getAlbum(item.id)
             .then(data => {
                 console.log('selected album', data.body)
@@ -298,6 +297,40 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             }).catch(error => {
                 console.log(error.message)
             })
+        } else if (param === 'playlist') {
+            spotifyApi.getPlaylist(item.id)
+            .then(data => {
+                console.log(data.body)
+                let tracks = data.body.tracks.items.map(item => {
+                    console.log('images are', item.track.album.images)
+                    const trackImage= item.track.album.images.reduce(
+                        (largest, image) => {
+                            if (image.height > largest.height) return image
+                            return largest
+                        },
+                        item.track.album.images[0]
+                    )
+                    return {
+                        type:'track',
+                        title: item.track.name,
+                        uri: item.track.uri,
+                        id:item.track.id,
+                        preview_url: item.track?.preview_url || '',
+                        imageUrl: trackImage.url,
+                        albumTitle: item.track.name,
+                        artist: item.track.artists[0].name,
+                        artistId: item.track.artists[0].id,
+                        duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
+                    }
+                    console.log('tracks are', tracks)
+                    
+                })
+                setPlaylistTracks({title:item.title, tracks:tracks})
+            }).catch(error => {
+                console.log(error.message)
+            })
+            
+
         }
         
     }
@@ -380,11 +413,9 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
                 <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
             </div>
-           { console.log('conditions', param==='album', albumTracks.tracks)}
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <div className='albumTracks'>
-                    {console.log('album tracks are', albumTracks.track)}
                     <h4>{albumTracks.title}</h4>
                     {
                         albumTracks.tracks.map(track => {
@@ -401,6 +432,28 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
                 </div>
                 :
+                <></>
+            }
+            { console.log('playlist tracks are', playlistTracks)}
+            {
+                param === 'playlist' && playlistTracks.tracks.length !== 0 ?
+                <div className='playlistTracks'>
+                    <h4>{playlistTracks.title}</h4>
+                    {
+                        playlistTracks.tracks.map(track => {
+                            return <RecoTrack 
+                            track={track} 
+                            preview_url={track.preview_url}
+                            user={user}
+                            changeTrackTo= {handleChangeTrack} 
+                            selectItem={selectItem}
+                            spotifyApi={spotifyApi} 
+                            key={track.uri}/>
+                        })
+                    }
+
+                </div>
+                : 
                 <></>
             }
             <div className='recommendations'>

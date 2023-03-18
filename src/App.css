@@ -652,6 +652,13 @@ label:nth-of-type(2n) {
   display:flex;
   align-items:center;
 }
+.selected{
+  text-align:right;
+}
+.selected .cover{
+  margin:0 5px;
+}
+
 /* Album preview styles */
 .albumTracks{
   display:flex;
@@ -660,6 +667,16 @@ label:nth-of-type(2n) {
 .albumTracks h4{
   flex-basis:100%;
 }
+/* Playlist preview styles */
+.playlistTracks {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.playlistTracks h4 {
+  flex-basis: 100%;
+}
+
 
 /* recommendation styles */
 .recommendations{
