@@ -15,26 +15,19 @@ export default function DisplayMe({ accessToken, spotifyApi }){
     return(
         
         <div className='userInfo'>
+            {userDetails.name ?
+            <p className='username'> {userDetails.name}</p>
+            :
+            <></>
+            } 
+
+
             {
-                userDetails.image ?
-                <img src={userDetails.image} className='cover' />
-                :
-                <></>
+            userDetails.image ?
+            <img src={userDetails.image} className='cover' />
+            :
+            <></>
             }
-                <div className='text'>
-                    {userDetails.name ?
-                    <h5 className='username'> {userDetails.name}</h5>
-                    :
-                    <></>
-                    }
-                    {
-                        userDetails.email ?
-                        <p className='userEmail'>{userDetails.email}</p>
-                        :
-                        <></>
-                    }
-                    
-                </div>
 
         </div>
     )

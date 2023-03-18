@@ -1,5 +1,6 @@
 // Modules
 import SpotifyWebApi from "spotify-web-api-node"
+import { FaHeadset, FaHeadphones } from 'react-icons/fa'
 // Hooks
 import { useState, useEffect } from "react"
 // Components
@@ -45,14 +46,16 @@ export default function Dashboard({ code }) {
 
     return (
         <>
-            <header className='App-header'>
-                <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
-                <h1> Euphonia</h1>
+            <header className='App-header app'>
+                <div className='navigationBar'>
+                    <h1>E3<FaHeadset /></h1>
+                    <SearchOptions searchBy={(e) => setSearchParam(e.target.id)} searchParam={searchParam}/>
+                    <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
+                </div>
                 <h2>old favourites multiplied</h2>
             </header>
             <section className='dashboard'>
                 <div className='wrapper'>
-                    <SearchOptions searchBy={(e) => setSearchParam(e.target.id)} searchParam={searchParam}/>
                     <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
                 </div>
             </section>

@@ -11,10 +11,10 @@ export default function DisplayItem({ item, selectItem }) {
             src={item.imageUrl}
             className='cover'/>
           <div className='info'>
-              <h5>{item.title}</h5>
+              <h5 className='title'>{item.title}</h5>
               {
                   item.artist ?
-                  <h5>{item.artist}</h5>
+                  <h5 className='artist'>{item.artist}</h5>
                   :
                   <></>
               }

@@ -1,5 +1,6 @@
 import react from 'react';
 import { useState, useEffect } from 'react';
+import { FaYinYang } from 'react-icons/fa'
 import {Routes, Route, useNavigate} from 'react-router-dom';
 import Canvas from './Components/Canvas';
 import Header from './Components/Header';
@@ -37,7 +38,7 @@ function App() {
                             let i = themes.indexOf(theme)
                             if (i < themes.length - 1) setTheme(themes[i + 1])
                             else setTheme(themes[0])
-                        }}> ◑ </i>
+                        }}> <FaYinYang /> </i>
             <Routes>
                 <Route path='/' 
                     element={<>

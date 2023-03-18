@@ -55,7 +55,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if (!player) return
         if(!apiReady) return
         player.addListener('ready', ({device_id}) => {
-            console.log('ready with device id', device_id)
             setPlayerId(device_id)
         })
         player.addListener('not_ready', ({device_id}) => {
@@ -194,7 +193,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         let start = true
         const seedTracks = [...paramToSelection['track'].map(track => {
             return track.id
-        }), ...paramToSelection['playlist'].map(track => {
+        }), ...playlistTracks.tracks.map(track => {
             return track.id
         })]
         console.log('seed track are', seedTracks)
@@ -244,7 +243,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
             return 
         })
         return () => start = false
-    },[paramToSelection, recoParams])
+    },[paramToSelection, recoParams, playlistTracks, albumTracks])
 
     const handleRecoParam = (recoParam, lower, upper) => {
         let min = lower/100
@@ -276,7 +275,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         if (param === 'album'){
             spotifyApi.getAlbum(item.id)
             .then(data => {
-                console.log('selected album', data.body)
                 let tracks = data.body.tracks.items.map(track => {
                     return {
                         type:'track',
@@ -291,8 +289,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
                     }
                 })
-                console.log('title is', data.body.name, 'tracks are', tracks)
-
                 setAlbumTracks({ title: data.body.name, tracks:tracks})
             }).catch(error => {
                 console.log(error.message)
@@ -300,9 +296,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
         } else if (param === 'playlist') {
             spotifyApi.getPlaylist(item.id)
             .then(data => {
-                console.log(data.body)
                 let tracks = data.body.tracks.items.map(item => {
-                    console.log('images are', item.track.album.images)
                     const trackImage= item.track.album.images.reduce(
                         (largest, image) => {
                             if (image.height > largest.height) return image
@@ -321,9 +315,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         artist: item.track.artists[0].name,
                         artistId: item.track.artists[0].id,
                         duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
-                    }
-                    console.log('tracks are', tracks)
-                    
+                    }    
                 })
                 setPlaylistTracks({title:item.title, tracks:tracks})
             }).catch(error => {
@@ -434,7 +426,6 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 :
                 <></>
             }
-            { console.log('playlist tracks are', playlistTracks)}
             {
                 param === 'playlist' && playlistTracks.tracks.length !== 0 ?
                 <div className='playlistTracks'>
