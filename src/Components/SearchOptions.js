@@ -1,17 +1,23 @@
-import { useRef, useState } from 'react'
-export default function SearchOptions({ searchBy, searchParam }) {
+import { useEffect, useRef, useState } from 'react'
+export default function SearchOptions({ searchBy, param }) {
     const searchOptions = useRef(['track', 'artist', 'album', 'playlist'])
+    const [displayOptions, setDisplayOptions] = useState([])
+    useEffect(() => {
+        setDisplayOptions(searchOptions.current.filter(option => {
+            return option !== param
+        }))
+    }, [param])
     return(
         <div className='searchOptionsContainer'>
             <ul className='listOfOptions'>
                 {
-                     searchOptions.current.map(searchOption => {
-                        return <li className='option' id={`${searchOption}`} onClick={(e) => searchBy(e)}> {searchOption}</li>
+                     displayOptions.map(option => {
+                        return <li className='option' id={`${option}`} onClick={(e) => searchBy(e)}> {option}</li>
                     })
                 }
             </ul>
             <div className='selectedOption'>
-                {searchParam}
+                {param}
             </div>
         </div>
     )

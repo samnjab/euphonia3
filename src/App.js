@@ -1,9 +1,7 @@
 import react from 'react';
 import { useState, useEffect } from 'react';
-import { FaYinYang } from 'react-icons/fa'
 import {Routes, Route, useNavigate} from 'react-router-dom';
 import Canvas from './Components/Canvas';
-import Header from './Components/Header';
 import Login from "./Components/Login";
 import Dashboard from "./Components/Dashboard";
 import './App.css'
@@ -28,28 +26,32 @@ function App() {
   window.addEventListener('resize', ( )=> {
     setWindowDims([document.documentElement.clientWidth, document.documentElement.clientHeight])
   })
+
+  const toggleTheme = () => {
+    let i = themes.indexOf(theme)
+    if (i < themes.length - 1) setTheme(themes[i + 1])
+    else setTheme(themes[0])
+
+  }
     
   return (
     <div className={`App ${theme}`}>
         <div className='layout'>
-            <i className='themeToggle' 
-                aria-hidden="true"
-                onClick={()=> {
-                            let i = themes.indexOf(theme)
-                            if (i < themes.length - 1) setTheme(themes[i + 1])
-                            else setTheme(themes[0])
-                        }}> <FaYinYang /> </i>
             <Routes>
                 <Route path='/' 
                     element={<>
                             {/* <Canvas windowDims={windowDims} theme={theme}/> */}
-                            <Header />  
+                            <header className='App-header landing'>
+                                <h2>old favourites multiplied</h2>
+                                 <i className='themeToggle' aria-hidden="true" onClick={() => toggleTheme()}>◑</i>
+                                <h1> Euphonia</h1>
+                            </header>
                             <Login />
                         
                             </> }/>
                 <Route path='/app'
                     element={
-                        <Dashboard code={code} />
+                        <Dashboard code={code} toggleTheme={toggleTheme}/>
                     }/>
                     
             </Routes>

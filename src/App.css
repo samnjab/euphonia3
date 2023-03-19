@@ -169,6 +169,15 @@ button {
   -moz-appearance: none;
   transition: opacity 0.3s ease-in-out;
 }
+body {
+  background-color: var(--backgroundColor);
+  color: var(--foregroundColorMix1);
+}
+section{
+  border-bottom:var(--borderColor) 1px solid;
+  padding:1rem 0;
+  width:100%;
+}
 button:hover{
   opacity:1;
 }
@@ -189,10 +198,7 @@ input:focus{
   font-weight: 300;
   opacity:0.7;
 }
-body{
- background-color: var(--backgroundColor);
- color: var(--foregroundColorMix1);
-}
+
 
 .layout {
   position: relative;
@@ -219,7 +225,7 @@ canvas {
   position:relative;
   z-index:30;
   cursor:pointer;
-  transform: rotateX(30deg);
+  font-style: normal;
 }
 /* header */
 .App-header {
@@ -238,8 +244,7 @@ canvas {
   min-height:80vh;
 }
 .App-header.app{
-  height:100vh;
-  padding:2rem 0;
+  min-height:100vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -265,7 +270,7 @@ header h2{
   color:var(--foregroundColorMix1);
 }
 .navigationBar{
-  padding:0 1rem;
+  padding: 1.1rem;
   display:flex;
   justify-content: space-between;
   align-items: center;
@@ -476,6 +481,7 @@ label:nth-of-type(2n) {
   flex-direction: column;
 }
 .searchOptionsContainer{
+  color:var(--foregroundColor);
   font-size:1rem;
   align-self:center;
   display:flex;
@@ -492,7 +498,7 @@ label:nth-of-type(2n) {
 
 }
 .searchOptionsContainer:hover>.selectedOption {
-  /* background-color: var(--overlayLightBackgroundColor); */
+  color:var(--foregroundColor);
 }
 .selectedOption{
   text-transform: capitalize;
@@ -514,6 +520,7 @@ label:nth-of-type(2n) {
 
 }
 .option{
+  color:var(--foregroundColorMix2);
   text-transform: capitalize;
   opacity:0.6;
   transition:all 0.3s ease-in-out;
@@ -671,23 +678,13 @@ label:nth-of-type(2n) {
 }
 
 /* Album preview styles */
-.albumTracks{
+.previewTracks{
   display:flex;
   flex-wrap:wrap;
 }
-.albumTracks h4{
+.previewTracks h4{
   flex-basis:100%;
 }
-/* Playlist preview styles */
-.playlistTracks {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.playlistTracks h4 {
-  flex-basis: 100%;
-}
-
 
 /* recommendation styles */
 .recommendations{

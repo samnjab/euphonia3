@@ -2,14 +2,16 @@
 import React from 'react'
 import { useState, useEffect, useRef } from 'react'
 // Components
+import SearchOptions from "./SearchOptions"
 import RecoTrack from './RecoTrack'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
 import DisplayItem from './DisplayItem'
 import DisplaySelected from './DisplaySelected'
-export default function ApiSearch({ param, spotifyApi, accessToken, user}){
+export default function ApiSearch({ spotifyApi, accessToken, user}){
 
+    const [param, setParam] = useState('track')
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
@@ -358,19 +360,32 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
 
     return(
         <div className='apiSearch'>
-            <form 
-            className='searchBox'
-            onSubmit={(e) => e.preventDefault()}>
-                <input
-                        type="text"
-                        placeholder={`Search by ${param}`}
-                        value={search}
-                        onChange={e => {
-                            setRevealStatus(true)
-                            setSearch(e.target.value)
-                        } }
-                    />
-            </form>
+            <section className='search'>
+                <form 
+                className='searchBox'
+                onSubmit={(e) => e.preventDefault()}>
+                    <input
+                            type="text"
+                            placeholder={`Search by ${param.slice(0,1).toUpperCase() + param.slice(1).toLowerCase()}`}
+                            value={search}
+                            onChange={e => {
+                                setRevealStatus(true)
+                                setSearch(e.target.value)
+                            } }
+                        />
+                </form>
+                <SearchOptions searchBy={(e) => setParam(e.target.id)} param={param}/>
+                <div className='sliders'>
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
+                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
+                </div>
+            </section>
             <div className='searchResults'>
             {   revealStatus ? (
                     searchResults.map(searchResult => {
@@ -383,7 +398,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 : <></>
             }
             </div>
-            <div className='selected'>
+            <section className='selected'>
                 {
                     paramToSelection[param].map(item => {
                         return <DisplaySelected
@@ -394,20 +409,10 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                     })
                 }
 
-            </div>
-            <div className='sliders'>
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
-                <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
-            </div>
+            </section>
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
-                <div className='albumTracks'>
+                <section className='previewTracks'>
                     <h4>{albumTracks.title}</h4>
                     {
                         albumTracks.tracks.map(track => {
@@ -422,13 +427,13 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         })
                     }
 
-                </div>
+                </section>
                 :
                 <></>
             }
             {
                 param === 'playlist' && playlistTracks.tracks.length !== 0 ?
-                <div className='playlistTracks'>
+                <section className='previewTracks'>
                     <h4>{playlistTracks.title}</h4>
                     {
                         playlistTracks.tracks.map(track => {
@@ -443,11 +448,11 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                         })
                     }
 
-                </div>
+                </section>
                 : 
                 <></>
             }
-            <div className='recommendations'>
+            <section className='recommendations'>
                 {
                 recommendations ? 
                 recommendations.map(track => {
@@ -463,7 +468,7 @@ export default function ApiSearch({ param, spotifyApi, accessToken, user}){
                 :  <Error message={'No recos!'}/>
                     
                 }
-            </div>
+            </section>
             {/* {
                 playerId && apiReady ?
                 <WebPlayer 
