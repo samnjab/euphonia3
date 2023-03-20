@@ -9,16 +9,16 @@ export default function SearchOptions({ searchBy, param }) {
     }, [param])
     return(
         <div className='searchOptionsContainer'>
-            <ul className='listOfOptions'>
+            <div className='selectedOption'>
+                {param}
+            </div>
+             <ul className='listOfOptions'>
                 {
                      displayOptions.map(option => {
                         return <li className='option' id={`${option}`} onClick={(e) => searchBy(e)}> {option}</li>
                     })
                 }
             </ul>
-            <div className='selectedOption'>
-                {param}
-            </div>
         </div>
     )
 

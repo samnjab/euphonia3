@@ -67,8 +67,8 @@ export default function Dashboard({ code, toggleTheme }) {
                     <>
                         <div className='navigationBar'>
                             <h1>E3<FaHeadset /></h1>
+                            <i className='themeToggle' aria-hidden="true" onClick={() => toggleTheme()}>◑</i>
                             <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
-                             <i className='themeToggle' aria-hidden="true" onClick={() => toggleTheme()}>◑</i>
                         </div>
                         <main className='dashboard'>
                             <ApiSearch spotifyApi={spotifyApi} accessToken={accessToken} user={user} />

@@ -174,8 +174,8 @@ body {
   color: var(--foregroundColorMix1);
 }
 section{
-  border-bottom:var(--borderColor) 1px solid;
-  padding:1rem 0;
+  border-bottom:var(--borderColor) 1.7px solid;
+  padding:2rem 2rem 5rem 2rem;
   width:100%;
 }
 button:hover{
@@ -247,7 +247,7 @@ canvas {
   min-height:100vh;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
 
 }
 .App-header.app h1{
@@ -270,7 +270,10 @@ header h2{
   color:var(--foregroundColorMix1);
 }
 .navigationBar{
-  padding: 1.1rem;
+  position:fixed;
+  z-index:40;
+  background-color: var(--backgroundColor);
+  padding: 0.5rem 1.1rem;
   display:flex;
   justify-content: space-between;
   align-items: center;
@@ -278,6 +281,7 @@ header h2{
   width:100%;
   border-bottom: var(--borderColor) solid 1px;
 }
+
 /* Main Section */
 main{
   position:relative;
@@ -326,7 +330,6 @@ main{
   min-width:fit-content;
   border-radius:25px;
   padding:0.25rem 0.5rem;
-  margin:0 0.5rem 1rem 0;
   display:flex;
   align-self:center;
   justify-content: center;
@@ -481,6 +484,8 @@ label:nth-of-type(2n) {
   flex-direction: column;
 }
 .searchOptionsContainer{
+  flex-basis: 40%;
+  flex-grow:1;
   color:var(--foregroundColor);
   font-size:1rem;
   align-self:center;
@@ -533,7 +538,15 @@ label:nth-of-type(2n) {
 }
 
 /* apiSearch component styles */
+.search{
+  display: flex;
+  flex-wrap:wrap;
+  justify-content: space-between;
+  min-width: 200px;
+  margin:2rem 0;
+}
 .apiSearch{
+  width:100%;
   position:relative;
   display:flex;
   flex-direction:column;
@@ -541,6 +554,8 @@ label:nth-of-type(2n) {
   justify-content:center;
 }
 .searchBox{
+  flex-basis: 40%;
+  flex-grow:1;
   width:100%;
   margin:0.5rem auto;
   z-index:6;
@@ -548,10 +563,10 @@ label:nth-of-type(2n) {
 /* Search results styles */
 .searchResults{
   position:absolute;
-  top:50px;
+  top:150px;
   left:0;
   width:100%;
-  background-color:var(--overlayLightBackgroundColor);
+  background-color:var(--backgroundColor);
   z-index:6;
   /* border-radius:15px; */
   max-height:300px;
@@ -562,7 +577,7 @@ label:nth-of-type(2n) {
   width:90%;
   margin:0.25rem auto;
   align-items:center;
-  border-bottom: var(--borderColor) solid 0.5px;
+  border-bottom: var(--borderColor) solid 1px;
   padding:1rem 0.5rem;
 }
 .searchResult .info{
@@ -572,6 +587,7 @@ label:nth-of-type(2n) {
   flex-direction:column;
   align-items:flex-start;
   justify-content: center;
+  margin:0 5px;
 }
 
 .icons{
@@ -632,13 +648,6 @@ label:nth-of-type(2n) {
   font-size:0.8rem;
 }
 
-.trackSearchResult .info,
-.artistSearchResult .info {
-  flex-basis:80%;
-  display: flex;
-  justify-content:space-around;
-  align-items:center;
-}
 .info h5{
   /* max-width:8rem; */
   text-align:left;
@@ -651,27 +660,12 @@ label:nth-of-type(2n) {
   margin:0.5rem auto;
   display:flex;
   flex-wrap:wrap;
-  background-color:var(--overlayLightBackgroundColor);
-  /* border-radius:15px; */
-  padding:1rem;
-  max-height:fit-content;
-
-}
-.selected h5{
-  font-size:0.7rem;
-  margin:2.5px 0;
-}
-.selected .cover{
-  height:30px;
-  width:30px;
-}
-.selectedTrack,
-.selectedArtist{
-  display:flex;
-  align-items:center;
-}
-.selected{
   text-align:right;
+  max-height:fit-content;
+}
+.selected h4{
+  text-transform: capitalize;
+  margin:2rem 5px;
 }
 .selected .cover{
   margin:0 5px;
@@ -684,16 +678,25 @@ label:nth-of-type(2n) {
 }
 .previewTracks h4{
   flex-basis:100%;
+  text-align: left;
+}
+.selected .info{
+  margin:0 5px;
 }
 
 /* recommendation styles */
 .recommendations{
-  margin:2rem 0;
   max-width:100%;
   max-height:90vh;
   overflow-y: scroll;
   display:flex;
   flex-wrap:wrap;
+
+}
+.recommendations h4{
+  margin:2rem 5px;
+  flex-basis:100%;
+  text-align:left;
 }
 
 .recoTrack{
@@ -941,7 +944,7 @@ footer {
   }
   .sliders{
     width:100%;
-    margin:0.5rem auto;
+    margin:2rem auto;
   }
   .cover{
     height:40px;

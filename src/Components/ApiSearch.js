@@ -25,6 +25,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
+
   
 
     // UseEffects
@@ -109,6 +110,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 if (!start) return
                 setSearchResults(
                     res.body.artists.items.map(artist => {
+                        console.log('artist obj is', artist)
                         const largestArtistImage = artist.images.reduce(
                             (largest, image) => {
                                 if (image.height > largest.height) return image
@@ -147,7 +149,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                             id: album.id,
                             imageUrl:largestAlbumImage?.url || '',
                             artist: album.artists[0].name,
-                            artistId: album.artists[0].id
+                            artistId: album.artists[0].id,
+                            // genres:album.artists[0].genres
                         }
                     })
                 )
@@ -185,7 +188,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     useEffect(() => {
         if(!accessToken) return
         let selected = false
-        for (param in paramToSelection){
+        for (let param in paramToSelection){
             if (paramToSelection[param].length !== 0) selected= true
         }
         if (!selected){
@@ -193,11 +196,17 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             return 
         }
         let start = true
-        const seedTracks = [...paramToSelection['track'].map(track => {
+        let genreSeeds = []
+        console.log('playlist tracks', playlistTracks.tracks)
+        if (playlistTracks.tracks.length !== 0){
+            playlistTracks.tracks.forEach(track => {
+                // genreSeeds.push(...track.genres)
+            })
+        }
+        console.log('genre seeds are', genreSeeds)
+        const seedTracks = paramToSelection['track'].map(track => {
             return track.id
-        }), ...playlistTracks.tracks.map(track => {
-            return track.id
-        })]
+        })
         console.log('seed track are', seedTracks)
         const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
@@ -215,7 +224,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         spotifyApi.getRecommendations({
             seed_tracks: seedTracks,
             seed_artists:seedArtists,
-            ...requestParams
+            ...requestParams,
+            limit:50
         }).then(data => {
             if (!start) return
             setRecommendations(
@@ -265,6 +275,25 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
 
         )
     }
+    useEffect(() => {
+        if (playlistTracks.tracks.length === 0) return
+        let artistIds = playlistTracks.tracks.map(track => {
+            return track.artistId
+        })
+        let genres = []
+        spotifyApi.getArtists([...new Set(artistIds)])
+        .then(data => {
+            console.log('artists of playlist', data.body)
+            data.body.artists.forEach(artist => {
+                artist.genres.forEach(genre => {
+                    genres.push(genre)
+                })
+            })
+            const summaryGenres = [...new Set(genres)]
+            console.log('summary genres', summaryGenres)
+        })
+
+    }, [playlistTracks])
     
     // Functions
     const selectItem = (item, param) => {
@@ -278,6 +307,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             spotifyApi.getAlbum(item.id)
             .then(data => {
                 let tracks = data.body.tracks.items.map(track => {
+                    console.log('track is', track)
                     return {
                         type:'track',
                         title: track.name,
@@ -316,6 +346,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                         albumTitle: item.track.name,
                         artist: item.track.artists[0].name,
                         artistId: item.track.artists[0].id,
+                        // genres:item.track.artists[0].genres,
                         duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
                     }    
                 })
@@ -398,18 +429,24 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 : <></>
             }
             </div>
-            <section className='selected'>
-                {
-                    paramToSelection[param].map(item => {
-                        return <DisplaySelected
-                                param={param}
-                                item={item}
-                                deselectItem={deselectItem}
-                                />
-                    })
-                }
+            {
+                paramToSelection[param].length !== 0 ?
+                <section className='selected'>
+                    <h4>selected {`${param}s`}</h4>
+                    {
+                        paramToSelection[param].map(item => {
+                            return <DisplaySelected
+                                    param={param}
+                                    item={item}
+                                    deselectItem={deselectItem}
+                                    />
+                        })
+                    }
 
-            </section>
+                </section>
+                :
+                <></>
+            }
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
@@ -452,23 +489,27 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 : 
                 <></>
             }
+
+            {
+            recommendations.length !==0 ? 
             <section className='recommendations'>
-                {
-                recommendations ? 
-                recommendations.map(track => {
+                <h4>Suggested Tracks</h4>
+                {recommendations.map(track => {
                     return <RecoTrack 
-                            track={track} 
-                            preview_url={track.preview_url}
-                            user={user}
-                            changeTrackTo= {handleChangeTrack} 
-                            selectItem={selectItem}
-                            spotifyApi={spotifyApi} 
-                            key={track.uri}/>
-                })
-                :  <Error message={'No recos!'}/>
-                    
+                                track={track} 
+                                preview_url={track.preview_url}
+                                user={user}
+                                changeTrackTo= {handleChangeTrack} 
+                                selectItem={selectItem}
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                    })
                 }
             </section>
+            :  <></>
+                    
+            }
+
             {/* {
                 playerId && apiReady ?
                 <WebPlayer 
