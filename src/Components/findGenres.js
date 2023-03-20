@@ -1,4 +1,3 @@
-import { useRef } from 'react'
   export default function findGenres(genres){
     const availableGenres = [
     "acoustic",
@@ -128,11 +127,30 @@ import { useRef } from 'react'
     "work-out",
     "world-music"
   ]
-availableGenres.forEach(genre => {
-    
-})
-
-
-
+    const genreFrequency = {}
+    availableGenres.forEach(availableGenre => {
+        let score = 0
+        let re = new RegExp(availableGenre, 'gi')
+        genres.forEach(genre => {
+            if (re.test(genre)) score += 1
+        })
+        genreFrequency[availableGenre] = score
+    })
+    console.log('genre frequency', genreFrequency)
+    const extractedGenres = []
+    for (let genre in genreFrequency){
+        if (genreFrequency[genre] > 0) extractedGenres.push({genre:genre, freq:genreFrequency[genre]}) 
+    }
+     console.log('extracted before sort', extractedGenres)
+    // for (let i=0; i < extractedGenres.length - 1; i++){
+    //     if (extractedGenres[i+1].freq > extractedGenres[i].freq){
+    //         console.log('swapping')
+    //         let temp = {...extractedGenres[i]}
+    //         extractedGenres[i] = {...extractedGenres[i+1]}
+    //         extractedGenres[i+1] = temp
+    //     }
+    // }
+    // console.log('extracted', extractedGenres)
+    return extractedGenres
 
   }

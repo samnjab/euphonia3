@@ -9,6 +9,7 @@ import Slider from './Slider'
 import Error from './Error'
 import DisplayItem from './DisplayItem'
 import DisplaySelected from './DisplaySelected'
+import findGenres from './findGenres'
 export default function ApiSearch({ spotifyApi, accessToken, user}){
 
     const [param, setParam] = useState('track')
@@ -17,6 +18,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
+    const [genreSeeds, setGenreSeeds] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
@@ -196,13 +198,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             return 
         }
         let start = true
-        let genreSeeds = []
-        console.log('playlist tracks', playlistTracks.tracks)
-        if (playlistTracks.tracks.length !== 0){
-            playlistTracks.tracks.forEach(track => {
-                // genreSeeds.push(...track.genres)
-            })
-        }
         console.log('genre seeds are', genreSeeds)
         const seedTracks = paramToSelection['track'].map(track => {
             return track.id
@@ -211,7 +206,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
         })
-        if (seedTracks.length === 0 && seedArtists.length === 0) return
+        // if (seedTracks.length === 0 && seedArtists.length === 0) return
         const requestParams = {}
         for (let key in recoParams){
             if (recoParams[key]?.min){
@@ -224,6 +219,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         spotifyApi.getRecommendations({
             seed_tracks: seedTracks,
             seed_artists:seedArtists,
+            genre_seeds: genreSeeds.map(genre => {return genre.genre}),
             ...requestParams,
             limit:50
         }).then(data => {
@@ -255,7 +251,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             return 
         })
         return () => start = false
-    },[paramToSelection, recoParams, playlistTracks, albumTracks])
+    },[paramToSelection, recoParams, genreSeeds, albumTracks])
 
     const handleRecoParam = (recoParam, lower, upper) => {
         let min = lower/100
@@ -289,8 +285,9 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                     genres.push(genre)
                 })
             })
-            const summaryGenres = [...new Set(genres)]
-            console.log('summary genres', summaryGenres)
+            // const summaryGenres = [...new Set(genres)]
+            // console.log('summary genres', summaryGenres)
+            setGenreSeeds(findGenres(genres))
         })
 
     }, [playlistTracks])
