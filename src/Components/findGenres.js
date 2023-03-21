@@ -86,7 +86,7 @@
     "party",
     "philippines-opm",
     "piano",
-    "pop",
+    // "pop",
     "pop-film",
     "post-dubstep",
     "power-pop",
@@ -142,15 +142,7 @@
         if (genreFrequency[genre] > 0) extractedGenres.push({genre:genre, freq:genreFrequency[genre]}) 
     }
      console.log('extracted before sort', extractedGenres)
-    // for (let i=0; i < extractedGenres.length - 1; i++){
-    //     if (extractedGenres[i+1].freq > extractedGenres[i].freq){
-    //         console.log('swapping')
-    //         let temp = {...extractedGenres[i]}
-    //         extractedGenres[i] = {...extractedGenres[i+1]}
-    //         extractedGenres[i+1] = temp
-    //     }
-    // }
-    // console.log('extracted', extractedGenres)
+   
     return extractedGenres
 
   }

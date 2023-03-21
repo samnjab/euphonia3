@@ -56,8 +56,7 @@ export default function Dashboard({ code, toggleTheme }) {
                     !begin ?
                     <>
                         <div className='container'>
-                            <h1 class="glitch" data-text="Euphonia3">Euphonia3</h1>
-                            <div class="glow">Euphonia3</div>
+                            <h1 class="glitch">Euphonia3</h1>
                             <p class="subtitle">old favourites multiplied</p>
                         </div>
                         <div class="scanlines"></div>

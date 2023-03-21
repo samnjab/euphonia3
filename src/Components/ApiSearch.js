@@ -10,6 +10,7 @@ import Error from './Error'
 import DisplayItem from './DisplayItem'
 import DisplaySelected from './DisplaySelected'
 import findGenres from './findGenres'
+import highestFreq from './highestFreq'
 export default function ApiSearch({ spotifyApi, accessToken, user}){
 
     const [param, setParam] = useState('track')
@@ -19,6 +20,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [genreSeeds, setGenreSeeds] = useState([])
+    const [playlistArtistSeeds, setPlaylistArtistSeeds] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
@@ -206,7 +208,13 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
         })
-        // if (seedTracks.length === 0 && seedArtists.length === 0) return
+        if (playlistTracks.tracks.length !== 0){
+            for (let i=0; i < 5; i++){
+                seedArtists.push(playlistArtistSeeds[i].ref)
+            }
+        }
+        console.log('seedArtists', seedArtists)
+        if (seedTracks.length === 0 && seedArtists.length === 0) return
         const requestParams = {}
         for (let key in recoParams){
             if (recoParams[key]?.min){
@@ -285,14 +293,48 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                     genres.push(genre)
                 })
             })
-            // const summaryGenres = [...new Set(genres)]
-            // console.log('summary genres', summaryGenres)
-            setGenreSeeds(findGenres(genres))
+            let unorderedGenres = findGenres(genres)
+            const genresInOrder = []
+            let max = highestFreq(unorderedGenres)
+            genresInOrder.push(max)
+            for (let i=0; i< unorderedGenres.length - 1 ; i++){
+                unorderedGenres.splice(unorderedGenres.indexOf(max), 1)
+                max = highestFreq(unorderedGenres)
+                genresInOrder.push(max)
+            }
+            console.log('genres in order', genresInOrder)
+            setGenreSeeds(genresInOrder.slice(0,5))
+            console.log('extracted genres', genresInOrder.slice(0,5))
+
+            let unorderedArtists = itemFreq(artistIds)
+            const artistsInOrder = []
+            let topArtist = highestFreq(unorderedArtists)
+            artistsInOrder.push(topArtist)
+            for (let i=0; i< unorderedArtists.length - 1; i++){
+                unorderedArtists.splice(unorderedArtists.indexOf(topArtist), 1)
+                topArtist = highestFreq(unorderedArtists)
+                artistsInOrder.push(topArtist)
+            }
+            console.log('top artists', artistsInOrder)
+            setPlaylistArtistSeeds(artistsInOrder)
         })
 
     }, [playlistTracks])
     
     // Functions
+    const itemFreq = (array) => {
+        let summarayArray = [...new Set(array)]
+        const freqArray = []
+        summarayArray.forEach(ref => {
+            let score = 0
+            array.forEach(item => {
+                if (ref === item) score += 1
+            })
+            freqArray.push({ref:ref, freq:score})
+        })
+        return freqArray
+
+    }
     const selectItem = (item, param) => {
         const exists = paramToSelection[param].filter(selecteditem =>{
             return selecteditem.uri === item.uri

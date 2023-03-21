@@ -281,7 +281,73 @@ header h2{
   width:100%;
   border-bottom: var(--borderColor) solid 1px;
 }
+/* Glitch Effect */
+h1.glitch{
+  color:var(--foregroundColor);
+  font-size:100px;
+  position: relative;
+  padding: 30px;
+}
+    
+  h1.glitch::before, h1.glitch::after{
+    font-size:100px;
+    padding: 30px;
+    content: "Euphonia3";
+    position: absolute;
+    overflow: hidden;
+    top: 0;
+    left:0;
+  }
+  
+  h1.glitch::before{
+    color: #e91e63;
+    animation-name: glitch;
+    animation-duration: 0.3s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: 6;
+    z-index:-2;
 
+  }
+    
+  h1.glitch::after{
+    color:#2196f3;
+    z-index:-1;
+    animation-name: glitch;
+    animation-duration: 0.3s;
+    animation-timing-function: linear;
+    animation-delay: 0s;
+    animation-iteration-count: 6;
+    animation-direction: reverse;
+
+  }
+  
+  @keyframes glitch {
+    0%{
+      top:0;
+      left:0;
+    }
+    20% {
+      top: -5px;
+      left: -5px;
+    }
+    40% {
+      top: 5px;
+      left: 5px;
+    }
+    60% {
+      top: -5px;
+      left: 5px;
+    }
+    80% {
+      top: 5px;
+      left: -5px;
+    }
+    100% {
+      top: 0;
+      left: 0;
+    }
+  }
 /* Main Section */
 main{
   position:relative;
