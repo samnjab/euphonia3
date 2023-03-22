@@ -20,7 +20,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [genreSeeds, setGenreSeeds] = useState([])
-    const [playlistArtistSeeds, setPlaylistArtistSeeds] = useState([])
+    const [artistSeeds, setArtistSeeds] = useState([])
     const [revealStatus, setRevealStatus] = useState(false)
     const [recommendations, setRecommendations] = useState([])
     const [player, setPlayer] = useState()
@@ -208,9 +208,9 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         const seedArtists = paramToSelection['artist'].map(artist=>{
             return artist.id
         })
-        if (playlistTracks.tracks.length !== 0){
-            for (let i=0; i < 5; i++){
-                seedArtists.push(playlistArtistSeeds[i].ref)
+        if (playlistTracks.tracks.length !== 0 || albumTracks.tracks.length !== 0){
+            for (let i=0; i < Math.min(artistSeeds.length, 5); i++){
+                seedArtists.push(artistSeeds[i].ref)
             }
         }
         console.log('seedArtists', seedArtists)
@@ -287,7 +287,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         let genres = []
         spotifyApi.getArtists([...new Set(artistIds)])
         .then(data => {
-            console.log('artists of playlist', data.body)
             data.body.artists.forEach(artist => {
                 artist.genres.forEach(genre => {
                     genres.push(genre)
@@ -316,10 +315,28 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 artistsInOrder.push(topArtist)
             }
             console.log('top artists', artistsInOrder)
-            setPlaylistArtistSeeds(artistsInOrder)
+            setArtistSeeds(artistsInOrder)
         })
 
     }, [playlistTracks])
+
+    useEffect(() => {
+        if (albumTracks.tracks.length === 0) return
+        spotifyApi.getArtist(albumTracks.tracks[0].artistId)
+        .then(data => {
+            let genres = data.body.genres
+            console.log('artist genres', genres)
+            let re = /r&b/gi
+            let re2 = /rock&roll/gi
+            genres.forEach((genre,i, array) => {
+                if (re.test(genre)) array.splice(i, 1, 'r-n-b')
+                if (re2.test(genre)) array.splice(i, 1, 'rock-n-roll')
+            })
+            genres = findGenres(genres)
+            console.log('filtered genres are', genres)
+            setGenreSeeds(genres)
+        })
+    },[albumTracks])
     
     // Functions
     const itemFreq = (array) => {
@@ -339,12 +356,20 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         const exists = paramToSelection[param].filter(selecteditem =>{
             return selecteditem.uri === item.uri
         })
-        if(exists.length === 0) setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item]})
+        if(exists.length === 0){
+            if (param === 'album' || param === 'playlist') {
+                setParamToSelection({...paramToSelection, [param]:[item]})
+            }else{
+                setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item]})
+            }
+        }
         setSearch('')
         setRevealStatus(false)
         if (param === 'album'){
             spotifyApi.getAlbum(item.id)
             .then(data => {
+                setArtistSeeds([{ref:data.body.artists[0].id, freq:1}])
+                console.log(data.body.artists[0].id)
                 let tracks = data.body.tracks.items.map(track => {
                     console.log('track is', track)
                     return {

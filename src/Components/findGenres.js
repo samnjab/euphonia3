@@ -86,7 +86,7 @@
     "party",
     "philippines-opm",
     "piano",
-    // "pop",
+    "pop",
     "pop-film",
     "post-dubstep",
     "power-pop",
