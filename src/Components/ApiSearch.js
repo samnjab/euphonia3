@@ -74,6 +74,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         setSearch('')
     },[param])
 
+
     useEffect(() => {
         if (!search) {
             setSearchResults([])
@@ -357,10 +358,16 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             return selecteditem.uri === item.uri
         })
         if(exists.length === 0){
-            if (param === 'album' || param === 'playlist') {
-                setParamToSelection({...paramToSelection, [param]:[item]})
-            }else{
-                setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item]})
+            if (param === 'album') {
+                setParamToSelection({...paramToSelection, [param]:[item], 'playlist':[]})
+                setPlaylistTracks({title:'', tracks:[]})
+            }else if (param === 'playlist'){
+                setParamToSelection({'artist':[], 'track':[], 'album':[], [param]:[item]})
+                setAlbumTracks({title:'', tracks:[]})
+            }
+            else{
+                setParamToSelection({...paramToSelection, [param]:[...paramToSelection[param], item], 'playlist':[]})
+                setPlaylistTracks({title:'', tracks:[]})
             }
         }
         setSearch('')
@@ -414,6 +421,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                         duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
                     }    
                 })
+                
                 setPlaylistTracks({title:item.title, tracks:tracks})
             }).catch(error => {
                 console.log(error.message)
@@ -430,6 +438,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                     return item !== toBeRemovedItem
                 })
             })
+        if(param === 'album') setAlbumTracks({title:'', tracks:[]})
+        if (param === 'playlist') setPlaylistTracks({title:'', tracks:[]})
     }
     
     const handleChangeTrack = (track) => {

@@ -4,7 +4,7 @@ export default function DisplaySelected({ param, item, deselectItem }){
 return(
      <div 
         className={'selected'}
-        onClick={(item) => deselectItem(item, item.type)}
+        onClick={() => deselectItem(item, item.type)}
         >
         <img src={item.imageUrl} className='cover'></img>
         <div className='info'>
