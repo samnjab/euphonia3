@@ -2,10 +2,8 @@ import { useEffect, useRef } from 'react'
 export default function DisplaySelected({ param, item, deselectItem }){
 
 return(
-     <div 
-        className={'selected'}
-        onClick={() => deselectItem(item, item.type)}
-        >
+     <div className={'selected'}>
+        <div className='xmark'onClick={() => deselectItem(item, item.type)}>x</div>
         <img src={item.imageUrl} className='cover'></img>
         <div className='info'>
             <h5 className='title'>{item.title}</h5>
