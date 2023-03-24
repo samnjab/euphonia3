@@ -55,11 +55,12 @@ export default function Dashboard({ code, toggleTheme }) {
                 {
                     !begin ?
                     <>
-                        <div className='container'>
+                        {/* <div className='container'>
                             <h1 class="glitch">Euphonia3</h1>
                             <p class="subtitle">old favourites multiplied</p>
                         </div>
-                        <div class="scanlines"></div>
+                        <div class="scanlines"></div> */}
+                        Loading...
                     
                     </>
                     :

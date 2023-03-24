@@ -40,7 +40,7 @@ function App() {
             <Routes>
                 <Route path='/' 
                     element={<>
-                            {/* <Canvas windowDims={windowDims} theme={theme}/> */}
+                            <Canvas windowDims={windowDims} theme={theme}/>
                             <header className='App-header landing'>
                                 <h2>old favourites multiplied</h2>
                                  <i className='themeToggle' aria-hidden="true" onClick={() => toggleTheme()}>◑</i>

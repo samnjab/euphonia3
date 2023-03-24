@@ -257,6 +257,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 })
             )
         }).catch(error => {
+            console.log(error.message)
             return 
         })
         return () => start = false
@@ -376,9 +377,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             spotifyApi.getAlbum(item.id)
             .then(data => {
                 setArtistSeeds([{ref:data.body.artists[0].id, freq:1}])
-                console.log(data.body.artists[0].id)
                 let tracks = data.body.tracks.items.map(track => {
-                    console.log('track is', track)
                     return {
                         type:'track',
                         title: track.name,
@@ -505,7 +504,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             </div>
             {
                 paramToSelection[param].length !== 0 ?
-                <section className='selected'>
+                <section className='selectedItems'>
                     <h4>selected {`${param}s`}</h4>
                     {
                         paramToSelection[param].map(item => {
