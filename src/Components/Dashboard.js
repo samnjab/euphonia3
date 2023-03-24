@@ -1,37 +1,32 @@
 // Modules
 import SpotifyWebApi from "spotify-web-api-node"
+import { FaHeadset } from 'react-icons/fa'
 // Hooks
 import { useState, useEffect } from "react"
 // Components
 import useAuth from "./useAuth"
-import Player from "./Player"
 import ApiSearch from "./ApiSearch"
-import ToggleSwitch from "./ToggleSwitch"
 import DisplayMe from './DisplayMe'
 
 const spotifyApi = new SpotifyWebApi({
     clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
 })
 
-export default function Dashboard({ code }) {
+export default function Dashboard({ code, toggleTheme }) {
     const accessToken = useAuth(code)
     const [user, setUser] = useState({})
-
     const [lyrics, setLyrics] = useState("")
-    const [searchParam, setSearchParam] = useState('track')
-    
+    const [begin, setBegin] = useState(false)
+
     const addUser= (user) =>{
         setUser(user)
     }
-    
+    useEffect(() => {
+        setTimeout(() => {
+            setBegin(true)
+        },[1000])
 
-    const searchBy = (e) => {
-        if (e.target.checked){
-            setSearchParam('artist')
-        }else{
-            setSearchParam('track')
-        }
-    }
+    },[])
 
     // useEffect(() => {
     //     if (!playingTrack) return
@@ -55,17 +50,34 @@ export default function Dashboard({ code }) {
     
 
     return (
-        <section className='dashboard'>
-            <div className='wrapper'>
-                <div className='topRow'>
-                    <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
-                    <ToggleSwitch 
-                    label='Track/Artist'
-                    searchBy={searchBy}
-                    />
-                </div>
-                <ApiSearch param={searchParam} spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
-            </div>
-        </section>
+        <>
+            <header className='App-header app'>
+                {
+                    !begin ?
+                    <>
+                        <div className='container'>
+                            <h1 class="glitch">Euphonia3</h1>
+                            <p class="subtitle">old favourites multiplied</p>
+                        </div>
+                        <div class="scanlines"></div>
+                    
+                    </>
+                    :
+                    <>
+                        <div className='navigationBar'>
+                            <h1>E3<FaHeadset /></h1>
+                            <i className='themeToggle' aria-hidden="true" onClick={() => toggleTheme()}>◑</i>
+                            <DisplayMe accessToken={accessToken} spotifyApi={spotifyApi} addUser={addUser}/>
+                        </div>
+                        <main className='dashboard'>
+                            <ApiSearch spotifyApi={spotifyApi} accessToken={accessToken} user={user} />
+                        </main>
+                    
+                    </>
+                    
+                }
+               
+            </header>
+        </>
   )
 }

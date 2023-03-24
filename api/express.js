@@ -1,25 +1,21 @@
 const app = require('express')();
-const { v4 } = require('uuid');
+// const request = require('request');
+require('dotenv').config();
+
 const SpotifyWebApi = require("spotify-web-api-node")
 
-// app.get('/api/express', (req, res) => {
-//   const path = `/api/express/code/${req.body}`;
-//   res.setHeader('Content-Type', 'text/html');
-//   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
-//   res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
-// });
 app.get('/api/express/code/:code', (req, res) => {
   const { code } = req.params;
   res.set('Access-Control-Allow-Origin', '*');
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   
-  // res.end(`Item: ${code}`);
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'https://euphonia3.vercel.app/',
-    clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
-    clientSecret: '33016e8082384da09b7f06052f543674',
+    redirectUri: process.env.redirectUri,
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret
   })
+  // https://euphonia3.vercel.app/
   spotifyApi
     .authorizationCodeGrant(code)
     .then(data => {
@@ -40,9 +36,9 @@ app.get('/api/express/refresh/:refreshToken', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: 'https://euphonia3.vercel.app/',
-    clientId: '0f4b9eb9ae8b479bb20f5cb8d21d54f9',
-    clientSecret: '33016e8082384da09b7f06052f543674',
+    redirectUri: process.env.redirectUri,
+    clientId: process.env.clientId,
+    clientSecret: process.env.clientSecret,
     refreshToken,
   })
   res.set('Access-Control-Allow-Origin', '*');
@@ -52,8 +48,8 @@ app.get('/api/express/refresh/:refreshToken', (req, res) => {
     .refreshAccessToken()
     .then(data => {
       res.json({
-        accessToken: data.body.accessToken,
-        expiresIn: data.body.expiresIn,
+        accessToken: data.body.access_token,
+        expiresIn: data.body.expires_in,
       })
     })
     .catch(err => {
@@ -61,6 +57,32 @@ app.get('/api/express/refresh/:refreshToken', (req, res) => {
       res.sendStatus(400)
     })
 });
+app.get('/api/express/client_credentials', (req, res) => {
+  const authOptions = {
+  url: 'https://accounts.spotify.com/api/token',
+  headers: {
+    'Authorization': 'Basic ' + (new Buffer (process.env.clientId + ':' + process.env.clientSecret).toString('base64'))
+  },
+  form: {
+    grant_type: 'client_credentials'
+  },
+  json: true
+};
+
+request.post(authOptions, function(error, response, body) {
+  if (!error && response.statusCode === 200) {
+    res.set('Access-Control-Allow-Origin', '*');
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+    res.json({
+      accessToken: body.access_token, 
+      expiresIn:body.expires_in
+    })
+  } else{
+    res.sendStatus(400)
+  }
+});
+})
 
 module.exports = app;
 
