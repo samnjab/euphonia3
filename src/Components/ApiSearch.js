@@ -9,14 +9,16 @@ import Slider from './Slider'
 import Error from './Error'
 import DisplayItem from './DisplayItem'
 import DisplaySelected from './DisplaySelected'
+import ArtistProfile from './ArtistProfile'
 import findGenres from './findGenres'
 import highestFreq from './highestFreq'
-export default function ApiSearch({ spotifyApi, accessToken, user}){
+export default function ApiSearch({ spotifyApi, accessToken, user }){
 
     const [param, setParam] = useState('track')
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
+    const [selectedItem, setSelectedItem] = useState()
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [genreSeeds, setGenreSeeds] = useState([])
@@ -339,6 +341,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             setGenreSeeds(genres)
         })
     },[albumTracks])
+   
     
     // Functions
     const itemFreq = (array) => {
@@ -505,18 +508,26 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             {
                 paramToSelection[param].length !== 0 ?
                 <section className='selectedItems'>
-                    <h4>selected {`${param}s`}</h4>
+                    <h4>Selected {`${param}s`}</h4>
                     {
                         paramToSelection[param].map(item => {
                             return <DisplaySelected
                                     param={param}
                                     item={item}
                                     deselectItem={deselectItem}
+                                    setSelectedItem={setSelectedItem}
+                                    changeTrackTo={changeTrackTo}
                                     />
                         })
                     }
 
                 </section>
+                :
+                <></>
+            }
+            {
+                selectedItem ?
+                <ArtistProfile item={selectedItem} spotifyApi={spotifyApi} />
                 :
                 <></>
             }
@@ -533,6 +544,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                             changeTrackTo= {handleChangeTrack} 
                             selectItem={selectItem}
                             spotifyApi={spotifyApi} 
+                            setSelectedItem={setSelectedItem}
                             key={track.uri}/>
                         })
                     }
