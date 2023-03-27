@@ -8,14 +8,15 @@ export default function RecoTrack({ track, selectItem, spotifyApi, user, changeT
       <div className='recoTrack'>
           <audio src={track.preview_url} id={`${track.uri}`}></audio>
             <a  
-            onClick={() => changeTrackTo(track)}
-            onMouseEnter ={() =>{
+            onClick={() => {
+                changeTrackTo(track)
                 setSelectedItem(track)
+            }}
+            onMouseEnter ={() =>{
                 const audioElement = document.getElementById(`${track.uri}`)
                 audioElement.play()
             }}
             onMouseLeave ={() => {
-                setSelectedItem()
                 const audioElement = document.getElementById(`${track.uri}`)
                 audioElement.pause()
             }}

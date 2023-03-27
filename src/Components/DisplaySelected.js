@@ -14,20 +14,21 @@ return(
         src={item.imageUrl} 
         className='cover'
         onMouseEnter ={() => {
-                setSelectedItem(item)
                 if (param === 'track'){
                     const audioElement = document.getElementById(`${item.uri}`)
                     audioElement.play()
                 }
                 }}
                 onMouseLeave ={() => {
-                setSelectedItem()
                 if (param === 'track'){
                     const audioElement = document.getElementById(`${item.uri}`)
                     audioElement.pause()
                 }
             }}
-        onClick={() => changeTrackTo(item)}
+        onClick={() => {
+            changeTrackTo(item)
+            setSelectedItem(item)
+        }}
         ></img>
         <div className='info'>
             <h5 className='title'>{item.title}</h5>

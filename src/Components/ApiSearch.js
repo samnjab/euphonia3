@@ -516,7 +516,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                                     item={item}
                                     deselectItem={deselectItem}
                                     setSelectedItem={setSelectedItem}
-                                    changeTrackTo={changeTrackTo}
+                                    changeTrackTo= {handleChangeTrack} 
                                     />
                         })
                     }
