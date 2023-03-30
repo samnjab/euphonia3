@@ -832,6 +832,13 @@ footer {
   text-align: center;
   margin: 2rem 0;
 }
+/* Artist Profile */
+.artistProfile{
+  text-align:left;
+}
+.topTracks{
+  display:flex;
+}
 
 /* Player */
 .playingTrackCover{

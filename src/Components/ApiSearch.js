@@ -527,7 +527,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             }
             {
                 selectedItem ?
-                <ArtistProfile item={selectedItem} spotifyApi={spotifyApi} />
+                <ArtistProfile item={selectedItem} spotifyApi={spotifyApi} changeTrackTo={changeTrackTo}/>
                 :
                 <></>
             }
