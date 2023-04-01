@@ -3,6 +3,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
+    const [albumTracks, setAlbumTracks] = useState([])
     const [relatedArtists, setRelatedArtists] = useState([])
      useEffect(() => {
         if (!item) return
@@ -98,7 +99,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
 
     }, [artist])
     useEffect(() => {
-        if (!albums) return
+        if (albums.length === 0) return
         albums.map((album,i) => {
             spotifyApi.getAlbum(album.id)
                .then(data => {
@@ -118,7 +119,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                    })
                    let updatedAlbum = {...album}
                    updatedAlbum.tracks = tracks
-                   setAlbums([...albums.splice(i, 1, updatedAlbum) ])
+                   setAlbumTracks([...albums.splice(i, 1, updatedAlbum) ])
                }).catch(error => {
                    console.log(error.message)
                })
@@ -161,6 +162,41 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
 
                    })
                    }
+                </div>
+                :
+                <></>
+            }<h5>Albums</h5>
+            {
+                albumTracks.tracks ?
+                <div classNmae='artistAlbums'>
+                    {
+                        albumTracks.map(album => {
+                            return(
+                            <div className='recoTrack'>
+                                <audio src={album.tracks[0].preview_url} id={`${album.uri}`}></audio>
+                                    <a  
+                                    onClick={() => {
+                                        changeTrackTo(album.tracks[0])
+                                    }}
+                                    onMouseEnter ={() =>{
+                                        const audioElement = document.getElementById(`${album.uri}`)
+                                        audioElement.play()
+                                    }}
+                                    onMouseLeave ={() => {
+                                        const audioElement = document.getElementById(`${album.uri}`)
+                                        audioElement.pause()
+                                    }}
+                                    >
+                                        <div className='img-box'>
+                                            <img src={album.imageUrl} className='cover' />
+                                        </div>
+                                    </a>
+                            </div>
+                       )
+
+                        })
+                    }
+
                 </div>
                 :
                 <></>
