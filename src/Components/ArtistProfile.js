@@ -3,7 +3,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
-    const [albumTracks, setAlbumTracks] = useState([])
     const [relatedArtists, setRelatedArtists] = useState([])
      useEffect(() => {
         if (!item) return
@@ -31,6 +30,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
 
     useEffect(() => {
         if (!artist) return
+        // Artist Top Tracks
         spotifyApi.getArtistTopTracks(artist.id, 'ES')
         .then(data => {
             console.log('top tracks', data.body.tracks)
@@ -61,11 +61,14 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         }).catch(error => {
             console.log(error.message)
         })
-        spotifyApi.getArtistAlbums(artist.id)
-        .then(data => {
-            console.log('artist albums', data.body.items)
-            setAlbums(
-                data.body.items.map(album => {
+        // end of Artist Top Tracks
+
+        // Artist Albums
+        const getArtistAlbums = async(id) => {
+            let albumsArray = await spotifyApi.getArtistAlbums(id)
+            .then(data => {
+                console.log('artist albums', data.body.items)
+                return data.body.items.map(album => {
                     const largestImage = album.images.reduce(
                         (largest, image) => {
                             if (image.height > largest.height) return image 
@@ -81,29 +84,22 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                             imageUrl:largestImage.url,
                             artist:album.artists[0].name,
                             artistId:album.artists[0].id
-                        }
-                    )
-                })
-            )
-
-
-        }).catch(error => {
-            console.log(error.message)
-        })
-         spotifyApi.getArtistRelatedArtists(artist.id)
-        .then(data => {
-            console.log('related Artists', data.body)
-        }).catch(error => {
-            console.log(error.message)
-        })
-
-    }, [artist])
-    useEffect(() => {
-        if (albums.length === 0) return
-        albums.map((album,i) => {
-            spotifyApi.getAlbum(album.id)
-               .then(data => {
-                   let tracks = data.body.tracks.items.map(track => {
+                        })
+                    })
+            }).catch(error => {
+                console.log(error.message)
+                return []
+            })
+            console.log('albums array inside function', albumsArray)
+            return albumsArray
+        }
+        const getAlbumTracks = async(albums) => {
+            const promiseArray = albums.map(async(album) => {
+                return await spotifyApi.getAlbum(album.id)
+            })
+            await Promise.all(promiseArray).then(dataArray => {
+                dataArray.forEach((data,i) => {
+                    let tracks = data.body.tracks.items.map(track => {
                        return {
                            type:'track',
                            title: track.name,
@@ -117,15 +113,61 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                            duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
                        }
                    })
-                   let updatedAlbum = {...album}
-                   updatedAlbum.tracks = tracks
-                   setAlbumTracks([...albums.splice(i, 1, updatedAlbum) ])
-               }).catch(error => {
-                   console.log(error.message)
-               })
-        }) 
+                   albums[i].tracks = tracks
+                })
+            }).catch(error => {
+                console.log(error.message)
+                // albums[i].tracks = []
+            })
 
-    },[albums])
+            // const albumsArray = albums.map((album) => {
+            // spotifyApi.getAlbum(album.id)
+            //    .then(data => {
+            //        let tracks = data.body.tracks.items.map(track => {
+            //            return {
+            //                type:'track',
+            //                title: track.name,
+            //                uri: track.uri,
+            //                id:track.id,
+            //                preview_url:track?.preview_url || '',
+            //                imageUrl: item.imageUrl,
+            //                albumTitle:item.title,
+            //                artist: track.artists[0].name,
+            //                artistId: track.artists[0].id,
+            //                duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+            //            }
+            //        })
+            //        album.tracks = tracks
+            //        return album
+            //    }).catch(error => {
+            //        console.log(error.message)
+            //        album.tracks = []
+            //        return album
+            //    })
+            // })
+            // console.log('2nd albums array', albumsArray)
+            // return albumsArray 
+        }
+        const displayAlbums = async () => {
+            let albumsArray = await getArtistAlbums(artist.id)
+            console.log('albums array', albumsArray)
+            // albumsArray = await getAlbumTracks(albumsArray)
+            await getAlbumTracks(albumsArray)
+            console.log('2nd albums array', albumsArray)
+            setAlbums(albumsArray)
+        }
+        displayAlbums();
+        // end of Artist Albums
+
+        // related Artists 
+         spotifyApi.getArtistRelatedArtists(artist.id)
+        .then(data => {
+            console.log('related Artists', data.body)
+        }).catch(error => {
+            console.log(error.message)
+        })
+        // end of related Artists
+    }, [artist])
 
     return(
         <section className='artistProfile'>
@@ -167,16 +209,18 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                 <></>
             }<h5>Albums</h5>
             {
-                albumTracks.tracks ?
-                <div classNmae='artistAlbums'>
+                albums.length !== 0 ?
+                <div className='artistAlbums'>
+                    {console.log('album w tracks are', albums)}
                     {
-                        albumTracks.map(album => {
+                        albums.map(album => {
                             return(
                             <div className='recoTrack'>
-                                <audio src={album.tracks[0].preview_url} id={`${album.uri}`}></audio>
+                                {console.log('tracks property', album.tracks)}
+                                <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
                                     <a  
                                     onClick={() => {
-                                        changeTrackTo(album.tracks[0])
+                                        changeTrackTo(album?.tracks[0])
                                     }}
                                     onMouseEnter ={() =>{
                                         const audioElement = document.getElementById(`${album.uri}`)

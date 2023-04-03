@@ -836,9 +836,12 @@ footer {
 .artistProfile{
   text-align:left;
 }
-.topTracks{
+.topTracks,
+.artistAlbums {
   display:flex;
+  flex-wrap:wrap;
 }
+
 
 /* Player */
 .playingTrackCover{
