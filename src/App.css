@@ -146,6 +146,9 @@ a{
 ul{
   list-style:none;
 }
+ h4, h5{
+   text-transform: capitalize;
+ }
 .img-box{
   width:64px;
   height:64px;

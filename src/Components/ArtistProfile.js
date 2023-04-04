@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
+export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, setParam, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
@@ -125,7 +125,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         const displayAlbums = async () => {
             let albumsArray = await getArtistAlbums(artist.id)
             console.log('albums array', albumsArray)
-            // albumsArray = await getAlbumTracks(albumsArray)
             await getAlbumTracks(albumsArray)
             console.log('2nd albums array', albumsArray)
             setAlbums(albumsArray)
@@ -134,10 +133,12 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         // end of Artist Albums
 
         // related Artists 
-         spotifyApi.getArtistRelatedArtists(artist.id)
-        .then(data => {
+         
+        const getRelatedArtists = async(id) => {
+            spotifyApi.getArtistRelatedArtists(id)
+            .then(data => {
             console.log('related Artists', data.body.artists)
-            setRelatedArtists(data.body.artists.map(artist => {
+            let artists = data.body.artists.map(artist => {
                 const largestImage = artist.images.reduce(
                     (largest, image) => {
                         if (image.height > largest.height) return image 
@@ -156,10 +157,18 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                     }
                 )
 
-            }))
+            })
+            return artists
         }).catch(error => {
             console.log(error.message)
+            return []
         })
+
+        }
+        const displayRelatedArtists = async() => {
+            let relatedArtists = await getRelatedArtists(artist.id)
+
+        }
         // end of related Artists
     }, [artist])
 
@@ -207,7 +216,10 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                     {
                         albums.map(album => {
                             return(
-                            <div className='recoTrack'>
+                            <div className='recoTrack' onClick={() => {
+                                setAlbumTracks({title:album.title, tracks:album.tracks})
+                                setParam('album')
+                                }}>
                                 <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
                                     <a  
                                     onClick={() => {
@@ -242,12 +254,11 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                         {
                             relatedArtists.map(artist => {
                                 return(
-                                    <div className='relatedArtist'>
+                                    <div className='relatedArtist' onClick={() => setSelectedItem(artist)}>
                                         <div className='img-box'>
                                             <img src={artist.imageUrl} className='cover'/>
                                         </div>
                                         <p className='title'>{artist.title}</p>
-                                        {/* <p className='artist'>{artist.followers}</p> */}
                                     </div>
                                 )
                             })

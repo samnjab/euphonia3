@@ -117,7 +117,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 if (!start) return
                 setSearchResults(
                     res.body.artists.items.map(artist => {
-                        console.log('artist obj is', artist)
                         const largestArtistImage = artist.images.reduce(
                             (largest, image) => {
                                 if (image.height > largest.height) return image
@@ -525,10 +524,15 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 :
                 <></>
             }
-            { console.log('selected item in apisearch', selectedItem)}
             {
                 selectedItem ?
-                <ArtistProfile item={selectedItem} spotifyApi={spotifyApi} changeTrackTo={changeTrackTo}/>
+                <ArtistProfile 
+                item={selectedItem} 
+                setSelectedItem={setSelectedItem}
+                setAlbumTracks={setAlbumTracks}
+                setParam={setParam} 
+                spotifyApi={spotifyApi} 
+                changeTrackTo={changeTrackTo}/>
                 :
                 <></>
             }
