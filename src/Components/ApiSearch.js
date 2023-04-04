@@ -44,21 +44,21 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
         settingAccessToken()
     }, [accessToken])
 
-    useEffect(() => {
-        if (!accessToken) return
-        const script = document.createElement('script')
-        script.src = "https://sdk.scdn.co/spotify-player.js"
-        script.async = true
-        document.body.appendChild(script)
-        window.onSpotifyWebPlaybackSDKReady = () => {
-            const player = new window.Spotify.Player({
-                name: 'Euphonia',
-                getOAuthToken:cb => {cb(accessToken)},
-                volume:0.5
-            })
-            setPlayer(player)
-        }
-    },[accessToken])
+    // useEffect(() => {
+    //     if (!accessToken) return
+    //     const script = document.createElement('script')
+    //     script.src = "https://sdk.scdn.co/spotify-player.js"
+    //     script.async = true
+    //     document.body.appendChild(script)
+    //     window.onSpotifyWebPlaybackSDKReady = () => {
+    //         const player = new window.Spotify.Player({
+    //             name: 'Euphonia',
+    //             getOAuthToken:cb => {cb(accessToken)},
+    //             volume:0.5
+    //         })
+    //         setPlayer(player)
+    //     }
+    // },[accessToken])
 
     useEffect(() => {
         if (!player) return
@@ -254,7 +254,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                         preview_url:track?.preview_url || '',
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
                     }
                 })
             )
@@ -391,7 +391,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                         albumTitle:item.title,
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
                     }
                 })
                 setAlbumTracks({ title: data.body.name, tracks:tracks})
@@ -420,7 +420,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                         artist: item.track.artists[0].name,
                         artistId: item.track.artists[0].id,
                         // genres:item.track.artists[0].genres,
-                        duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
+                        duration:`${Math.round(item.duration_ms/60000)}:${Math.round((Math.round(item.duration_ms/1000)%60)/10)}${(Math.round(item.duration_ms/1000)%60)%10}`
                     }    
                 })
                 
@@ -525,6 +525,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 :
                 <></>
             }
+            { console.log('selected item in apisearch', selectedItem)}
             {
                 selectedItem ?
                 <ArtistProfile item={selectedItem} spotifyApi={spotifyApi} changeTrackTo={changeTrackTo}/>

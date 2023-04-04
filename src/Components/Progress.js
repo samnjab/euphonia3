@@ -44,7 +44,7 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                 preview_url:track?.preview_url || '',
                 artist: track.artists[0].name,
                 artistId: track.artists[0].id,
-                duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
              }
         )
 

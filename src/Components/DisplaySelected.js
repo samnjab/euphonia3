@@ -27,6 +27,7 @@ return(
             }}
         onClick={() => {
             changeTrackTo(item)
+            console.log('setting item to', item)
             setSelectedItem(item)
         }}
         ></img>

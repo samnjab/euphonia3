@@ -146,10 +146,14 @@ a{
 ul{
   list-style:none;
 }
+.img-box{
+  width:64px;
+  height:64px;
+  margin:0 5px;
+}
+
 .img-box img{
   max-width:100%;
-  width:100%;
-  height:auto;
   object-fit: cover;
 }
 button {
@@ -186,9 +190,10 @@ input:focus{
 }
 .cover {
   height: 64px;
-  width: 64px;
+  width: 64px; 
   margin:0 5px;
 }
+
 .title{
   font-size: 1rem;
   font-weight: 300;
@@ -840,6 +845,20 @@ footer {
 .artistAlbums {
   display:flex;
   flex-wrap:wrap;
+}
+.relatedArtists{
+  display:flex;
+  flex-wrap:wrap;
+}
+.relatedArtists .cover{
+  border-radius:50%;
+}
+.relatedArtist{
+  margin:1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 

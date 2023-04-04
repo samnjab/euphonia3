@@ -6,7 +6,12 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
     const [relatedArtists, setRelatedArtists] = useState([])
      useEffect(() => {
         if (!item) return
-        spotifyApi.getArtist(item.artistId)
+        console.log(item.type)
+        let id = ''
+        if (item.type === 'artist') id = item.id
+        else if (item.type === 'track' || item.type === 'album') id = item.artistId
+        else return
+        spotifyApi.getArtist(id)
         .then(data => {
             console.log('artist of item is', data.body)
             const largestImage = data.body.images.reduce(
@@ -33,7 +38,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         // Artist Top Tracks
         spotifyApi.getArtistTopTracks(artist.id, 'ES')
         .then(data => {
-            console.log('top tracks', data.body.tracks)
             const tracks = data.body.tracks.map(track => {
                 const largestImage = track.album.images.reduce(
                     (largest, image) => {
@@ -52,7 +56,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                         preview_url:track?.preview_url || '',
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
 
                     }
                 )
@@ -67,7 +71,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         const getArtistAlbums = async(id) => {
             let albumsArray = await spotifyApi.getArtistAlbums(id)
             .then(data => {
-                console.log('artist albums', data.body.items)
                 return data.body.items.map(album => {
                     const largestImage = album.images.reduce(
                         (largest, image) => {
@@ -90,7 +93,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                 console.log(error.message)
                 return []
             })
-            console.log('albums array inside function', albumsArray)
             return albumsArray
         }
         const getAlbumTracks = async(albums) => {
@@ -119,34 +121,6 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                 console.log(error.message)
                 // albums[i].tracks = []
             })
-
-            // const albumsArray = albums.map((album) => {
-            // spotifyApi.getAlbum(album.id)
-            //    .then(data => {
-            //        let tracks = data.body.tracks.items.map(track => {
-            //            return {
-            //                type:'track',
-            //                title: track.name,
-            //                uri: track.uri,
-            //                id:track.id,
-            //                preview_url:track?.preview_url || '',
-            //                imageUrl: item.imageUrl,
-            //                albumTitle:item.title,
-            //                artist: track.artists[0].name,
-            //                artistId: track.artists[0].id,
-            //                duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
-            //            }
-            //        })
-            //        album.tracks = tracks
-            //        return album
-            //    }).catch(error => {
-            //        console.log(error.message)
-            //        album.tracks = []
-            //        return album
-            //    })
-            // })
-            // console.log('2nd albums array', albumsArray)
-            // return albumsArray 
         }
         const displayAlbums = async () => {
             let albumsArray = await getArtistAlbums(artist.id)
@@ -162,7 +136,27 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
         // related Artists 
          spotifyApi.getArtistRelatedArtists(artist.id)
         .then(data => {
-            console.log('related Artists', data.body)
+            console.log('related Artists', data.body.artists)
+            setRelatedArtists(data.body.artists.map(artist => {
+                const largestImage = artist.images.reduce(
+                    (largest, image) => {
+                        if (image.height > largest.height) return image 
+                        return largest
+                    }
+                )
+                return (
+                    {
+                        type:'artist',
+                        title:artist.name,
+                        uri:artist.uri,
+                        id:artist.id,
+                        imageUrl:largestImage.url,
+                        popularity:artist.popularity,
+                        followers:`${Math.floor(artist.followers.total/1000000)},${Math.floor((artist.followers.total%1000000)/1000)},${Math.floor(((artist.followers.total%1000000)%1000)/100)}${Math.floor((((artist.followers.total%1000000)%1000)%100)/10)}${Math.floor((((artist.followers.total%1000000)%1000)%100)%10)}`
+                    }
+                )
+
+            }))
         }).catch(error => {
             console.log(error.message)
         })
@@ -195,9 +189,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                                         audioElement.pause()
                                     }}
                                     >
-                                        <div className='img-box'>
-                                            <img src={track.imageUrl} className='cover' />
-                                        </div>
+                                        <img src={track.imageUrl} className='cover' />
                                     </a>
                             </div>
                        )
@@ -207,16 +199,15 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                 </div>
                 :
                 <></>
-            }<h5>Albums</h5>
+            }
+            <h5>Albums</h5>
             {
                 albums.length !== 0 ?
                 <div className='artistAlbums'>
-                    {console.log('album w tracks are', albums)}
                     {
                         albums.map(album => {
                             return(
                             <div className='recoTrack'>
-                                {console.log('tracks property', album.tracks)}
                                 <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
                                     <a  
                                     onClick={() => {
@@ -231,9 +222,7 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                                         audioElement.pause()
                                     }}
                                     >
-                                        <div className='img-box'>
-                                            <img src={album.imageUrl} className='cover' />
-                                        </div>
+                                        <img src={album.imageUrl} className='cover' />
                                     </a>
                             </div>
                        )
@@ -242,6 +231,30 @@ export default function ArtistProfile({ item, spotifyApi, changeTrackTo }){
                     }
 
                 </div>
+                :
+                <></>
+            }
+            {
+                relatedArtists.length !== 0 ?
+                <>
+                    <h5>Related Artists</h5>
+                    <div className='relatedArtists'>
+                        {
+                            relatedArtists.map(artist => {
+                                return(
+                                    <div className='relatedArtist'>
+                                        <div className='img-box'>
+                                            <img src={artist.imageUrl} className='cover'/>
+                                        </div>
+                                        <p className='title'>{artist.title}</p>
+                                        {/* <p className='artist'>{artist.followers}</p> */}
+                                    </div>
+                                )
+                            })
+                        }
+
+                    </div>
+                </>
                 :
                 <></>
             }
