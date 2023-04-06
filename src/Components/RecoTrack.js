@@ -21,9 +21,9 @@ export default function RecoTrack({ track, selectItem, spotifyApi, user, changeT
                 audioElement.pause()
             }}
             >
-                <div className='img-box'>
-                    <img src={track.imageUrl} className='cover' />
-                </div>
+                
+            <img src={track.imageUrl} className='cover' />
+                
             </a>
       </div>
     )

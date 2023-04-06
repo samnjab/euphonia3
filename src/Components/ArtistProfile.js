@@ -68,8 +68,22 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
         // end of Artist Top Tracks
 
         // Artist Albums
+        const refineArray = (array) => {
+            const idArray = [...new Set(array.map(item => {return item.id}))]
+            const refinedArray =[]
+            let i = 0
+            while(i < idArray.length) {
+                array.forEach(item => {
+                    if (item.id === idArray[i]) {
+                        refinedArray.push(item)
+                        i += 1
+                    }
+                })
+            }
+            return refinedArray
+        }
         const getArtistAlbums = async(id) => {
-            let albumsArray = await spotifyApi.getArtistAlbums(id)
+            let albumsArray = await spotifyApi.getArtistAlbums(id, {limit:30})
             .then(data => {
                 return data.body.items.map(album => {
                     const largestImage = album.images.reduce(
@@ -93,7 +107,7 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                 console.log(error.message)
                 return []
             })
-            return albumsArray
+            return refineArray(albumsArray)
         }
         const getAlbumTracks = async(albums) => {
             const promiseArray = albums.map(async(album) => {
@@ -108,11 +122,11 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                            uri: track.uri,
                            id:track.id,
                            preview_url:track?.preview_url || '',
-                           imageUrl: item.imageUrl,
-                           albumTitle:item.title,
+                           imageUrl: albums[i].imageUrl,
+                           albumTitle:albums[i].title,
                            artist: track.artists[0].name,
                            artistId: track.artists[0].id,
-                           duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                           duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
                        }
                    })
                    albums[i].tracks = tracks
@@ -124,18 +138,15 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
         }
         const displayAlbums = async () => {
             let albumsArray = await getArtistAlbums(artist.id)
-            console.log('albums array', albumsArray)
             await getAlbumTracks(albumsArray)
-            console.log('2nd albums array', albumsArray)
             setAlbums(albumsArray)
         }
         displayAlbums();
         // end of Artist Albums
 
         // related Artists 
-         
         const getRelatedArtists = async(id) => {
-            spotifyApi.getArtistRelatedArtists(id)
+            let artists = await spotifyApi.getArtistRelatedArtists(id)
             .then(data => {
             console.log('related Artists', data.body.artists)
             let artists = data.body.artists.map(artist => {
@@ -163,18 +174,59 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
             console.log(error.message)
             return []
         })
+        return artists
+        }
+        const getArtistsTracks = async(artists) => {
+            const topTracks = artists.map( async(artist) => {
+                return await spotifyApi.getArtistTopTracks(artist.id,'ES').then(data => {
+                    return data.body.tracks
+                })
+            })
+            console.log('top related artist tracks are', topTracks)
+            await Promise.all(topTracks).then(dataArray => {
+                dataArray.forEach((artistTracks, i) => {
+                    artists[i].tracks = artistTracks.map(track => {
+                        const largestImage = track.album.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
+                            }
+                        )
+                        return (
+                            {
+                                title: track.name,
+                                uri: track.uri,
+                                id: track.id,
+                                imageUrl:largestImage.url,
+                                preview_url:track.preview_url,
+                                artist:track.artists[0].name,
+                                artistId: track.artists[0].id,
+                                albumTitle: track.album.name,
+                                duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
 
+                            }
+                        )
+                    })
+
+                })
+            })
         }
         const displayRelatedArtists = async() => {
-            let relatedArtists = await getRelatedArtists(artist.id)
-
+            let artists = await getRelatedArtists(artist.id)
+            console.log('first artists array', artists)
+            await getArtistsTracks(artists)
+            console.log('seconds artists array', artists)
+            setRelatedArtists(artists)
         }
+        displayRelatedArtists();
         // end of related Artists
     }, [artist])
 
     return(
         <section className='artistProfile'>
-            <img className='cover' src={artist?.imageUrl}></img>
+            <div className='img-box'>
+                <img className='cover' src={artist?.imageUrl}></img>
+            </div>
             <p className='title'>{artist?.title}</p>
             <p className='artist'>Followers: {artist?.followers}</p>
             <h5>Top Tracks</h5>
@@ -216,7 +268,9 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                     {
                         albums.map(album => {
                             return(
-                            <div className='recoTrack' onClick={() => {
+                            <div 
+                            className='recoTrack' 
+                            onClick={() => {
                                 setAlbumTracks({title:album.title, tracks:album.tracks})
                                 setParam('album')
                                 }}>
@@ -255,10 +309,26 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                             relatedArtists.map(artist => {
                                 return(
                                     <div className='relatedArtist' onClick={() => setSelectedItem(artist)}>
+                                        <audio src={artist?.tracks[0].preview_url} id={`${artist.uri}`}></audio>
+                                    <a  
+                                    onClick={() => {
+                                        changeTrackTo(artist?.tracks[0])
+                                    }}
+                                    onMouseEnter ={() =>{
+                                        const audioElement = document.getElementById(`${artist.uri}`)
+                                        audioElement.play()
+                                    }}
+                                    onMouseLeave ={() => {
+                                        const audioElement = document.getElementById(`${artist.uri}`)
+                                        audioElement.pause()
+                                    }}
+                                    >
                                         <div className='img-box'>
                                             <img src={artist.imageUrl} className='cover'/>
                                         </div>
-                                        <p className='title'>{artist.title}</p>
+                                    </a>
+                                        
+                                        
                                     </div>
                                 )
                             })
