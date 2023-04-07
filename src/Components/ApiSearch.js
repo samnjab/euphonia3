@@ -532,7 +532,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 item={selectedItem} 
                 setSelectedItem={setSelectedItem}
                 setPreviewItem={setPreviewItem}
-                setAlbumTracks={setAlbumTracks}
                 setParam={setParam} 
                 spotifyApi={spotifyApi} 
                 changeTrackTo={changeTrackTo}/>
@@ -542,12 +541,11 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{albumTracks.title} Preview</h4>
+                    <h4>{albumTracks.title}</h4>
                     {
                         albumTracks.tracks.map(track => {
                             return <RecoTrack 
                             track={track} 
-                            preview_url={track.preview_url}
                             setPreviewItem={setPreviewItem}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 

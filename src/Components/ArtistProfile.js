@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
-export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, setPreviewItem, setParam, spotifyApi, changeTrackTo }){
+import RecoTrack from './RecoTrack'
+export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, setParam, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
+    const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [relatedArtists, setRelatedArtists] = useState([])
      useEffect(() => {
         if (!item) return
@@ -220,6 +222,7 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
         }
         displayRelatedArtists();
         // end of related Artists
+        setAlbumTracks({title:'', tracks:[]})
     }, [artist])
 
     return(
@@ -307,6 +310,23 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                 :
                 <></>
             }
+            {
+                albumTracks.tracks.length !== 0 ?
+                <div className='artistAlbumPreview'>
+                    <h4>{albumTracks.title}</h4>
+               {     albumTracks.tracks.map(track => {
+                                return <RecoTrack 
+                                track={track} 
+                                setPreviewItem={setPreviewItem}
+                                changeTrackTo= {changeTrackTo} 
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                            })
+                }
+                </div>
+                :
+                <></>
+                }
             {
                 relatedArtists.length !== 0 ?
                 <>
