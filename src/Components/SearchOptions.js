@@ -15,7 +15,14 @@ export default function SearchOptions({ searchBy, param }) {
              <ul className='listOfOptions'>
                 {
                      displayOptions.map(option => {
-                        return <li className='option' id={`${option}`} onClick={(e) => searchBy(e)}> {option}</li>
+                        return (
+                        <li className='option' 
+                        id={`${option}`} 
+                        onClick={(e) => searchBy(e)}
+                        key={option}
+                        > 
+                        {option}
+                        </li>)
                     })
                 }
             </ul>

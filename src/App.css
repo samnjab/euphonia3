@@ -22,21 +22,21 @@ html { box-sizing: border-box;}
   --mixedColor7Ref: #c196a1;
   --secondaryColorRef: #BC939E;
   --overlayLight:#DECACF;
-  --colorGradientMin: rgba(0, 0, 0, 0);
-  --colorGradientMax: rgba(0, 0, 0, 100);
+  --colorGradientMin: #000000;
+  --colorGradientMax: #a6818a;
   --tertiaryColorRef: #e4001c;
   /* blue theme */
-  --primaryColorRefBlue:#311A51;
-  --mixedColor1RefBlue:#f4f3ee;
-  --mixedColor2RefBlue: #e5e5e5;
-  --mixedColor3RefBlue: #dee2e6;
-  --mixedColor4RefBlue: #f7ebe8;
-  --mixedColor5RefBlue: #566D7D;
-  --mixedColor6RefBlue: #242423;
-  --mixedColor7RefBlue: #4f5d75;
-  --secondaryColorRefBlue: #f5cb5c;
-  --colorGradientMinBlue: #333533;
-  --colorGradientMaxBlue: rgba(0, 0, 0, 100);
+  --primaryColorRefBlue:#001427;
+  --mixedColor1RefBlue:#1F2F3C;
+  --mixedColor2RefBlue: #3E4A50;
+  --mixedColor3RefBlue: #5C6465;
+  --mixedColor4RefBlue: #7B7F79;
+  --mixedColor5RefBlue: #9A9A8E;
+  --mixedColor6RefBlue: #B9B5A2;
+  --mixedColor7RefBlue: #D7CFB7;
+  --secondaryColorRefBlue: #F6EACB;
+  --colorGradientMinBlue: #001427;
+  --colorGradientMaxBlue: #D7CFB7;
   --tertiaryColorRefBlue: #d62828;
   /* default colors */
   --backgroundColor: var(--secondaryColorRef);
@@ -74,7 +74,7 @@ html { box-sizing: border-box;}
   --foregroundColorMix7: var(--mixedColor7Ref);
   --gradientColorMin: var(--colorGradientMin);
   --gradientColorMax: var(--colorGradientMax);
-  --borderColor: var(--mixedColor7Ref);
+  --borderColor: var(--mixedColor5Ref);
   --highlightColor: var(--tertiaryColorRef);
   --errorColor: #E4001C;
 }
@@ -206,11 +206,15 @@ input:focus{
   font-weight: 300;
   opacity:0.7;
 }
-
-
 .layout {
   position: relative;
   width: 100vw;
+}
+.saved{
+  color:var(--foregroundColor);
+}
+.notSaved{
+  color:#fff;
 }
 canvas {
   position: fixed;
@@ -730,7 +734,7 @@ label:nth-of-type(2n) {
 
 /* selected items styles */
 .selectedItems{
-  grid-column: 1/ 2;
+  grid-column: 1/ 4;
   display:flex;
   flex-direction:column;
   align-items: flex-start;
@@ -787,7 +791,7 @@ label:nth-of-type(2n) {
 
 /* Album preview styles */
 .previewTracks{
-  grid-column: 1/ span 2;
+  grid-column: 1/ -1;
   display:flex;
   flex-wrap:wrap;
 }
@@ -801,7 +805,7 @@ label:nth-of-type(2n) {
 
 /* recommendation styles */
 .recommendations{
-  grid-column: 1/ span 2;
+  grid-column: 1/ -1;
   max-width:100%;
   max-height:90vh;
   overflow-y: scroll;
@@ -860,7 +864,7 @@ footer {
 /* Artist Profile */
 .artistProfile{
   text-align:left;
-  grid-column: 2/ span 2;
+  grid-column: 1/ -1;
   max-height:500px;
   overflow-y:scroll;
 }

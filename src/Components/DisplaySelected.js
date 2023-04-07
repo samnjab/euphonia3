@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 export default function DisplaySelected({ param, item, deselectItem , setSelectedItem, changeTrackTo}){
+    console.log('preview url for selected', item.preview_url)
 
 return(
      <div className={'selected'}>

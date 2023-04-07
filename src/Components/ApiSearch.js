@@ -106,6 +106,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                             uri: track.uri,
                             id:track.id,
                             imageUrl: smallestAlbumImage?.url || '',
+                            preview_url:track?.preview_url,
                             artist: track.artists[0].name,
                             artistId: track.artists[0].id
                         }
@@ -500,6 +501,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                         return <DisplayItem 
                                 item={searchResult} 
                                 selectItem={selectItem}
+                                key={searchResult.uri}
                                 /> 
                     })
                 )  
@@ -518,23 +520,12 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                                     deselectItem={deselectItem}
                                     setSelectedItem={setSelectedItem}
                                     changeTrackTo= {handleChangeTrack} 
+                                    key={item.uri}
                                     />
                         })
                     }
 
                 </section>
-                :
-                <></>
-            }
-            {
-                selectedItem ?
-                <ArtistProfile 
-                item={selectedItem} 
-                setSelectedItem={setSelectedItem}
-                setPreviewItem={setPreviewItem}
-                setParam={setParam} 
-                spotifyApi={spotifyApi} 
-                changeTrackTo={changeTrackTo}/>
                 :
                 <></>
             }
@@ -547,11 +538,11 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                             return <RecoTrack 
                             track={track} 
                             setPreviewItem={setPreviewItem}
+                            setSelectedItem={setSelectedItem}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 
                             selectItem={selectItem}
                             spotifyApi={spotifyApi} 
-                            setSelectedItem={setSelectedItem}
                             key={track.uri}/>
                         })
                     }
@@ -568,8 +559,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                         playlistTracks.tracks.map(track => {
                             return <RecoTrack 
                             track={track} 
-                            preview_url={track.preview_url}
                             setPreviewItem={setPreviewItem}
+                            setSelectedItem={setSelectedItem}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 
                             selectItem={selectItem}
@@ -582,6 +573,17 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 : 
                 <></>
             }
+            {
+                selectedItem ?
+                <ArtistProfile 
+                item={selectedItem} 
+                setSelectedItem={setSelectedItem}
+                setPreviewItem={setPreviewItem} 
+                spotifyApi={spotifyApi} 
+                changeTrackTo={handleChangeTrack}/>
+                :
+                <></>
+            }
 
             {
             recommendations.length !==0 ? 
@@ -590,8 +592,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 {recommendations.map(track => {
                     return <RecoTrack 
                                 track={track} 
-                                preview_url={track.preview_url}
                                 setPreviewItem={setPreviewItem}
+                                setSelectedItem={setSelectedItem}
                                 user={user}
                                 changeTrackTo= {handleChangeTrack} 
                                 selectItem={selectItem}
@@ -606,7 +608,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 previewItem ?
                 <section className='previewSection'>
-                    <Preview item={previewItem} />
+                    <Preview item={previewItem} spotifyApi={spotifyApi} user={user} />
                 </section>
                 :
                 <></>

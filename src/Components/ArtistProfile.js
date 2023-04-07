@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import RecoTrack from './RecoTrack'
-export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, setParam, spotifyApi, changeTrackTo }){
+export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
@@ -25,6 +25,7 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
             )
             setArtist(
                 {
+                    type: 'artist',
                     title:data.body.name,
                     uri:data.body.uri,
                     id:data.body.id,
@@ -196,6 +197,7 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                         )
                         return (
                             {
+                                type:'track',
                                 title: track.name,
                                 uri: track.uri,
                                 id: track.id,
@@ -239,7 +241,10 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                 <div className='topTracks'>
                    { topTracks.map(track => {
                        return(
-                            <div className='recoTrack'>
+                            <div 
+                            className='recoTrack'
+                            key={track.uri}
+                            >
                                 <audio src={track.preview_url} id={`${track.uri}`}></audio>
                                     <a  
                                     onClick={() => {
@@ -278,10 +283,9 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                             return(
                             <div 
                             className='recoTrack' 
-                            onClick={() => {
-                                setAlbumTracks({title:album.title, tracks:album.tracks})
-                                setParam('album')
-                                }}>
+                            onClick={() => setAlbumTracks({title:album.title, tracks:album.tracks})}
+                            key={album.uri}
+                            >
                                 <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
                                     <a  
                                     onClick={() => {
@@ -335,7 +339,11 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                         {
                             relatedArtists.map(artist => {
                                 return(
-                                    <div className='relatedArtist' onClick={() => setSelectedItem(artist)}>
+                                    <div 
+                                    className='relatedArtist' 
+                                    onClick={() => setSelectedItem(artist)}
+                                    key={artist.uri}
+                                    >
                                         <audio src={artist?.tracks[0].preview_url} id={`${artist.uri}`}></audio>
                                     <a  
                                     onClick={() => {

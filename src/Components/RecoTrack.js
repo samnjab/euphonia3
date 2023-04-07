@@ -1,9 +1,11 @@
 import React from "react"
 import {useState, useEffect, useRef} from 'react'
 
+
 import Playlists from './Playlists';
 
-export default function RecoTrack({ track, selectItem, spotifyApi, setPreviewItem, user, changeTrackTo, setSelectedItem }) {
+export default function RecoTrack({ track, selectItem, setPreviewItem, setSelectedItem, changeTrackTo, spotifyApi, user }) {
+   
     return ( 
       <div className='recoTrack'>
           <audio src={track.preview_url} id={`${track.uri}`}></audio>

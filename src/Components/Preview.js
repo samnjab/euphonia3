@@ -1,4 +1,19 @@
-export default function Preview ({item}){
+import { useState, useEffect } from 'react'
+import { FaHeart } from 'react-icons/fa'
+
+export default function Preview ({item, spotifyApi, user}){
+     const [inLibrary, setInLibrary] = useState(false)
+    useEffect(() => {
+        if (!item || item.type !== 'track') return 
+        spotifyApi.containsMySavedTracks([item.id])
+        .then(data => {
+            setInLibrary(data.body[0])
+        }).catch(error => {
+            console.log(error.message)
+            setInLibrary(false)
+        })
+    }, [item])
+
     return (
         <>
             {
@@ -9,6 +24,17 @@ export default function Preview ({item}){
                     </div>
                     <p className='title'>{item?.title}</p>
                     <p className='artist'>{item?.artist}</p>
+                    {
+                        item.type === 'track' && inLibrary ?
+                        <FaHeart className='saved'/>
+                        :
+                        item.type === 'track' && !inLibrary ?
+                        <FaHeart className='notSaved'/>
+                        :
+                        <></>
+
+                    }
+
         
                 </div>
                 :
