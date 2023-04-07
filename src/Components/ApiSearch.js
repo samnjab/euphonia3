@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 // Components
 import SearchOptions from "./SearchOptions"
 import RecoTrack from './RecoTrack'
+import Preview from './Preview'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
@@ -19,6 +20,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
     const [selectedItem, setSelectedItem] = useState()
+    const [previewItem, setPreviewItem] = useState()
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [genreSeeds, setGenreSeeds] = useState([])
@@ -529,6 +531,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 <ArtistProfile 
                 item={selectedItem} 
                 setSelectedItem={setSelectedItem}
+                setPreviewItem={setPreviewItem}
                 setAlbumTracks={setAlbumTracks}
                 setParam={setParam} 
                 spotifyApi={spotifyApi} 
@@ -539,12 +542,13 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{albumTracks.title}</h4>
+                    <h4>{albumTracks.title} Preview</h4>
                     {
                         albumTracks.tracks.map(track => {
                             return <RecoTrack 
                             track={track} 
                             preview_url={track.preview_url}
+                            setPreviewItem={setPreviewItem}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 
                             selectItem={selectItem}
@@ -561,12 +565,13 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 param === 'playlist' && playlistTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{playlistTracks.title}</h4>
+                    <h4>{playlistTracks.title} Preview</h4>
                     {
                         playlistTracks.tracks.map(track => {
                             return <RecoTrack 
                             track={track} 
                             preview_url={track.preview_url}
+                            setPreviewItem={setPreviewItem}
                             user={user}
                             changeTrackTo= {handleChangeTrack} 
                             selectItem={selectItem}
@@ -588,6 +593,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                     return <RecoTrack 
                                 track={track} 
                                 preview_url={track.preview_url}
+                                setPreviewItem={setPreviewItem}
                                 user={user}
                                 changeTrackTo= {handleChangeTrack} 
                                 selectItem={selectItem}
@@ -598,6 +604,14 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             </section>
             :  <></>
                     
+            }
+            {
+                previewItem ?
+                <section className='previewSection'>
+                    <Preview item={previewItem} />
+                </section>
+                :
+                <></>
             }
 
             {/* {

@@ -3,7 +3,7 @@ import {useState, useEffect, useRef} from 'react'
 
 import Playlists from './Playlists';
 
-export default function RecoTrack({ track, selectItem, spotifyApi, user, changeTrackTo, setSelectedItem }) {
+export default function RecoTrack({ track, selectItem, spotifyApi, setPreviewItem, user, changeTrackTo, setSelectedItem }) {
     return ( 
       <div className='recoTrack'>
           <audio src={track.preview_url} id={`${track.uri}`}></audio>
@@ -15,10 +15,12 @@ export default function RecoTrack({ track, selectItem, spotifyApi, user, changeT
             onMouseEnter ={() =>{
                 const audioElement = document.getElementById(`${track.uri}`)
                 audioElement.play()
+                setPreviewItem(track)
             }}
             onMouseLeave ={() => {
                 const audioElement = document.getElementById(`${track.uri}`)
                 audioElement.pause()
+                setPreviewItem()
             }}
             >
                 

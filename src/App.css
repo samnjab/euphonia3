@@ -618,14 +618,14 @@ label:nth-of-type(2n) {
   justify-content: space-between;
   min-width: 200px;
   margin:2rem 0;
+  grid-column: 1/ -1;
 }
 .apiSearch{
   width:100%;
   position:relative;
-  display:flex;
-  flex-direction:column;
-  flex-wrap:wrap;
-  justify-content:center;
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0px;
 }
 .searchBox{
   flex-basis: 40%;
@@ -730,6 +730,7 @@ label:nth-of-type(2n) {
 
 /* selected items styles */
 .selectedItems{
+  grid-column: 1/ 2;
   display:flex;
   flex-direction:column;
   align-items: flex-start;
@@ -769,9 +770,24 @@ label:nth-of-type(2n) {
 .selected .cover{
   margin:0 5px;
 }
+/* Preview Item styles */
+.previewSection{
+  /* grid-column: 2/3; */
+  position:fixed;
+  top:50%;
+  right:0;
+  width:30%;
+}
+.preview{
+  display:flex;
+  flex-direction:column;
+  align-items: flex-end;
+}
+/* end of Preview Item styles */
 
 /* Album preview styles */
 .previewTracks{
+  grid-column: 1/ span 2;
   display:flex;
   flex-wrap:wrap;
 }
@@ -785,6 +801,7 @@ label:nth-of-type(2n) {
 
 /* recommendation styles */
 .recommendations{
+  grid-column: 1/ span 2;
   max-width:100%;
   max-height:90vh;
   overflow-y: scroll;
@@ -843,6 +860,9 @@ footer {
 /* Artist Profile */
 .artistProfile{
   text-align:left;
+  grid-column: 2/ span 2;
+  max-height:500px;
+  overflow-y:scroll;
 }
 .topTracks,
 .artistAlbums {

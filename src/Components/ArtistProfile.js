@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, setParam, spotifyApi, changeTrackTo }){
+export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, setPreviewItem, setParam, spotifyApi, changeTrackTo }){
     const [artist, setArtist] = useState()
     const [topTracks, setTopTracks] = useState([])
     const [albums, setAlbums] = useState([])
@@ -224,6 +224,7 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
 
     return(
         <section className='artistProfile'>
+            <h4>Artist Profile</h4>
             <div className='img-box'>
                 <img className='cover' src={artist?.imageUrl}></img>
             </div>
@@ -244,10 +245,14 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                                     onMouseEnter ={() =>{
                                         const audioElement = document.getElementById(`${track.uri}`)
                                         audioElement.play()
+                                        console.log('setting preview to', track)
+                                        setPreviewItem(track)
+                                        
                                     }}
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${track.uri}`)
                                         audioElement.pause()
+                                        setPreviewItem()
                                     }}
                                     >
                                         <img src={track.imageUrl} className='cover' />
@@ -282,10 +287,12 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                                     onMouseEnter ={() =>{
                                         const audioElement = document.getElementById(`${album.uri}`)
                                         audioElement.play()
+                                        setPreviewItem(album)
                                     }}
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${album.uri}`)
                                         audioElement.pause()
+                                        setPreviewItem()
                                     }}
                                     >
                                         <img src={album.imageUrl} className='cover' />
@@ -317,10 +324,12 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                                     onMouseEnter ={() =>{
                                         const audioElement = document.getElementById(`${artist.uri}`)
                                         audioElement.play()
+                                        setPreviewItem(artist)
                                     }}
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${artist.uri}`)
                                         audioElement.pause()
+                                        setPreviewItem()
                                     }}
                                     >
                                         <div className='img-box'>
@@ -339,7 +348,6 @@ export default function ArtistProfile({ item, setSelectedItem, setAlbumTracks, s
                 :
                 <></>
             }
-
 
         </section>
     )
