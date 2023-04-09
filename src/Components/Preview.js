@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { FaHeart, FaPlus, FaCheckCircle, FaCircle } from 'react-icons/fa'
 
-export default function Preview ({ item, spotifyApi, user, playlists }){
+export default function Preview ({ item, spotifyApi, user, playlists, scan, setScan }){
      const [inLibrary, setInLibrary] = useState(false)
      const [added, setAdded] = useState(false)
      const [reveal, setReveal] = useState(false)
+     const [exists, setExists] = useState([])
     useEffect(() => {
         if (!item || item.type !== 'track') return 
         spotifyApi.containsMySavedTracks([item.id])
@@ -15,12 +16,27 @@ export default function Preview ({ item, spotifyApi, user, playlists }){
             setInLibrary(false)
         })
     }, [item, added])
+
+    useEffect(() => {
+        if (playlists.length === 0 || !item || item.type !== 'track') return 
+        const existsArray = playlists.map(playlist => {
+            let trackExists = false
+            playlist.tracks.forEach(track => {
+                if (track.uri == item.uri) {
+                    trackExists = true
+                    return
+                }
+            })
+            return trackExists
+        })
+        setExists(existsArray)
+    }, [item, playlists, scan])
+   
     
     const addToLibrary = (item) => {
         spotifyApi.addToMySavedTracks([item.id])
         .then(data => {
             setAdded(!added)
-            console.log('added')
         }).catch(error => {
             console.log(error.message)
         })
@@ -29,7 +45,6 @@ export default function Preview ({ item, spotifyApi, user, playlists }){
         spotifyApi.removeFromMySavedTracks([item.id])
         .then(data => {
             setAdded(!added)
-            console.log('removed')
         }).catch(error => {
             console.log(error.message)
         })
@@ -37,10 +52,19 @@ export default function Preview ({ item, spotifyApi, user, playlists }){
     const addToPlaylist = (playlistId, itemUri) => {
         spotifyApi.addTracksToPlaylist(playlistId, [itemUri])
         .then(data => {
-            console.log('added to playlist', playlistId)
+            setScan(!scan)
         }).catch(error => {
             console.log(error.message)
         })
+    }
+    const removedFromPlaylist = (playlistId, trackUri) => {
+        spotifyApi.removeTracksFromPlaylist(playlistId, [{uri: trackUri}])
+        .then(data => {
+            setScan(!scan)
+        }).catch(error => {
+            console.log(error.message)
+        })
+
     }
     
 
@@ -81,11 +105,16 @@ export default function Preview ({ item, spotifyApi, user, playlists }){
                                 reveal ?
                                 <ul className='playlists'>
                                     {   playlists.length !== 0 ?
-                                    playlists.map(playlist => {
+                                    playlists.map((playlist, i) => {
                                         return (
                                             <li className='playlist' key={playlist.id}>
-                                                <FaCircle onClick={() => addToPlaylist(playlist.id, item.uri)}/>
-                                                <FaCheckCircle />
+                                                {
+                                                    exists[i] ?
+                                                    <FaCheckCircle onClick={() => removedFromPlaylist(playlist.id, item.uri)}/>
+                                                    :
+                                                    <FaCircle onClick={() => addToPlaylist(playlist.id, item.uri)}/>
+
+                                                }
                                                 <p className='artist'>{playlist.name}</p>
                                             </li>
                                         )

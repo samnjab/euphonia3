@@ -34,6 +34,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
     const [playlists, setPlaylists] = useState([])
+    const [scan, setScan] = useState(false)
 
   
 
@@ -75,18 +76,29 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             await Promise.all(trackPromises)
             .then(dataArray => {
                 dataArray.forEach((trackArray, i) => {
-                    playlists[i].track = trackArray
+                    playlists[i].tracks =  trackArray.body.items.map(track => {
+                        return (
+                            {
+                                type:'track',
+                                title:track.track.name,
+                                uri:track.track.uri,
+                                id:track.track.id,
+                                
+                            }
+                        )
+                    })
                 })
             })
         }
         const getPlaylists = async() => {
             const playlists = await getPlaylistInfo()
             await getPlaylistTracks(playlists)
+            console.log('user playlists are', playlists)
             setPlaylists(playlists)
         }
         getPlaylists();
         
-    },[apiReady])
+    },[apiReady, scan])
 
     // useEffect(() => {
     //     if (!accessToken) return
@@ -650,7 +662,14 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 previewItem ?
                 <section className='previewSection'>
-                    <Preview item={previewItem} spotifyApi={spotifyApi} user={user} playlists={playlists}/>
+                    <Preview 
+                    item={previewItem} 
+                    spotifyApi={spotifyApi} 
+                    user={user} 
+                    playlists={playlists}
+                    scan={scan}
+                    setScan={setScan}
+                    />
                 </section>
                 :
                 <></>
