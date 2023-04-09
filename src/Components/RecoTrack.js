@@ -22,7 +22,6 @@ export default function RecoTrack({ track, selectItem, setPreviewItem, setSelect
             onMouseLeave ={() => {
                 const audioElement = document.getElementById(`${track.uri}`)
                 audioElement.pause()
-                setPreviewItem()
             }}
             >
                 

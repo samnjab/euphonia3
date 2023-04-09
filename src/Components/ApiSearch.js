@@ -33,6 +33,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
     const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
+    const [playlists, setPlaylists] = useState([])
 
   
 
@@ -45,6 +46,47 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
         if (!accessToken) return
         settingAccessToken()
     }, [accessToken])
+
+    useEffect(() => {
+        if (!apiReady) return
+        const getPlaylistInfo = async() => {
+            const playlists = await spotifyApi.getUserPlaylists(user.id).then(data => {
+                return data.body.items.map(item => {
+                    return (
+                        {
+                            type: 'playlist',
+                            name:item.name,
+                            uri:item.uri,
+                            id:item.id
+
+                        }
+                    )
+                })
+            }).catch(error => {
+                console.log(error.message)
+                return []
+            })
+            return playlists
+        }
+        const getPlaylistTracks = async (playlists) => {
+            const trackPromises = playlists.map( async(playlist) => {
+                return await spotifyApi.getPlaylistTracks(playlist.id)
+            })
+            await Promise.all(trackPromises)
+            .then(dataArray => {
+                dataArray.forEach((trackArray, i) => {
+                    playlists[i].track = trackArray
+                })
+            })
+        }
+        const getPlaylists = async() => {
+            const playlists = await getPlaylistInfo()
+            await getPlaylistTracks(playlists)
+            setPlaylists(playlists)
+        }
+        getPlaylists();
+        
+    },[apiReady])
 
     // useEffect(() => {
     //     if (!accessToken) return
@@ -608,7 +650,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 previewItem ?
                 <section className='previewSection'>
-                    <Preview item={previewItem} spotifyApi={spotifyApi} user={user} />
+                    <Preview item={previewItem} spotifyApi={spotifyApi} user={user} playlists={playlists}/>
                 </section>
                 :
                 <></>

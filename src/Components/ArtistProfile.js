@@ -260,7 +260,7 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${track.uri}`)
                                         audioElement.pause()
-                                        setPreviewItem()
+                                        
                                     }}
                                     >
                                         <img src={track.imageUrl} className='cover' />
@@ -299,7 +299,7 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${album.uri}`)
                                         audioElement.pause()
-                                        setPreviewItem()
+                                        
                                     }}
                                     >
                                         <img src={album.imageUrl} className='cover' />
@@ -357,7 +357,7 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
                                     onMouseLeave ={() => {
                                         const audioElement = document.getElementById(`${artist.uri}`)
                                         audioElement.pause()
-                                        setPreviewItem()
+                        
                                     }}
                                     >
                                         <div className='img-box'>
