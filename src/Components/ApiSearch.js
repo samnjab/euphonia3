@@ -523,6 +523,21 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
 
     return(
         <div className='apiSearch'>
+            {
+                previewItem ?
+                <section className='previewSection'>
+                    <Preview 
+                    item={previewItem} 
+                    spotifyApi={spotifyApi} 
+                    user={user} 
+                    playlists={playlists}
+                    scan={scan}
+                    setScan={setScan}
+                    />
+                </section>
+                :
+                <></>
+            }
             <section className='search'>
                 <form 
                 className='searchBox'
@@ -659,21 +674,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             :  <></>
                     
             }
-            {
-                previewItem ?
-                <section className='previewSection'>
-                    <Preview 
-                    item={previewItem} 
-                    spotifyApi={spotifyApi} 
-                    user={user} 
-                    playlists={playlists}
-                    scan={scan}
-                    setScan={setScan}
-                    />
-                </section>
-                :
-                <></>
-            }
+            
 
             {/* {
                 playerId && apiReady ?

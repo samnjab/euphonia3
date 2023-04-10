@@ -93,13 +93,13 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
                     {
                         item.type === 'track' && inLibrary ?
                         <FaHeart 
-                        className='saved'
+                        className='button saved'
                         onClick={() => removeFromLibrary(item)}
                         />
                         :
                         item.type === 'track' && !inLibrary ?
                         <FaHeart 
-                        className='notSaved'
+                        className='button notSaved'
                         onClick={() => addToLibrary(item)}
                         />
                         :
@@ -122,9 +122,9 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
                                             <li className='playlist' key={playlist.id}>
                                                 {
                                                     exists[i] ?
-                                                    <FaCheckCircle onClick={() => removedFromPlaylist(playlist.id, item.uri)}/>
+                                                    <FaCheckCircle className='button checked' onClick={() => removedFromPlaylist(playlist.id, item.uri)}/>
                                                     :
-                                                    <FaCircle onClick={() => addToPlaylist(playlist.id, item.uri)}/>
+                                                    <FaCircle className='button unchecked' onClick={() => addToPlaylist(playlist.id, item.uri)}/>
 
                                                 }
                                                 <p className='artist'>{playlist.name}</p>
@@ -135,12 +135,15 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
                                         <></>
                                     }
                                     <li className='playlist'>
-                                        <form onSubmit={(e) => {
+                                        <form
+                                        className='searchBox' 
+                                        onSubmit={(e) => {
                                             setInput(value)
                                             e.preventDefault()
                                             }}>
                                             <input 
-                                            placeholder='Create New'
+                                            type="text"
+                                            placeholder='Create New Playlist'
                                             value={value}
                                             onChange={(e) => setValue(e.target.value)}
                                             />
@@ -152,7 +155,7 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
                             }
 
                             <FaPlus 
-                            className='plus'
+                            className='button plus'
                             />
 
                         </div>

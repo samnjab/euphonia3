@@ -35,6 +35,7 @@ html { box-sizing: border-box;}
   --mixedColor6RefBlue: #B9B5A2;
   --mixedColor7RefBlue: #D7CFB7;
   --secondaryColorRefBlue: #F6EACB;
+  --overlayLightBlue:#F9F1DC;
   --colorGradientMinBlue: #001427;
   --colorGradientMaxBlue: #D7CFB7;
   --tertiaryColorRefBlue: #d62828;
@@ -64,6 +65,7 @@ html { box-sizing: border-box;}
 .lightPink{
   --backgroundColor: var(--secondaryColorRef);
   --overlayBackgroundColor: var(--mixedColor6Ref);
+  --overlayLightBackgroundColor:var(--overlayLight);
   --foregroundColor: var(--primaryColorRef);
   --foregroundColorMix1: var(--mixedColor1Ref);
   --foregroundColorMix2: var(--mixedColor2Ref);
@@ -81,6 +83,7 @@ html { box-sizing: border-box;}
 .darkPink{
   --backgroundColor: var(--primaryColorRef);
   --overlayBackgroundColor: var(--mixedColor2Ref);
+  --overlayLightBackgroundColor:var(--mixedColor1Ref);
   --foregroundColor: var(--secondaryColorRef);
   --foregroundColorMix1: var(--mixedColor7Ref);
   --foregroundColorMix2: var(--mixedColor6Ref);
@@ -98,6 +101,7 @@ html { box-sizing: border-box;}
 .lightBlue{
   --backgroundColor: var(--secondaryColorRefBlue);
   --overlayBackgroundColor: var(--mixedColor6RefBlue);
+  --overlayLightBackgroundColor:var(--overlayLightBlue);
   --foregroundColor: var(--primaryColorRefBlue);
   --foregroundColorMix1: var(--mixedColor1RefBlue);
   --foregroundColorMix2: var(--mixedColor2RefBlue);
@@ -116,6 +120,7 @@ html { box-sizing: border-box;}
 .darkBlue{
   --backgroundColor: var(--primaryColorRefBlue);
   --overlayBackgroundColor: var(--mixedColor2RefBlue);
+  --overlayLightBackgroundColor:var(--mixedColor1RefBlue);
   --foregroundColor: var(--secondaryColorRefBlue);
   --foregroundColorMix1: var(--mixedColor7RefBlue);
   --foregroundColorMix2: var(--mixedColor6RefBlue);
@@ -196,7 +201,6 @@ input:focus{
   width: 64px; 
   margin:0 5px;
 }
-
 .title{
   font-size: 1rem;
   font-weight: 300;
@@ -210,12 +214,19 @@ input:focus{
   position: relative;
   width: 100vw;
 }
+.button{
+  margin:0 10px;
+  font-size:1rem;
+}
 .saved{
   color:var(--foregroundColor);
 }
-.notSaved{
+.notSaved,
+.unchecked{
   color:#fff;
 }
+
+
 canvas {
   position: fixed;
   top: 0;
@@ -436,7 +447,6 @@ main{
 /* Search form */
 .searchBox input{
   width:fit-content;
-  /* border-radius:25px; */
   padding:0.75rem 1.5rem;
   width:100%;
   font-size:1rem;
@@ -621,7 +631,7 @@ label:nth-of-type(2n) {
   flex-wrap:wrap;
   justify-content: space-between;
   min-width: 200px;
-  margin:2rem 0;
+  margin:6rem 0 2rem 0;
   grid-column: 1/ -1;
 }
 .apiSearch{
@@ -776,16 +786,47 @@ label:nth-of-type(2n) {
 }
 /* Preview Item styles */
 .previewSection{
-  /* grid-column: 2/3; */
   position:fixed;
-  top:50%;
+  top:50px;
   right:0;
-  width:30%;
+  width:100%;
+  background-color: var(--backgroundColor);
+  z-index:30;
+  padding: 10px 2rem 10px 2rem;
 }
 .preview{
   display:flex;
-  flex-direction:column;
-  align-items: flex-end;
+  justify-content: space-evenly;
+  align-items: center;
+}
+.playlistParent{
+  position:relative;
+}
+.playlists{
+  padding:10px;
+  min-width:300px;
+  text-align: left;
+  overflow-y: scroll;
+  max-height:200px;
+  position:absolute;
+  top:0px;
+  right:50%;
+  background-color: var(--overlayLightBackgroundColor);
+  color:var(--foregroundColorMix1);
+}
+.playlist{
+  margin-left:0;
+  display:flex;
+  justify-content: flex-start;
+  align-items: center;
+  border-bottom: 0.75px solid var(--borderColor);
+}
+.playlists .searchBox{
+  width:100%;
+  font-size:0.75rem;
+}
+.playlists input::placeholder{
+  font-size: 0.75rem;
 }
 /* end of Preview Item styles */
 
@@ -837,21 +878,7 @@ a .img-box{
   max-height:100%;
 }
 
-.playlists{
-  max-height:100px;
-  overflow-y: scroll;
-  position:absolute;
-  background-color:#0D0D25;
-  z-index:10;
-  font-size:12px;
-  text-align:left;
-  /* border-radius:15px; */
-  padding:15px;
-  
-}
-.playlist{
-  margin:5px 0;
-}
+
 footer {
   display: flex;
   flex-direction: column;
