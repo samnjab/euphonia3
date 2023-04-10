@@ -4,19 +4,23 @@ import { useState, useEffect, useRef } from 'react'
 // Components
 import SearchOptions from "./SearchOptions"
 import RecoTrack from './RecoTrack'
+import Preview from './Preview'
 import WebPlayer from "./WebPlayer"
 import Slider from './Slider'
 import Error from './Error'
 import DisplayItem from './DisplayItem'
 import DisplaySelected from './DisplaySelected'
+import ArtistProfile from './ArtistProfile'
 import findGenres from './findGenres'
 import highestFreq from './highestFreq'
-export default function ApiSearch({ spotifyApi, accessToken, user}){
+export default function ApiSearch({ spotifyApi, accessToken, user }){
 
     const [param, setParam] = useState('track')
     const [search, setSearch] = useState('')
     const [searchResults, setSearchResults] = useState([])
     const [paramToSelection, setParamToSelection] = useState({'track':[], 'artist':[], 'album':[], 'playlist':[]})
+    const [selectedItem, setSelectedItem] = useState()
+    const [previewItem, setPreviewItem] = useState()
     const [albumTracks, setAlbumTracks] = useState({title:'', tracks:[]})
     const [playlistTracks, setPlaylistTracks] = useState({title:'', tracks:[]})
     const [genreSeeds, setGenreSeeds] = useState([])
@@ -29,6 +33,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
     const [changeTrackTo, setChangeTrackTo] = useState()
     const [playingTracks, setPlayingTracks] = useState([])
     const [recoParams, setRecoParams] = useState({popularity:{}, energy:{}, tempo:{}, valence:{},acousticness:{}, danceability:{}, instrumentalness:{}, speechiness:{}})
+    const [playlists, setPlaylists] = useState([])
+    const [scan, setScan] = useState(false)
 
   
 
@@ -41,6 +47,58 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         if (!accessToken) return
         settingAccessToken()
     }, [accessToken])
+
+    useEffect(() => {
+        if (!apiReady) return
+        const getPlaylistInfo = async() => {
+            const playlists = await spotifyApi.getUserPlaylists(user.id).then(data => {
+                return data.body.items.map(item => {
+                    return (
+                        {
+                            type: 'playlist',
+                            name:item.name,
+                            uri:item.uri,
+                            id:item.id
+
+                        }
+                    )
+                })
+            }).catch(error => {
+                console.log(error.message)
+                return []
+            })
+            return playlists
+        }
+        const getPlaylistTracks = async (playlists) => {
+            const trackPromises = playlists.map( async(playlist) => {
+                return await spotifyApi.getPlaylistTracks(playlist.id)
+            })
+            await Promise.all(trackPromises)
+            .then(dataArray => {
+                dataArray.forEach((trackArray, i) => {
+                    playlists[i].tracks =  trackArray.body.items.map(track => {
+                        return (
+                            {
+                                type:'track',
+                                title:track.track.name,
+                                uri:track.track.uri,
+                                id:track.track.id,
+                                
+                            }
+                        )
+                    })
+                })
+            })
+        }
+        const getPlaylists = async() => {
+            const playlists = await getPlaylistInfo()
+            await getPlaylistTracks(playlists)
+            console.log('user playlists are', playlists)
+            setPlaylists(playlists)
+        }
+        getPlaylists();
+        
+    },[apiReady, scan])
 
     useEffect(() => {
         if (!accessToken) return
@@ -57,7 +115,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             setPlayer(player)
         }
     },[accessToken])
-
     useEffect(() => {
         if (!player) return
         if(!apiReady) return
@@ -69,6 +126,9 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
         })
         player.connect()
     }, [apiReady, player])
+    window.addEventListener('beforeunload', () => {
+        if (!player) player.disconnect()
+    })
 
     useEffect(() => {
         setSearch('')
@@ -88,10 +148,10 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 if (!start) return
                 setSearchResults(
                     res.body.tracks.items.map(track => {
-                        const smallestAlbumImage = track.album.images.reduce(
-                            (smallest, image) => {
-                                if (image.height < smallest.height) return image
-                                return smallest
+                        const largestAlbumImage = track.album.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
                             },
                             track.album.images[0]
                         )
@@ -101,7 +161,8 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                             albumTitle: track.album.name,
                             uri: track.uri,
                             id:track.id,
-                            imageUrl: smallestAlbumImage?.url || '',
+                            imageUrl: largestAlbumImage?.url || '',
+                            preview_url:track?.preview_url,
                             artist: track.artists[0].name,
                             artistId: track.artists[0].id
                         }
@@ -115,7 +176,6 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 if (!start) return
                 setSearchResults(
                     res.body.artists.items.map(artist => {
-                        console.log('artist obj is', artist)
                         const largestArtistImage = artist.images.reduce(
                             (largest, image) => {
                                 if (image.height > largest.height) return image
@@ -252,7 +312,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                         preview_url:track?.preview_url || '',
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
                     }
                 })
             )
@@ -339,6 +399,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             setGenreSeeds(genres)
         })
     },[albumTracks])
+   
     
     // Functions
     const itemFreq = (array) => {
@@ -388,7 +449,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                         albumTitle:item.title,
                         artist: track.artists[0].name,
                         artistId: track.artists[0].id,
-                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                        duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
                     }
                 })
                 setAlbumTracks({ title: data.body.name, tracks:tracks})
@@ -417,7 +478,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                         artist: item.track.artists[0].name,
                         artistId: item.track.artists[0].id,
                         // genres:item.track.artists[0].genres,
-                        duration:`${Math.round(item.track.duration_ms/60000)}:${Math.round(item.track.duration_ms/1000)%60}`
+                        duration:`${Math.round(item.duration_ms/60000)}:${Math.round((Math.round(item.duration_ms/1000)%60)/10)}${(Math.round(item.duration_ms/1000)%60)%10}`
                     }    
                 })
                 
@@ -464,58 +525,85 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
 
     return(
         <div className='apiSearch'>
-            <section className='search'>
-                <form 
-                className='searchBox'
-                onSubmit={(e) => e.preventDefault()}>
-                    <input
-                            type="text"
-                            placeholder={`Search by ${param.slice(0,1).toUpperCase() + param.slice(1).toLowerCase()}`}
-                            value={search}
-                            onChange={e => {
-                                setRevealStatus(true)
-                                setSearch(e.target.value)
-                            } }
+            {
+                previewItem ?
+                <section className='previewSection'>
+                    <div className='wrapper'>
+                        <Preview 
+                        item={previewItem} 
+                        spotifyApi={spotifyApi} 
+                        user={user} 
+                        playlists={playlists}
+                        scan={scan}
+                        setScan={setScan}
                         />
-                </form>
-                <SearchOptions searchBy={(e) => setParam(e.target.id)} param={param}/>
-                <div className='sliders'>
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
+                    </div>
+                </section>
+                :
+                <></>
+            }
+            <section className='search'>
+                <div className='wrapper'>
+                    <form 
+                    className='searchBox'
+                    onSubmit={(e) => e.preventDefault()}>
+                        <input
+                                type="text"
+                                placeholder={`Search by ${param.slice(0,1).toUpperCase() + param.slice(1).toLowerCase()}`}
+                                value={search}
+                                onChange={e => {
+                                    setRevealStatus(true)
+                                    setSearch(e.target.value)
+                                } }
+                            />
+                    </form>
+                    <SearchOptions searchBy={(e) => setParam(e.target.id)} param={param}/>
+                    <div className='sliders'>
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
+                    </div>
                 </div>
             </section>
             <div className='searchResults'>
-            {   revealStatus ? (
-                    searchResults.map(searchResult => {
-                        return <DisplayItem 
-                                item={searchResult} 
-                                selectItem={selectItem}
-                                /> 
-                    })
-                )  
-                : <></>
-            }
+                <div className='wrapper'>
+                {   revealStatus ? (
+                        searchResults.map(searchResult => {
+                            return <DisplayItem 
+                                    item={searchResult} 
+                                    selectItem={selectItem}
+                                    key={searchResult.uri}
+                                    /> 
+                        })
+                    )  
+                    : <></>
+                }
+                </div>
             </div>
             {
                 paramToSelection[param].length !== 0 ?
                 <section className='selectedItems'>
-                    <h4>selected {`${param}s`}</h4>
-                    {
-                        paramToSelection[param].map(item => {
-                            return <DisplaySelected
-                                    param={param}
-                                    item={item}
-                                    deselectItem={deselectItem}
-                                    />
-                        })
-                    }
-
+                    <div className='wrapper'>
+                        <h4>Selected {`${param}s`}</h4>
+                        {
+                            paramToSelection[param].map(item => {
+                                return <DisplaySelected
+                                        param={param}
+                                        item={item}
+                                        setPreviewItem={setPreviewItem}
+                                        deselectItem={deselectItem}
+                                        setSelectedItem={setSelectedItem}
+                                        changeTrackTo= {handleChangeTrack} 
+                                        key={item.uri}
+                                        />
+                            })
+                        }
+                    </div>
                 </section>
                 :
                 <></>
@@ -523,20 +611,22 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{albumTracks.title}</h4>
-                    {
-                        albumTracks.tracks.map(track => {
-                            return <RecoTrack 
-                            track={track} 
-                            preview_url={track.preview_url}
-                            user={user}
-                            changeTrackTo= {handleChangeTrack} 
-                            selectItem={selectItem}
-                            spotifyApi={spotifyApi} 
-                            key={track.uri}/>
-                        })
-                    }
-
+                    <div className='wrapper'>
+                        <h4>{albumTracks.title}</h4>
+                        {
+                            albumTracks.tracks.map(track => {
+                                return <RecoTrack 
+                                track={track} 
+                                setPreviewItem={setPreviewItem}
+                                setSelectedItem={setSelectedItem}
+                                user={user}
+                                changeTrackTo= {handleChangeTrack} 
+                                selectItem={selectItem}
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                            })
+                        }
+                    </div>
                 </section>
                 :
                 <></>
@@ -544,46 +634,64 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
             {
                 param === 'playlist' && playlistTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{playlistTracks.title}</h4>
-                    {
-                        playlistTracks.tracks.map(track => {
-                            return <RecoTrack 
-                            track={track} 
-                            preview_url={track.preview_url}
-                            user={user}
-                            changeTrackTo= {handleChangeTrack} 
-                            selectItem={selectItem}
-                            spotifyApi={spotifyApi} 
-                            key={track.uri}/>
-                        })
-                    }
+                    <div className='wrapper'>
+                        <h4>{playlistTracks.title} Preview</h4>
+                        {
+                            playlistTracks.tracks.map(track => {
+                                return <RecoTrack 
+                                track={track} 
+                                setPreviewItem={setPreviewItem}
+                                setSelectedItem={setSelectedItem}
+                                user={user}
+                                changeTrackTo= {handleChangeTrack} 
+                                selectItem={selectItem}
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                            })
+                        }
+                    </div>
 
                 </section>
                 : 
+                <></>
+            }
+            {
+                selectedItem ?
+                <ArtistProfile 
+                item={selectedItem} 
+                setSelectedItem={setSelectedItem}
+                setPreviewItem={setPreviewItem} 
+                spotifyApi={spotifyApi} 
+                changeTrackTo={handleChangeTrack}/>
+                :
                 <></>
             }
 
             {
             recommendations.length !==0 ? 
             <section className='recommendations'>
-                <h4>Suggested Tracks</h4>
-                {recommendations.map(track => {
-                    return <RecoTrack 
-                                track={track} 
-                                preview_url={track.preview_url}
-                                user={user}
-                                changeTrackTo= {handleChangeTrack} 
-                                selectItem={selectItem}
-                                spotifyApi={spotifyApi} 
-                                key={track.uri}/>
-                    })
-                }
+                <div className='wrapper'>
+                    <h4>Suggested Tracks</h4>
+                    {recommendations.map(track => {
+                        return <RecoTrack 
+                                    track={track} 
+                                    setPreviewItem={setPreviewItem}
+                                    setSelectedItem={setSelectedItem}
+                                    user={user}
+                                    changeTrackTo= {handleChangeTrack} 
+                                    selectItem={selectItem}
+                                    spotifyApi={spotifyApi} 
+                                    key={track.uri}/>
+                        })
+                    }
+                </div>
             </section>
             :  <></>
                     
             }
+            
 
-            {/* {
+            {
                 playerId && apiReady ?
                 <WebPlayer 
                 player={player}
@@ -596,7 +704,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user}){
                 />
                 :
                 <></>
-            } */}
+            }
             
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (

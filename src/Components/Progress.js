@@ -44,7 +44,7 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                 preview_url:track?.preview_url || '',
                 artist: track.artists[0].name,
                 artistId: track.artists[0].id,
-                duration:`${Math.round(track.duration_ms/60000)}:${Math.round(track.duration_ms/1000)%60}`
+                duration:`${Math.round(track.duration_ms/60000)}:${Math.round((Math.round(track.duration_ms/1000)%60)/10)}${(Math.round(track.duration_ms/1000)%60)%10}`
              }
         )
 
@@ -127,10 +127,10 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                     alt='' />
                 </div>
                 <div className='playingTrackInfo'>
-                    <div className='playingTrackName'>
+                    <div className='title'>
                         {progressParams?.item?.name}
                     </div>
-                    <div className='playingTrackArtist'>
+                    <div className='artist'>
                         { progressParams?.item?.artists.map(artist => {
                             return <div className='artistName'>{artist.name}</div>
                         })}
@@ -141,12 +141,12 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                 <button  
                 className='playerBtn'
                 onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart  id='likedHeart' /></button>
+                ><FaHeart  id='likedHeart' className='button' /></button>
                 :
                 <button 
                 className='playerBtn'
                  onClick={() => likeTrack(playingTrack)}
-                ><FaHeart  id='unlikedHeart'/></button>
+                ><FaHeart  id='unlikedHeart' className='button'/></button>
 
             }
             </div>
