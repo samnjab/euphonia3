@@ -60,6 +60,15 @@ export default function Canvas({windowDims, theme}){
         let maxOpacity = 0.5
         let minOpacity = 0.1
         let shadowColor = '#a6818a'
+        if(theme === 'darkPink'){
+            shadowColor = '#544146';
+
+        }else if(theme === 'lightBlue'){
+            shadowColor = '#D7CFB7';
+            
+        }else if(theme === 'darkBlue'){
+            shadowColor = '#3E4A50';
+        }
         for (let i=0; i < 15; i++){
             const dt = 250 - Math.random() * 100
             let height = Math.random() * 150

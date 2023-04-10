@@ -127,10 +127,10 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                     alt='' />
                 </div>
                 <div className='playingTrackInfo'>
-                    <div className='playingTrackName'>
+                    <div className='title'>
                         {progressParams?.item?.name}
                     </div>
-                    <div className='playingTrackArtist'>
+                    <div className='artist'>
                         { progressParams?.item?.artists.map(artist => {
                             return <div className='artistName'>{artist.name}</div>
                         })}
@@ -141,12 +141,12 @@ export default function Progress({spotifyApi, setPlayingTrack, playingTrack ,set
                 <button  
                 className='playerBtn'
                 onClick={() => unlikeTrack(playingTrack)}
-                ><FaHeart  id='likedHeart' /></button>
+                ><FaHeart  id='likedHeart' className='button' /></button>
                 :
                 <button 
                 className='playerBtn'
                  onClick={() => likeTrack(playingTrack)}
-                ><FaHeart  id='unlikedHeart'/></button>
+                ><FaHeart  id='unlikedHeart' className='button'/></button>
 
             }
             </div>

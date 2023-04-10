@@ -100,22 +100,21 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
         
     },[apiReady, scan])
 
-    // useEffect(() => {
-    //     if (!accessToken) return
-    //     const script = document.createElement('script')
-    //     script.src = "https://sdk.scdn.co/spotify-player.js"
-    //     script.async = true
-    //     document.body.appendChild(script)
-    //     window.onSpotifyWebPlaybackSDKReady = () => {
-    //         const player = new window.Spotify.Player({
-    //             name: 'Euphonia',
-    //             getOAuthToken:cb => {cb(accessToken)},
-    //             volume:0.5
-    //         })
-    //         setPlayer(player)
-    //     }
-    // },[accessToken])
-
+    useEffect(() => {
+        if (!accessToken) return
+        const script = document.createElement('script')
+        script.src = "https://sdk.scdn.co/spotify-player.js"
+        script.async = true
+        document.body.appendChild(script)
+        window.onSpotifyWebPlaybackSDKReady = () => {
+            const player = new window.Spotify.Player({
+                name: 'Euphonia',
+                getOAuthToken:cb => {cb(accessToken)},
+                volume:0.5
+            })
+            setPlayer(player)
+        }
+    },[accessToken])
     useEffect(() => {
         if (!player) return
         if(!apiReady) return
@@ -127,6 +126,9 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
         })
         player.connect()
     }, [apiReady, player])
+    window.addEventListener('beforeunload', () => {
+        if (!player) player.disconnect()
+    })
 
     useEffect(() => {
         setSearch('')
@@ -526,75 +528,82 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 previewItem ?
                 <section className='previewSection'>
-                    <Preview 
-                    item={previewItem} 
-                    spotifyApi={spotifyApi} 
-                    user={user} 
-                    playlists={playlists}
-                    scan={scan}
-                    setScan={setScan}
-                    />
+                    <div className='wrapper'>
+                        <Preview 
+                        item={previewItem} 
+                        spotifyApi={spotifyApi} 
+                        user={user} 
+                        playlists={playlists}
+                        scan={scan}
+                        setScan={setScan}
+                        />
+                    </div>
                 </section>
                 :
                 <></>
             }
             <section className='search'>
-                <form 
-                className='searchBox'
-                onSubmit={(e) => e.preventDefault()}>
-                    <input
-                            type="text"
-                            placeholder={`Search by ${param.slice(0,1).toUpperCase() + param.slice(1).toLowerCase()}`}
-                            value={search}
-                            onChange={e => {
-                                setRevealStatus(true)
-                                setSearch(e.target.value)
-                            } }
-                        />
-                </form>
-                <SearchOptions searchBy={(e) => setParam(e.target.id)} param={param}/>
-                <div className='sliders'>
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
-                    <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
+                <div className='wrapper'>
+                    <form 
+                    className='searchBox'
+                    onSubmit={(e) => e.preventDefault()}>
+                        <input
+                                type="text"
+                                placeholder={`Search by ${param.slice(0,1).toUpperCase() + param.slice(1).toLowerCase()}`}
+                                value={search}
+                                onChange={e => {
+                                    setRevealStatus(true)
+                                    setSearch(e.target.value)
+                                } }
+                            />
+                    </form>
+                    <SearchOptions searchBy={(e) => setParam(e.target.id)} param={param}/>
+                    <div className='sliders'>
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'popularity'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'energy'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'tempo'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'valence'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'acousticness'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'instrumentalness'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'danceability'} />
+                        <Slider min={0} max={100} handleRecoParam={handleRecoParam} recoParam={'speechiness'} />
+                    </div>
                 </div>
             </section>
             <div className='searchResults'>
-            {   revealStatus ? (
-                    searchResults.map(searchResult => {
-                        return <DisplayItem 
-                                item={searchResult} 
-                                selectItem={selectItem}
-                                key={searchResult.uri}
-                                /> 
-                    })
-                )  
-                : <></>
-            }
+                <div className='wrapper'>
+                {   revealStatus ? (
+                        searchResults.map(searchResult => {
+                            return <DisplayItem 
+                                    item={searchResult} 
+                                    selectItem={selectItem}
+                                    key={searchResult.uri}
+                                    /> 
+                        })
+                    )  
+                    : <></>
+                }
+                </div>
             </div>
             {
                 paramToSelection[param].length !== 0 ?
                 <section className='selectedItems'>
-                    <h4>Selected {`${param}s`}</h4>
-                    {
-                        paramToSelection[param].map(item => {
-                            return <DisplaySelected
-                                    param={param}
-                                    item={item}
-                                    setPreviewItem={setPreviewItem}
-                                    deselectItem={deselectItem}
-                                    setSelectedItem={setSelectedItem}
-                                    changeTrackTo= {handleChangeTrack} 
-                                    key={item.uri}
-                                    />
-                        })
-                    }
-
+                    <div className='wrapper'>
+                        <h4>Selected {`${param}s`}</h4>
+                        {
+                            paramToSelection[param].map(item => {
+                                return <DisplaySelected
+                                        param={param}
+                                        item={item}
+                                        setPreviewItem={setPreviewItem}
+                                        deselectItem={deselectItem}
+                                        setSelectedItem={setSelectedItem}
+                                        changeTrackTo= {handleChangeTrack} 
+                                        key={item.uri}
+                                        />
+                            })
+                        }
+                    </div>
                 </section>
                 :
                 <></>
@@ -602,21 +611,22 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 param === 'album' && albumTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{albumTracks.title}</h4>
-                    {
-                        albumTracks.tracks.map(track => {
-                            return <RecoTrack 
-                            track={track} 
-                            setPreviewItem={setPreviewItem}
-                            setSelectedItem={setSelectedItem}
-                            user={user}
-                            changeTrackTo= {handleChangeTrack} 
-                            selectItem={selectItem}
-                            spotifyApi={spotifyApi} 
-                            key={track.uri}/>
-                        })
-                    }
-
+                    <div className='wrapper'>
+                        <h4>{albumTracks.title}</h4>
+                        {
+                            albumTracks.tracks.map(track => {
+                                return <RecoTrack 
+                                track={track} 
+                                setPreviewItem={setPreviewItem}
+                                setSelectedItem={setSelectedItem}
+                                user={user}
+                                changeTrackTo= {handleChangeTrack} 
+                                selectItem={selectItem}
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                            })
+                        }
+                    </div>
                 </section>
                 :
                 <></>
@@ -624,20 +634,22 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
                 param === 'playlist' && playlistTracks.tracks.length !== 0 ?
                 <section className='previewTracks'>
-                    <h4>{playlistTracks.title} Preview</h4>
-                    {
-                        playlistTracks.tracks.map(track => {
-                            return <RecoTrack 
-                            track={track} 
-                            setPreviewItem={setPreviewItem}
-                            setSelectedItem={setSelectedItem}
-                            user={user}
-                            changeTrackTo= {handleChangeTrack} 
-                            selectItem={selectItem}
-                            spotifyApi={spotifyApi} 
-                            key={track.uri}/>
-                        })
-                    }
+                    <div className='wrapper'>
+                        <h4>{playlistTracks.title} Preview</h4>
+                        {
+                            playlistTracks.tracks.map(track => {
+                                return <RecoTrack 
+                                track={track} 
+                                setPreviewItem={setPreviewItem}
+                                setSelectedItem={setSelectedItem}
+                                user={user}
+                                changeTrackTo= {handleChangeTrack} 
+                                selectItem={selectItem}
+                                spotifyApi={spotifyApi} 
+                                key={track.uri}/>
+                            })
+                        }
+                    </div>
 
                 </section>
                 : 
@@ -658,26 +670,28 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
             {
             recommendations.length !==0 ? 
             <section className='recommendations'>
-                <h4>Suggested Tracks</h4>
-                {recommendations.map(track => {
-                    return <RecoTrack 
-                                track={track} 
-                                setPreviewItem={setPreviewItem}
-                                setSelectedItem={setSelectedItem}
-                                user={user}
-                                changeTrackTo= {handleChangeTrack} 
-                                selectItem={selectItem}
-                                spotifyApi={spotifyApi} 
-                                key={track.uri}/>
-                    })
-                }
+                <div className='wrapper'>
+                    <h4>Suggested Tracks</h4>
+                    {recommendations.map(track => {
+                        return <RecoTrack 
+                                    track={track} 
+                                    setPreviewItem={setPreviewItem}
+                                    setSelectedItem={setSelectedItem}
+                                    user={user}
+                                    changeTrackTo= {handleChangeTrack} 
+                                    selectItem={selectItem}
+                                    spotifyApi={spotifyApi} 
+                                    key={track.uri}/>
+                        })
+                    }
+                </div>
             </section>
             :  <></>
                     
             }
             
 
-            {/* {
+            {
                 playerId && apiReady ?
                 <WebPlayer 
                 player={player}
@@ -690,7 +704,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 />
                 :
                 <></>
-            } */}
+            }
             
             {/* stretch goal to be implemented after project due date */}
                 {/* {searchTrackResults.length === 0 && (

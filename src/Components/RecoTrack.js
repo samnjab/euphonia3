@@ -1,9 +1,3 @@
-import React from "react"
-import {useState, useEffect, useRef} from 'react'
-
-
-import Playlists from './Playlists';
-
 export default function RecoTrack({ track, selectItem, setPreviewItem, setSelectedItem, changeTrackTo, spotifyApi, user }) {
    
     return ( 

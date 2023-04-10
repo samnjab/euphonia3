@@ -229,154 +229,155 @@ export default function ArtistProfile({ item, setSelectedItem, setPreviewItem, s
 
     return(
         <section className='artistProfile'>
-            <h4>Artist Profile</h4>
-            <div className='img-box'>
-                <img className='cover' src={artist?.imageUrl}></img>
-            </div>
-            <p className='title'>{artist?.title}</p>
-            <p className='artist'>Followers: {artist?.followers}</p>
-            <h5>Top Tracks</h5>
-            {
-                topTracks ?
-                <div className='topTracks'>
-                   { topTracks.map(track => {
-                       return(
-                            <div 
-                            className='recoTrack'
-                            key={track.uri}
-                            >
-                                <audio src={track.preview_url} id={`${track.uri}`}></audio>
-                                    <a  
-                                    onClick={() => {
-                                        changeTrackTo(track)
-                                    }}
-                                    onMouseEnter ={() =>{
-                                        const audioElement = document.getElementById(`${track.uri}`)
-                                        audioElement.play()
-                                        console.log('setting preview to', track)
-                                        setPreviewItem(track)
-                                        
-                                    }}
-                                    onMouseLeave ={() => {
-                                        const audioElement = document.getElementById(`${track.uri}`)
-                                        audioElement.pause()
-                                        
-                                    }}
-                                    >
-                                        <img src={track.imageUrl} className='cover' />
-                                    </a>
-                            </div>
-                       )
-
-                   })
-                   }
+            <div className='wrapper'>
+                <h4>Artist Profile</h4>
+                <div className='img-box'>
+                    <img className='cover' src={artist?.imageUrl}></img>
                 </div>
-                :
-                <></>
-            }
-            <h5>Albums</h5>
-            {
-                albums.length !== 0 ?
-                <div className='artistAlbums'>
-                    {
-                        albums.map(album => {
-                            return(
-                            <div 
-                            className='recoTrack' 
-                            onClick={() => setAlbumTracks({title:album.title, tracks:album.tracks})}
-                            key={album.uri}
-                            >
-                                <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
-                                    <a  
-                                    onClick={() => {
-                                        changeTrackTo(album?.tracks[0])
-                                    }}
-                                    onMouseEnter ={() =>{
-                                        const audioElement = document.getElementById(`${album.uri}`)
-                                        audioElement.play()
-                                        setPreviewItem(album)
-                                    }}
-                                    onMouseLeave ={() => {
-                                        const audioElement = document.getElementById(`${album.uri}`)
-                                        audioElement.pause()
-                                        
-                                    }}
-                                    >
-                                        <img src={album.imageUrl} className='cover' />
-                                    </a>
-                            </div>
-                       )
+                <p className='title'>{artist?.title}</p>
+                <p className='artist'>Followers: {artist?.followers}</p>
+                <h5>Top Tracks</h5>
+                {
+                    topTracks ?
+                    <div className='topTracks'>
+                    { topTracks.map(track => {
+                        return(
+                                <div 
+                                className='recoTrack'
+                                key={track.uri}
+                                >
+                                    <audio src={track.preview_url} id={`${track.uri}`}></audio>
+                                        <a  
+                                        onClick={() => {
+                                            changeTrackTo(track)
+                                        }}
+                                        onMouseEnter ={() =>{
+                                            const audioElement = document.getElementById(`${track.uri}`)
+                                            audioElement.play()
+                                            console.log('setting preview to', track)
+                                            setPreviewItem(track)
+                                            
+                                        }}
+                                        onMouseLeave ={() => {
+                                            const audioElement = document.getElementById(`${track.uri}`)
+                                            audioElement.pause()
+                                            
+                                        }}
+                                        >
+                                            <img src={track.imageUrl} className='cover' />
+                                        </a>
+                                </div>
+                        )
 
-                        })
+                    })
                     }
-
-                </div>
-                :
-                <></>
-            }
-            {
-                albumTracks.tracks.length !== 0 ?
-                <div className='artistAlbumPreview'>
-                    <h4>{albumTracks.title}</h4>
-               {     albumTracks.tracks.map(track => {
-                                return <RecoTrack 
-                                track={track} 
-                                setPreviewItem={setPreviewItem}
-                                changeTrackTo= {changeTrackTo} 
-                                spotifyApi={spotifyApi} 
-                                key={track.uri}/>
-                            })
+                    </div>
+                    :
+                    <></>
                 }
-                </div>
-                :
-                <></>
-                }
-            {
-                relatedArtists.length !== 0 ?
-                <>
-                    <h5>Related Artists</h5>
-                    <div className='relatedArtists'>
+                <h5>Albums</h5>
+                {
+                    albums.length !== 0 ?
+                    <div className='artistAlbums'>
                         {
-                            relatedArtists.map(artist => {
+                            albums.map(album => {
                                 return(
-                                    <div 
-                                    className='relatedArtist' 
-                                    onClick={() => setSelectedItem(artist)}
-                                    key={artist.uri}
-                                    >
-                                        <audio src={artist?.tracks[0].preview_url} id={`${artist.uri}`}></audio>
-                                    <a  
-                                    onClick={() => {
-                                        changeTrackTo(artist?.tracks[0])
-                                    }}
-                                    onMouseEnter ={() =>{
-                                        const audioElement = document.getElementById(`${artist.uri}`)
-                                        audioElement.play()
-                                        setPreviewItem(artist)
-                                    }}
-                                    onMouseLeave ={() => {
-                                        const audioElement = document.getElementById(`${artist.uri}`)
-                                        audioElement.pause()
-                        
-                                    }}
-                                    >
-                                        <div className='img-box'>
-                                            <img src={artist.imageUrl} className='cover'/>
-                                        </div>
-                                    </a>
-                                        
-                                        
-                                    </div>
-                                )
+                                <div 
+                                className='recoTrack' 
+                                onClick={() => setAlbumTracks({title:album.title, tracks:album.tracks})}
+                                key={album.uri}
+                                >
+                                    <audio src={album?.tracks[0].preview_url} id={`${album.uri}`}></audio>
+                                        <a  
+                                        onClick={() => {
+                                            changeTrackTo(album?.tracks[0])
+                                        }}
+                                        onMouseEnter ={() =>{
+                                            const audioElement = document.getElementById(`${album.uri}`)
+                                            audioElement.play()
+                                            setPreviewItem(album)
+                                        }}
+                                        onMouseLeave ={() => {
+                                            const audioElement = document.getElementById(`${album.uri}`)
+                                            audioElement.pause()
+                                            
+                                        }}
+                                        >
+                                            <img src={album.imageUrl} className='cover' />
+                                        </a>
+                                </div>
+                        )
+
                             })
                         }
 
                     </div>
-                </>
-                :
-                <></>
-            }
+                    :
+                    <></>
+                }
+                {
+                    albumTracks.tracks.length !== 0 ?
+                    <div className='artistAlbumPreview'>
+                        <h4>{albumTracks.title}</h4>
+                {     albumTracks.tracks.map(track => {
+                                    return <RecoTrack 
+                                    track={track} 
+                                    setPreviewItem={setPreviewItem}
+                                    changeTrackTo= {changeTrackTo} 
+                                    spotifyApi={spotifyApi} 
+                                    key={track.uri}/>
+                                })
+                    }
+                    </div>
+                    :
+                    <></>
+                    }
+                {
+                    relatedArtists.length !== 0 ?
+                    <>
+                        <h5>Related Artists</h5>
+                        <div className='relatedArtists'>
+                            {
+                                relatedArtists.map(artist => {
+                                    return(
+                                        <div 
+                                        className='relatedArtist' 
+                                        onClick={() => setSelectedItem(artist)}
+                                        key={artist.uri}
+                                        >
+                                            <audio src={artist?.tracks[0].preview_url} id={`${artist.uri}`}></audio>
+                                        <a  
+                                        onClick={() => {
+                                            changeTrackTo(artist?.tracks[0])
+                                        }}
+                                        onMouseEnter ={() =>{
+                                            const audioElement = document.getElementById(`${artist.uri}`)
+                                            audioElement.play()
+                                            setPreviewItem(artist)
+                                        }}
+                                        onMouseLeave ={() => {
+                                            const audioElement = document.getElementById(`${artist.uri}`)
+                                            audioElement.pause()
+                            
+                                        }}
+                                        >
+                                            <div className='img-box'>
+                                                <img src={artist.imageUrl} className='cover'/>
+                                            </div>
+                                        </a>
+                                            
+                                            
+                                        </div>
+                                    )
+                                })
+                            }
 
+                        </div>
+                    </>
+                    :
+                    <></>
+                }
+                </div>
         </section>
     )
 }

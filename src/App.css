@@ -139,7 +139,6 @@ html { box-sizing: border-box;}
 
 /* resets */
 html{
-  background: var(--backgroundColor);
   color: var(--foregroundColor);
   -moz-osx-font-smoothing: grayscale;
 }
@@ -171,7 +170,7 @@ button {
   margin: 0;
   text-decoration: none;
   background-color: transparent;
-  opacity:0.5;
+  /* opacity:0.5; */
   font-size: 1rem;
   cursor: pointer;
   text-align: center;
@@ -468,7 +467,7 @@ main{
   margin:1rem 0;
 }
 .wrapper{
-  width:90%;
+  width:100%;
   margin:0 auto;
   max-width:1000px;
 }
@@ -627,10 +626,10 @@ label:nth-of-type(2n) {
 /* end of slider styles */
 
 /* Search Options */
-.wrapper{
+/* .search {
   display:flex;
   flex-direction: column;
-}
+} */
 .searchOptionsContainer{
   flex-basis: 40%;
   flex-grow:1;
@@ -687,15 +686,18 @@ label:nth-of-type(2n) {
 
 /* apiSearch component styles */
 .search{
+  width:100vw;
+}
+.search .wrapper{
   display: flex;
   flex-wrap:wrap;
   justify-content: space-between;
   min-width: 200px;
-  margin:6rem 0 2rem 0;
+  margin:6rem auto 2rem auto;
   grid-column: 1/ -1;
 }
 .apiSearch{
-  width:100%;
+  width:100vw;
   position:relative;
   display:grid;
   grid-template-columns: repeat(3, 1fr);
@@ -852,13 +854,17 @@ label:nth-of-type(2n) {
   width:100%;
   background-color: var(--backgroundColor);
   z-index:30;
-  padding: 10px 2rem 10px 2rem;
+  padding: 10px 0 10px 0;
+}
+.previewSection .wrapper{
+  max-width:800px;
 }
 .preview{
   display:flex;
   justify-content: space-evenly;
   align-items: center;
 }
+
 .playlistParent{
   position:relative;
 }
@@ -908,11 +914,14 @@ label:nth-of-type(2n) {
 .recommendations{
   grid-column: 1/ -1;
   max-width:100%;
-  max-height:90vh;
+  max-height:100vh;
   overflow-y: scroll;
+  border-bottom:none;
+}
+.recommendations .wrapper{
   display:flex;
+  flex-direction: row;
   flex-wrap:wrap;
-
 }
 .recommendations h4{
   margin:2rem 5px;
@@ -952,13 +961,18 @@ footer {
 .artistProfile{
   text-align:left;
   grid-column: 1/ -1;
-  max-height:500px;
+  max-height:100vh;
   overflow-y:scroll;
 }
 .topTracks,
-.artistAlbums {
+.artistAlbums,
+.artistAlbumPreview {
   display:flex;
+  flex-direction: row;
   flex-wrap:wrap;
+}
+.artistAlbumPreview h4{
+  flex-basis:100%;
 }
 .relatedArtists{
   display:flex;
@@ -977,10 +991,30 @@ footer {
 
 
 /* Player */
-.playingTrackCover{
-  width:100px;
-  height:100px;
+.MusicContainer{
+  width:100vw;
+  font-size: 1rem;
+  color:var(--foregroundColor);
+  background-color: var(--backgroundColor);
+  padding:1rem;
+  border-top:1px var(--borderColor) solid;
+  border-bottom: none;
+  position:fixed;
+  bottom:0;
+  z-index:30;
 }
+
+.playingTrackCover{
+  width:32px;
+  height:32px;
+}
+.playingTrackCover .cover{
+  max-width:100%;
+  max-height:100%;
+  height:auto;
+  object-fit: cover;
+}
+
 .trackWrapper{
   display:flex;
   align-items: center;
@@ -993,13 +1027,18 @@ footer {
   justify-content: space-between;
 }
 .progressContainer {
-  background-color: var(--overlayLightBackgroundColor);
+  background-color: var(--overlayBackgroundColor);
   height: 4px;
   width: 100%;
   border-radius: 5px;
   margin: 10px 0;
   cursor: pointer;
+  opacity:0.7;
 }
+.progressContainer:hover{
+  opacity:1;
+}
+
 
 #progressBar {
   background-color: var(--foregroundColor);
@@ -1008,11 +1047,7 @@ footer {
   border-radius: 5px;
   transition: width 0.1s linear;
 }
-
-#playingTrackCover {
-  width: 64px;
-  height: 64px;
-}
+/* Volume */
 .volumeContainer{
   display:flex;
   align-items:center;
@@ -1037,6 +1072,7 @@ footer {
   font-size:1rem;
   margin:0 10px;
 }
+/* Player Navigation */
 .playerNav{
   flex-basis:50%;
   display: flex;
@@ -1049,65 +1085,73 @@ footer {
   justify-content: center;
   align-items: center;
 }
-.playingDevice{
-  flex-basis:100%;
-}
 .playerBtn{
   padding: 0 1rem;
   height:2rem;
   display:flex;
   justify-content: center;
   align-items: center;
-  text-transform: uppercase;
+  color:var(--foregroundColor);
+  opacity:0.7;
 }
-.devicesContainer{
-  position:relative;
-  flex-basis:50%;
-  display:flex;
-  flex-direction:column;
-  justify-content: space-between;
-  align-items:center;
+.playerBtn:hover{
+  opacity:1;
 }
-.devicesList{
-  position:absolute;
-  top:0;
-  left:0;
-}
-.deviceInfo{
-  cursor:pointer;
-}
-#play{
+#play {
   font-size: 2rem;
-
 }
-#pause{
+#pause {
   font-size: 2rem;
-
 }
-#shuffleOn {
-  
-}
+#shuffleOn {}
 
-#unlikedHeart{
-  color:white;
-
+#unlikedHeart {
+  color: white;
 }
 #likedHeart {
-  
+  color: var(--foregroundColor);
 }
-
 #repeatLook {
-  
-}
 
-#repeatOne {
- 
 }
-#playingDevice{
-  background-color: var(--foregroundColor);
-  color:var(--backgroundColor);
-  padding:10px 0;
+#repeatOne {
+
+}
+/* Devices */
+.devicesContainer{
+  position:relative;
   display:flex;
+  justify-content: center;
+  align-items:flex-end;
+  margin-bottom:5px;
+  font-size:0.9rem;
+  font-weight:100;
+}
+.deviceList{
+  position:absolute;
+  bottom:1rem;
+  left:1rem;
+  text-align:left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 100;
+  background-color: var(--overlayLightBackgroundColor);
+  max-height:100px;
+  padding:2rem 1rem;
+  overflow-y: scroll;
+  min-width:200px;
+}
+.deviceList li{ 
+  cursor:pointer;
+}
+.activeDevice{
+  font-weight: 300;
+  opacity:1;
+}
+.inactiveDevice{
+  font-weight:100;
+  opacity:0.7;
 }
 #soundBars{
   height: 30px;
@@ -1116,7 +1160,7 @@ footer {
   margin:0 10px;
 }
 .bar {
-  background: var(--foregroundColorMix6);
+  background: var(--foregroundColorMix2);
   bottom: 1px;
   height: 3px;
   position: absolute;

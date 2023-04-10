@@ -31,7 +31,6 @@ function App() {
     let i = themes.indexOf(theme)
     if (i < themes.length - 1) setTheme(themes[i + 1])
     else setTheme(themes[0])
-
   }
     
   return (
