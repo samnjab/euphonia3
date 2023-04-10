@@ -5,6 +5,8 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
      const [inLibrary, setInLibrary] = useState(false)
      const [added, setAdded] = useState(false)
      const [reveal, setReveal] = useState(false)
+     const [value, setValue] = useState('')
+     const [input, setInput] = useState('')
      const [exists, setExists] = useState([])
     useEffect(() => {
         if (!item || item.type !== 'track') return 
@@ -31,6 +33,18 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
         })
         setExists(existsArray)
     }, [item, playlists, scan])
+    useEffect(() => {
+        if (!input) return
+        console.log('input is', input)
+        spotifyApi.createPlaylist(input, { 'description': '', 'public': true })
+        .then(data => {
+            setScan(!scan)
+            setValue('')
+            console.log('created')
+        }).catch(error => {
+            console.log(error.message)
+        })
+    }, [input])
    
     
     const addToLibrary = (item) => {
@@ -64,9 +78,7 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
         }).catch(error => {
             console.log(error.message)
         })
-
     }
-    
 
     return (
         <>
@@ -122,6 +134,18 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
                                         :
                                         <></>
                                     }
+                                    <li className='playlist'>
+                                        <form onSubmit={(e) => {
+                                            setInput(value)
+                                            e.preventDefault()
+                                            }}>
+                                            <input 
+                                            placeholder='Create New'
+                                            value={value}
+                                            onChange={(e) => setValue(e.target.value)}
+                                            />
+                                        </form>
+                                    </li>
                                 </ul>
                                 :
                                 <></>
