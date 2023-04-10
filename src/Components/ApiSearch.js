@@ -146,10 +146,10 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                 if (!start) return
                 setSearchResults(
                     res.body.tracks.items.map(track => {
-                        const smallestAlbumImage = track.album.images.reduce(
-                            (smallest, image) => {
-                                if (image.height < smallest.height) return image
-                                return smallest
+                        const largestAlbumImage = track.album.images.reduce(
+                            (largest, image) => {
+                                if (image.height > largest.height) return image
+                                return largest
                             },
                             track.album.images[0]
                         )
@@ -159,7 +159,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                             albumTitle: track.album.name,
                             uri: track.uri,
                             id:track.id,
-                            imageUrl: smallestAlbumImage?.url || '',
+                            imageUrl: largestAlbumImage?.url || '',
                             preview_url:track?.preview_url,
                             artist: track.artists[0].name,
                             artistId: track.artists[0].id
@@ -586,6 +586,7 @@ export default function ApiSearch({ spotifyApi, accessToken, user }){
                             return <DisplaySelected
                                     param={param}
                                     item={item}
+                                    setPreviewItem={setPreviewItem}
                                     deselectItem={deselectItem}
                                     setSelectedItem={setSelectedItem}
                                     changeTrackTo= {handleChangeTrack} 

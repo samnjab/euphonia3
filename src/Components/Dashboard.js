@@ -24,7 +24,7 @@ export default function Dashboard({ code, toggleTheme }) {
     useEffect(() => {
         setTimeout(() => {
             setBegin(true)
-        },[1000])
+        },[7000])
 
     },[])
 
@@ -54,15 +54,14 @@ export default function Dashboard({ code, toggleTheme }) {
             <header className='App-header app'>
                 {
                     !begin ?
-                    <>
-                        {/* <div className='container'>
-                            <h1 class="glitch">Euphonia3</h1>
-                            <p class="subtitle">old favourites multiplied</p>
+                    <div className='loading'>
+                       <p>Welcome to E3...</p>
+                        <div class="lds-sonic">
+                            <div></div>
+                            <div></div>
+                            <div></div>
                         </div>
-                        <div class="scanlines"></div> */}
-                        Loading...
-                    
-                    </>
+                    </div>
                     :
                     <>
                         <div className='navigationBar'>
