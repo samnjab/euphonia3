@@ -25,7 +25,6 @@ export default function Dashboard({ code, toggleTheme }) {
         setTimeout(() => {
             setBegin(true)
         },[7000])
-
     },[])
 
     // useEffect(() => {
