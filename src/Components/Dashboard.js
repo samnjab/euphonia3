@@ -56,7 +56,7 @@ export default function Dashboard({ code, toggleTheme }) {
                     !begin ?
                     <div className='loading'>
                        <p>Welcome to E3 <FaHeadset /> ...</p>
-                        <div class="lds-sonic">
+                        <div className="lds-sonic">
                             <div></div>
                             <div></div>
                             <div></div>

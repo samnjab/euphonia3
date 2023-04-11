@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
-export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectItem}){
+export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectItem, setPreviewItem}){
     const initialPlayngStatus = useRef(false)
     const [activeDevice, setActiveDevice] = useState()
     const [playingTrack, setPlayingTrack] = useState()
@@ -92,9 +92,11 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
     }
     return(
         <>
-        <section className='MusicContainer'>
+        <section 
+        className='MusicContainer'
+        onMouseEnter={() => setPreviewItem(playingTrack)}
+        >
             <div className='wrapper'>
-
                 <Progress 
                 spotifyApi={spotifyApi} 
                 playingTrack={playingTrack}
@@ -116,12 +118,12 @@ export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, 
                         !isPaused && activeDevice ?
                         <div id='playingDevice' >
                             <div id='soundBars'>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
-                                <div class="bar"></div>
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                                <div className="bar"></div>
+                                <div className="bar"></div>
                             </div>
                         </div>
                         :

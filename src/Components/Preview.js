@@ -84,30 +84,26 @@ export default function Preview ({ item, spotifyApi, user, playlists, scan, setS
         <>
             {
                 item ?
-                <div className='preview'>
+                <div 
+                className='preview'
+                onMouseEnter ={() => {
+                    if (item.type === 'track'){
+                        const audioElement = document.getElementById(`${item.uri}`)
+                        audioElement.play()
+                    }
+                    }}
+                onMouseLeave ={() => {
+                    if (item.type === 'track'){
+                        const audioElement = document.getElementById(`${item.uri}`)
+                        audioElement.pause()
+                    }
+                    }} 
+                >
                     <div className='img-box'>
                         <img 
                         className='cover' 
                         src={item?.imageUrl}
-                        onMouseEnter ={() => {
-                        if (item.type === 'track'){
-                            const audioElement = document.getElementById(`${item.uri}`)
-                            audioElement.play()
-                        }
-                        }}
-                        onMouseLeave ={() => {
-                        if (item.type === 'track'){
-                            const audioElement = document.getElementById(`${item.uri}`)
-                            audioElement.pause()
-                        }
-                        }} 
                         />
-                        {/* {
-                            item.type === 'track' ?
-                            <audio src={item.preview_url} id={`${item.uri}`}></audio>
-                            :
-                            <></>
-                        } */}
                     </div>
                     <p className='title'>{item?.title}</p>
                     <p className='artist'>{item?.artist}</p>
