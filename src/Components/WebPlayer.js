@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react"
 import {FaVolumeUp, FaSearch} from 'react-icons/fa'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faShuffle, faComputer, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
+import { faShuffle, faRepeat, faRotate, faPlayCircle, faPauseCircle, faBackwardStep, faForwardStep } from '@fortawesome/free-solid-svg-icons'
 import Progress from "./Progress"
 
 export default function WebPlayer({player, playerId, spotifyApi, changeTrackTo, setChangeTrackTo, selectItem, setPreviewItem}){
