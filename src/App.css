@@ -572,7 +572,7 @@ input::placeholder{
   height: 0;
   width: 100%;
   outline: none;
-  bottom: 0.7px;
+  bottom: 1px;
   left: 0;
 }
 .thumbZindex3 {

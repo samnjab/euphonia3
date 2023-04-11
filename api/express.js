@@ -11,11 +11,11 @@ app.get('/api/express/code/:code', (req, res) => {
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: process.env.redirectUri,
+    redirectUri: 'https://euphonia3.vercel.app/',
     clientId: process.env.clientId,
     clientSecret: process.env.clientSecret
   })
-  // https://euphonia3.vercel.app/
+  // 'https://euphonia3.vercel.app/'
   spotifyApi
     .authorizationCodeGrant(code)
     .then(data => {
@@ -36,7 +36,7 @@ app.get('/api/express/refresh/:refreshToken', (req, res) => {
   res.setHeader('Content-Type', 'text/html');
   res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
   const spotifyApi = new SpotifyWebApi({
-    redirectUri: process.env.redirectUri,
+    redirectUri: 'https://euphonia3.vercel.app/',
     clientId: process.env.clientId,
     clientSecret: process.env.clientSecret,
     refreshToken,
